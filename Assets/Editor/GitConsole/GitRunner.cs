@@ -53,7 +53,21 @@ namespace GitConsole
                 process.Start();
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
-                process.WaitForExit(30_000); // 最多等 30 秒
+
+                bool exited = process.WaitForExit(30_000); // 最多等 30 秒
+                if (!exited)
+                {
+                    try { process.Kill(); } catch { /* ignore */ }
+                    return new Result
+                    {
+                        Output   = stdout.ToString().TrimEnd(),
+                        Error    = "git command timed out after 30 seconds.",
+                        ExitCode = -1,
+                    };
+                }
+
+                // 等待异步流读取完毕（WaitForExit(timeout) 不保证流已排空）
+                process.WaitForExit();
 
                 return new Result
                 {

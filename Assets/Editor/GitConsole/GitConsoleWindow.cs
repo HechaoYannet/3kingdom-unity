@@ -276,13 +276,27 @@ namespace GitConsole
                 using (new EditorGUI.DisabledScope(string.IsNullOrWhiteSpace(_newBranchName) || _isBusy))
                 {
                     if (GUILayout.Button("Checkout -b (新建并切换)"))
-                        RunAndLog($"checkout -b \"{_newBranchName.Trim()}\"");
+                    {
+                        string name = _newBranchName.Trim();
+                        if (IsValidBranchName(name))
+                            RunAndLog($"checkout -b \"{name}\"");
+                        else
+                            EditorUtility.DisplayDialog("非法分支名", "分支名含有非法字符，请重新输入。", "OK");
+                    }
                     if (GUILayout.Button("Checkout (切换)"))
-                        RunAndLog($"checkout \"{_newBranchName.Trim()}\"");
+                    {
+                        string name = _newBranchName.Trim();
+                        if (IsValidBranchName(name))
+                            RunAndLog($"checkout \"{name}\"");
+                        else
+                            EditorUtility.DisplayDialog("非法分支名", "分支名含有非法字符，请重新输入。", "OK");
+                    }
                     if (GUILayout.Button("删除分支"))
                     {
-                        if (EditorUtility.DisplayDialog("确认", $"删除分支 {_newBranchName}？", "确认", "取消"))
-                            RunAndLog($"branch -d \"{_newBranchName.Trim()}\"");
+                        string name = _newBranchName.Trim();
+                        if (IsValidBranchName(name) &&
+                            EditorUtility.DisplayDialog("确认", $"删除分支 {name}？", "确认", "取消"))
+                            RunAndLog($"branch -d \"{name}\"");
                     }
                 }
             }
@@ -376,8 +390,12 @@ namespace GitConsole
                 {
                     if (GUILayout.Button("执行", EditorStyles.toolbarButton, GUILayout.Width(40)))
                     {
-                        RunAndLog(_customCommand);
-                        _customCommand = "";
+                        string cmd = _customCommand.Trim();
+                        if (EditorUtility.DisplayDialog("确认执行", $"即将执行：\ngit {cmd}", "确认", "取消"))
+                        {
+                            RunAndLog(cmd);
+                            _customCommand = "";
+                        }
                     }
                 }
             }
@@ -430,7 +448,15 @@ namespace GitConsole
 
         private void RefreshDiff()
         {
-            string args = string.IsNullOrWhiteSpace(_diffTarget) ? "diff" : $"diff {_diffTarget.Trim()}";
+            string target = (_diffTarget ?? "").Trim();
+            // 拒绝含有 shell 危险字符的 diff target
+            char[] forbidden = { '"', '\'', '`', '$', '\\', '|', '&', ';', '<', '>', '(', ')', '{', '}', '!', '\n', '\r' };
+            if (!string.IsNullOrEmpty(target) && target.IndexOfAny(forbidden) >= 0)
+            {
+                _diffText = "[err] diff 目标含有非法字符，已拒绝执行。";
+                return;
+            }
+            string args = string.IsNullOrEmpty(target) ? "diff" : $"diff {target}";
             var r = GitRunner.Run(args);
             _diffText = r.Success ? r.Output : r.Error;
         }
@@ -441,11 +467,21 @@ namespace GitConsole
         private void RunAndLog(string gitArgs)
         {
             _isBusy = true;
-            AppendConsole($"> git {gitArgs}");
-            var r = GitRunner.Run(gitArgs);
-            if (!string.IsNullOrEmpty(r.Output)) AppendConsole(r.Output);
-            if (!string.IsNullOrEmpty(r.Error))  AppendConsole("[err] " + r.Error);
-            _isBusy = false;
+            try
+            {
+                AppendConsole($"> git {gitArgs}");
+                var r = GitRunner.Run(gitArgs);
+                if (!string.IsNullOrEmpty(r.Output)) AppendConsole(r.Output);
+                if (!string.IsNullOrEmpty(r.Error))  AppendConsole("[err] " + r.Error);
+            }
+            catch (Exception ex)
+            {
+                AppendConsole("[exception] " + ex.Message);
+            }
+            finally
+            {
+                _isBusy = false;
+            }
             Refresh();
             Repaint();
         }
@@ -460,10 +496,17 @@ namespace GitConsole
 
         private void StageChecked()
         {
+            var toStage = new List<string>();
             foreach (var kv in _stageChecks)
             {
-                if (kv.Value) RunAndLog($"add \"{kv.Key}\"");
+                if (kv.Value) toStage.Add(kv.Key);
             }
+
+            if (toStage.Count == 0) return;
+
+            // 一次性 add 所有选中文件
+            string allPaths = string.Join(" ", toStage.ConvertAll(p => $"\"{p}\""));
+            RunAndLog($"add {allPaths}");
             SetAllChecks(false);
         }
 
@@ -473,7 +516,15 @@ namespace GitConsole
                 _stageChecks[entry.Path] = value;
         }
 
-        private static Color GetEntryColor(string xy)
+        private static bool IsValidBranchName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return false;
+            // 拒绝包含 shell 危险字符
+            char[] forbidden = { '"', '\'', '`', '$', '\\', '|', '&', ';', '<', '>', '(', ')', '{', '}', '!', '\n', '\r' };
+            return name.IndexOfAny(forbidden) < 0;
+        }
+
+
         {
             if (string.IsNullOrEmpty(xy)) return Color.white;
             char x = xy[0];
