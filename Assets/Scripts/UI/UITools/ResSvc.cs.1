@@ -1,0 +1,58 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+
+/// <summary>
+/// 加载场景
+/// </summary>
+public class ResSvc : MonoBehaviour
+{
+    private static ResSvc _instance;
+    /// <summary>
+    /// 得到实例
+    /// </summary>
+    public static ResSvc Instance()
+    {
+        if (_instance == null)
+        {
+            _instance = GameObject.Find("StartGames").GetComponent<ResSvc>();
+            //DontDestroyOnLoad(_instance);
+        }
+        return _instance;
+    }
+    private ResSvc() { }
+    public AsyncOperation SceneAsync;
+
+    public Action PrgV { get; set; } = null;
+
+    public void AsyncLoadScene(string sceneName, Action loaded)
+    {
+        //BasicSettingPanel._instance.Loading.Display();//加载条（改）
+        SceneAsync = SceneManager.LoadSceneAsync(sceneName);
+        SceneAsync.allowSceneActivation = false;
+        PrgV = () =>
+        {
+            float val = SceneAsync.progress;
+            //BasicSettingPanel._instance.Loading.SetProgress(val);
+            if (val == 1)
+            {
+                loaded?.Invoke(); //if(loaded!=null) loaded();
+                PrgV = null;
+                SceneAsync = null;
+                //BasicSettingPanel._instance.Loading.Hiding();
+            }
+        };
+    }
+
+    //public void AsyncLoadScene(string sceneName, Action loaded)
+    //{
+    //    SceneAsync = SceneManager.LoadSceneAsync(sceneName);
+    //}
+    private void Update()
+    {
+        PrgV?.Invoke();
+    }
+}

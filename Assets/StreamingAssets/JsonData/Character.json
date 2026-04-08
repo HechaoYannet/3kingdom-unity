@@ -1,0 +1,13 @@
+{
+	"Tool": "github.com/davyxu/tabtoy",
+	"Version": "3.1.1",
+	"CharacterList":[
+		{ "cardID": 1, "IDName": "CaiWenJi", "CardName": "蔡文姬", "_CharacterInfo": "蔡文姬，名琰，字文姬。陈留郡圉县人，东汉末年女性文学家，文学家蔡邕之女。博学多才，擅长文学、音乐、书法。初嫁于卫仲道，丈夫死后回家。东汉末中原大乱诸侯割据，原本归降汉朝的南匈奴趁机叛乱，蔡文姬为匈奴左贤王所掳，生育两个孩子。曹操统一北方后，花费重金赎回，嫁给董祀。", "URL": "https://vd3.bdstatic.com/mda-kccegr0qe81m9239/v1-cae/hd/mda-kccegr0qe81m9239.mp4" },
+		{ "cardID": 2, "IDName": "CaoYing", "CardName": "曹婴", "_CharacterInfo": "曹婴是电影《三国志之见龙卸甲》中登场的虚拟人物,曹婴是曹操的孙女，弓马娴熟，文武双全，深得曹操的用兵之道及心术。于凤鸣山一战中担任魏军大都督阻止诸葛亮北伐并因罗平安的告密而全歼关兴、张苞、赵云率领的蜀军部队。在《三国演义》中，对应她的原型人物为当时与赵云作战并在凤鸣山围困住赵云的夏侯楙大都督。", "URL": "https://vd3.bdstatic.com/mda-khsfj2z6n28uf1ib/hd/cae_h264/mda-khsfj2z6n28uf1ib.mp4" },
+		{ "cardID": 3, "IDName": "DingFeng", "CardName": "丁奉", "_CharacterInfo": "丁奉，字承渊。庐江安丰人。三国时期吴国名将、权臣。丁奉年少从军，骁勇善战，武艺超群，有勇有谋。太元二年（252年）东兴之战，丁奉雪中奋短兵大破魏军。吴景帝孙休在位时，丁奉设计斩杀权臣孙綝，替孙休夺回了皇权，官拜大将军，开始掌握吴国军政大权。永安三年（260年），假节，领徐州牧。后又扶立乌程侯孙皓为帝，升迁大司马、军师，位列三公之上。", "URL": "https://vd3.bdstatic.com/mda-mhbk8pm2kai8b2d6/480p/h264/1628777975481926883/mda-mhbk8pm2kai8b2d6.mp4" },
+		{ "cardID": 4, "IDName": "DongBai", "CardName": "董白", "_CharacterInfo": "董小宛（1623年－1651年），名白，字青莲，南直隶苏州（今江苏苏州）人，因家道中落生活贫困而沦落青楼，名隶南京教坊司乐籍，与柳如是、陈圆圆、李香君等同为“秦淮八艳”。\n1639年，董小宛结识复社名士冒辟疆，后嫁冒为妾。明亡后小宛随冒家逃难，此后与冒辟疆同甘共苦直至去世。", "URL": "https://vd3.bdstatic.com/mda-mghjw35vnvgze8fp/480p/h264/1626617282077110480/mda-mghjw35vnvgze8fp.mp4" },
+		{ "cardID": 5, "IDName": "GuanSuo", "CardName": "关索", "_CharacterInfo": "关索，是中国古代民间传说里的虚构人物，出自《花关索传》。《三国演义》中为蜀汉名将关羽的第三子（毛本）或长子（周本），荆州失陷后逃难到鲍家庄养病，伤愈后听说东吴仇人已死，乃回归蜀汉，并随同诸葛亮南征。", "URL": "https://vd3.bdstatic.com/mda-kif7rr9k7vy396c1/hd/mda-kif7rr9k7vy396c1.mp4" },
+		{ "cardID": 6, "IDName": "GuanYu", "CardName": "关羽", "_CharacterInfo": "关羽（？—220年），字云长，本字长生 [100]  ，河东郡解县（今山西省运城市盐湖区解州镇）人。东汉末年名将。", "URL": "https://vd3.bdstatic.com/mda-mkufmk3pn1nen3q4/480p/h264/1638184292175050445/mda-mkufmk3pn1nen3q4.mp4" },
+		{ "cardID": 7, "IDName": "GongSunZan", "CardName": "公孙瓒", "_CharacterInfo": "公孙瓒出身贵族。因母地位卑贱，只当了郡中小吏。因其相貌俊美，且声音洪亮、机智善辩，得到涿郡太守赏识。后逐步做到中郎将，以强硬的态度对抗北方游牧民族，作战勇猛，威震边疆。公孙瓒好战，与主张以怀柔政策对待胡人的上司刘虞不和，二人矛盾逐渐激化。初平四年（193年），公孙瓒击杀刘虞，并挟持朝廷使者，得到了总督北方四州的授权，成为北方最强大的诸侯之一。", "URL": "https://vd3.bdstatic.com/mda-jmdsrbd1squi52as/hd/mda-jmdsrbd1squi52as.mp4" },
+		{ "cardID": 8, "IDName": "YueJin", "CardName": "乐进", "_CharacterInfo": "乐进（？－218年），字文谦，阳平郡卫侯国（今河南清丰）人。东汉末年名将。乐进容貌短小以其胆烈而成为曹操帐下吏，南征北讨。获嘉，斩俘数千。在官渡之战时，斩袁绍部将淳于琼。又从击袁谭、袁尚于黎阳，斩其大将严敬。又大破黄巾、雍奴、管承。从平荆州，留屯襄阳。刘备入蜀后，乐进击退关羽、苏非，降伏南郡蛮夷，又大破刘备的临沮长、旌阳长。后来，跟从曹操征讨孙权，获假节。曹操自合肥还，留下乐进与张辽、李典屯于合肥。建安二十三年（218年）逝世，谥曰威侯。后世将乐进称为曹魏“五子良将”之一", "URL": "https://vd3.bdstatic.com/mda-mee5zwypht5etzbw/480p/h264/1621052192353482452/mda-mee5zwypht5etzbw.mp4" }
+	]}

@@ -1,0 +1,20 @@
+ManifestFileVersion: 0
+CRC: 169355135
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 1a1a14b4732bfb4d70e6b4bfbf6c37d0
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 12da798fbf3a6c0c342cc56cb1a6efdf
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Res/card/jineng/background.jpg
+- Assets/Res/card/jineng/bigBg.jpg
+Dependencies: []

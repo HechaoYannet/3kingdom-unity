@@ -1,0 +1,28 @@
+ManifestFileVersion: 0
+CRC: 3187679814
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: d4e997dfa99327a8eb0fa9da8c5b9f45
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 9a2ca7bdbd1871f7131daf57de908e0c
+HashAppended: 0
+ClassTypes:
+- Class: 83
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Res/audio/ogg/sha.ogg
+- Assets/Res/audio/ogg/wanjianqifa.ogg
+- Assets/Res/audio/ogg/sha2.ogg
+- Assets/Res/audio/ogg/baozha.ogg
+- Assets/Res/audio/ogg/tao2.ogg
+- Assets/Res/audio/ogg/nanmanruqin.ogg
+- Assets/Res/audio/ogg/over.ogg
+- Assets/Res/audio/ogg/tao.ogg
+- Assets/Res/audio/ogg/shan.ogg
+- Assets/Res/audio/ogg/shan2.ogg
+- Assets/Res/audio/ogg/bgmusic.ogg
+- Assets/Res/audio/ogg/shaTX.ogg
+Dependencies: []

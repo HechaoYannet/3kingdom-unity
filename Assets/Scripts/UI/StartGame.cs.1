@@ -1,0 +1,40 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class StartGame : MonoBehaviour
+{
+    private static StartGame _instance;
+    /// <summary>
+    /// 得到实例
+    /// </summary>
+    public static StartGame Instance()
+    {
+        if (_instance == null)
+        {
+            _instance = GameObject.Find("StartGames").GetComponent<StartGame>();
+        }
+        return _instance;
+    }
+    private StartGame() { }
+    //[HideInInspector]
+    //public LoadingWind Loading = null;
+    // Start is called before the first frame update
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+        UiManager.Instance().ShowUiForms(UiWind.SelectCharacterPanel.ToString());
+       
+
+        //ResSvc.Instance().AsyncLoadScene("MainCity", () => 
+        //{
+        //    UiManager.Instance().ShowUiForms(UiWind.LoginWind.ToString());
+        //});
+    }
+}
+
+public class CharacterMesseges
+{
+  public static  CharacterInfo characterInfo;
+    public static Sprite sprite;
+}

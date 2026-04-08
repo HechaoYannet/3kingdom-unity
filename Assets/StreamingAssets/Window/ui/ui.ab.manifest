@@ -1,0 +1,36 @@
+ManifestFileVersion: 0
+CRC: 121908089
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: bf8aa1abd775bcab16db06ca6d1dc5f7
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 8b0934d0a2609b8ecd01657c7b5ed3c0
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 83
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Res/UI/logo.png
+- Assets/Res/UI/Ball.png
+- Assets/Res/UI/Button.png
+- Assets/Res/UI/jiantou.png
+- Assets/Res/UI/shandianjg.png
+- Assets/Res/UI/shantween.PNG
+- Assets/Res/UI/light.png
+- Assets/Res/UI/logox.png
+- Assets/Res/UI/shaTween.png
+- Assets/Res/UI/biankuang.png
+- Assets/Res/UI/button 1.png
+- Assets/Res/UI/main.jpg
+- Assets/Res/UI/Eye Of The Tiger.mp3
+- Assets/Res/UI/gouyu.png
+- Assets/Res/UI/touming.png
+- Assets/Res/UI/mainTap.jpg
+Dependencies: []

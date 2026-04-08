@@ -1,0 +1,98 @@
+{
+  "cardDefineList": [
+    {
+      "cardID": 1,
+      "cardName": "杀",
+      "cardType": 3,
+      "useAudioClip": "sha",
+      "IsInitiative": true,
+      "FullHPCanInitiative": true,
+      "Attack": 1,
+      "Recover": 0,
+      "Defense": 0,
+      "GetCardCount": 0,
+      "CanBeResponse": true,
+      "RespondCardsName": [
+        "闪"
+      ]
+    },
+    {
+      "cardID": 2,
+      "cardName": "闪",
+      "cardType": 1,
+      "useAudioClip": "shan",
+      "IsInitiative": false,
+      "FullHPCanInitiative": false,
+      "Attack": 0,
+      "Recover": 0,
+      "Defense": 1,
+      "GetCardCount": 0,
+      "CanBeResponse": false,
+      "RespondCardsName": [
+        "杀",
+        "南蛮入侵",
+        "万箭齐发"
+      ]
+    },
+    {
+      "cardID": 3,
+      "cardName": "桃",
+      "cardType": 3,
+      "useAudioClip": "tao",
+      "IsInitiative": true,
+      "FullHPCanInitiative": false,
+      "Attack": 0,
+      "Recover": 1,
+      "Defense": 1,
+      "GetCardCount": 0,
+      "CanBeResponse": false,
+      "RespondCardsName": []
+    },
+    {
+      "cardID": 4,
+      "cardName": "无中生有",
+      "cardType": 1,
+      "useAudioClip": "wuzhongshengyou",
+      "IsInitiative": false,
+      "FullHPCanInitiative": true,
+      "Attack": 0,
+      "Recover": 0,
+      "Defense": 0,
+      "GetCardCount": 0,
+      "CanBeResponse": false,
+      "RespondCardsName": []
+    },
+    {
+      "cardID": 5,
+      "cardName": "南蛮入侵",
+      "cardType": 1,
+      "useAudioClip": "nanmanruqin",
+      "IsInitiative": true,
+      "FullHPCanInitiative": true,
+      "Attack": 0,
+      "Recover": 0,
+      "Defense": 0,
+      "GetCardCount": 0,
+      "CanBeResponse": false,
+      "RespondCardsName": [
+        "闪"
+      ]
+    },
+    {
+      "cardID": 6,
+      "cardName": "万箭齐发",
+      "cardType": 1,
+      "useAudioClip": "wanjianqifa",
+      "IsInitiative": true,
+      "FullHPCanInitiative": true,
+      "Attack": 0,
+      "Recover": 0,
+      "Defense": 0,
+      "GetCardCount": 0,
+      "CanBeResponse": false,
+      "RespondCardsName": [
+        "闪"
+      ]
+    }
+  ]
+}

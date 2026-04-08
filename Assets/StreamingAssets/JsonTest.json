@@ -1,0 +1,29 @@
+{
+    "lsPlayerMessage": [
+        {
+            "PlayerId": 1,
+            "PlayerName": "大声道",
+            "PassWord": 123
+        },
+        {
+            "PlayerId": 2,
+            "PlayerName": "123",
+            "PassWord": 15
+        },
+        {
+            "PlayerId": 3,
+            "PlayerName": "111",
+            "PassWord": 111
+        },
+        {
+            "PlayerId": 4,
+            "PlayerName": "152",
+            "PassWord": 152
+        },
+        {
+            "PlayerId": 5,
+            "PlayerName": "78888",
+            "PassWord": 123
+        }
+    ]
+}

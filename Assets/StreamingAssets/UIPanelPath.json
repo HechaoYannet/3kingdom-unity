@@ -1,0 +1,34 @@
+{
+  "UIPanelPathList": [
+    {
+      "ID": 1,
+      "UIPanelName": "LoadingWind",
+      "UIPanelPath": "UIpanel/LoadingWind"
+    },
+    {
+      "ID": 2,
+      "UIPanelName": "SelectCharacterPanel",
+      "UIPanelPath": "UIpanel/SelectCharacterPanel"
+    },
+    {
+      "ID": 3,
+      "UIPanelName": "CharacterInfoPop",
+      "UIPanelPath": "UIpanel/CharacterInfoPop"
+    },
+    {
+      "ID": 3,
+      "UIPanelName": "GamingPanel",
+      "UIPanelPath": "UIpanel/GamingPanel"
+    },
+    {
+      "ID": 4,
+      "UIPanelName": "LogErrorPopPanel",
+      "UIPanelPath": "UIpanel/LogErrorPopPanel"
+    },
+    {
+      "ID": 5,
+      "UIPanelName": "ResultPanel",
+      "UIPanelPath": "UIpanel/ResultPanel"
+    }
+  ]
+}
