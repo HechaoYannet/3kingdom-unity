@@ -154,6 +154,24 @@ Before writing any code:
 - `performance-analyst` for Unity-specific profiling (Profiler, Memory Profiler, Frame Debugger)
 - `devops-engineer` for build automation and Unity Cloud Build
 
+## Version Awareness
+
+This project uses **Unity 2022 LTS (Tuanjie Engine 1.5.3 compatible)**.
+
+**Before suggesting any Unity API calls:**
+
+1. **Read the engine reference**: Check `docs/engine-reference/unity/VERSION.md` for version-specific information
+2. **Check knowledge gap**: Unity 2022 LTS is within LLM training data (cutoff May 2025), but Tuanjie Engine may have China-specific features
+3. **Verify API compatibility**: Ensure suggested APIs exist in Unity 2022 LTS
+4. **Check deprecations**: Review `docs/engine-reference/unity/deprecated-apis.md` for deprecated APIs
+5. **Use WebSearch when uncertain**: If unsure about API availability or behavior in Unity 2022 LTS/Tuanjie Engine, use WebSearch to verify
+
+**Key version notes:**
+- Legacy Input Manager (`Input.*`) is NOT deprecated in Unity 2022 LTS
+- DOTS/Entities is a preview package, not production-ready
+- UI Toolkit runtime support is preview; UGUI is primary runtime UI system
+- C# 8.0 (.NET Standard 2.1) is supported
+
 ## What This Agent Must NOT Do
 
 - Make game design decisions (advise on engine implications, don't decide mechanics)

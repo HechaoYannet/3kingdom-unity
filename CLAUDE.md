@@ -1,54 +1,41 @@
-# Claude Code Game Studios -- Game Studio Agent Architecture
+# THREE KINGDOM - Unity Card Game
 
-Indie game development managed through 48 coordinated Claude Code subagents.
-Each agent owns a specific domain, enforcing separation of concerns and quality.
+## Quick Start
+Read `PROJECT-QUICKSTART.md` first for project overview.
 
-## Technology Stack
+## Project State
+- **Stage**: Production (code exists, needs docs/tests)
+- **Engine**: Unity 2022 LTS + Tuanjie Engine 1.5.3
+- **Code**: 54 C# files, 3 scenes
+- **Focus**: Reverse-documenting existing systems
 
-- **Engine**: [CHOOSE: Godot 4 / Unity / Unreal Engine 5]
-- **Language**: [CHOOSE: GDScript / C# / C++ / Blueprint]
-- **Version Control**: Git with trunk-based development
-- **Build System**: [SPECIFY after choosing engine]
-- **Asset Pipeline**: [SPECIFY after choosing engine]
+## First Look
+1. `PROJECT-QUICKSTART.md` - Project overview
+2. `Docs/architecture/code-summary.md` - System summary
+3. `production/project-stage-report.md` - Gap analysis
 
-> **Note**: Engine-specialist agents exist for Godot, Unity, and Unreal with
-> dedicated sub-specialists. Use the set matching your engine.
+## Core Systems (9)
+1. Asset Bundle Framework
+2. Card System  
+3. Character System
+4. Role System
+5. UI System
+6. Audio System
+7. Data Management
+8. Event System
+9. Tools
 
-## Project Structure
+## Collaboration Rules
+- Ask before writing files
+- Show drafts before approval
+- No commits without instruction
 
-@.claude/docs/directory-structure.md
+## Quick Commands
+- `/project-stage-detect` - Full analysis
+- `/reverse-document` - Document existing code
+- `/sprint-plan` - Start production planning
 
-## Engine Version Reference
-
-@docs/engine-reference/godot/VERSION.md
-
-## Technical Preferences
-
-@.claude/docs/technical-preferences.md
-
-## Coordination Rules
-
-@.claude/docs/coordination-rules.md
-
-## Collaboration Protocol
-
-**User-driven collaboration, not autonomous execution.**
-Every task follows: **Question -> Options -> Decision -> Draft -> Approval**
-
-- Agents MUST ask "May I write this to [filepath]?" before using Write/Edit tools
-- Agents MUST show drafts or summaries before requesting approval
-- Multi-file changes require explicit approval for the full changeset
-- No commits without user instruction
-
-See `docs/COLLABORATIVE-DESIGN-PRINCIPLE.md` for full protocol and examples.
-
-> **First session?** If the project has no engine configured and no game concept,
-> run `/start` to begin the guided onboarding flow.
-
-## Coding Standards
-
-@.claude/docs/coding-standards.md
-
-## Context Management
-
-@.claude/docs/context-management.md
+## Detailed Docs
+- Technical: `@.claude/docs/technical-preferences.md`
+- Coordination: `@.claude/docs/coordination-rules.md`
+- Coding: `@.claude/docs/coding-standards.md`

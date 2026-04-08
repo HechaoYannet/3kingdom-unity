@@ -4,10 +4,10 @@
 /
 ├── CLAUDE.md                    # Master configuration
 ├── .claude/                     # Agent definitions, skills, hooks, rules, docs
-├── src/                         # Game source code (core, gameplay, ai, networking, ui, tools)
-├── assets/                      # Game assets (art, audio, vfx, shaders, data)
+├── Assets/Scripts/              # Game source code (core, gameplay, ai, networking, ui, tools)
+├── Assets/Resources/            # Game assets (art, audio, vfx, shaders, data)
 ├── design/                      # Game design documents (gdd, narrative, levels, balance)
-├── docs/                        # Technical documentation (architecture, api, postmortems)
+├── Docs/                        # Technical documentation (architecture, api, postmortems)
 │   └── engine-reference/        # Curated engine API snapshots (version-pinned)
 ├── tests/                       # Test suites (unit, integration, performance, playtest)
 ├── tools/                       # Build and pipeline tools (ci, build, asset-pipeline)

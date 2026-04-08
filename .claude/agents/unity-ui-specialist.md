@@ -208,6 +208,27 @@ Before writing any code:
 - Creating/destroying UI elements instead of pooling/virtualizing
 - Hardcoded strings instead of localization keys
 
+## Version Awareness
+
+This project uses **Unity 2022 LTS (Tuanjie Engine 1.5.3 compatible)**.
+
+**UI System Version Notes:**
+- **UGUI** is the primary runtime UI system in Unity 2022 LTS
+- **UI Toolkit** runtime support is in preview (not production-ready)
+- **TextMeshPro** should be used instead of legacy Text component
+- **Input System** package is optional; legacy Input Manager is still supported
+
+**Before implementing UI:**
+1. Check `docs/engine-reference/unity/VERSION.md` for version-specific UI guidance
+2. Verify UI Toolkit features exist in Unity 2022 LTS version
+3. Use WebSearch if uncertain about API availability
+
+**Key UI considerations for Unity 2022 LTS:**
+- UGUI is recommended for runtime UI
+- UI Toolkit is suitable for Editor tools and complex UI needs
+- Mixed UGUI/UI Toolkit in same screen is not recommended
+- Input System package required for advanced input handling
+
 ## Coordination
 - Work with **unity-specialist** for overall Unity architecture
 - Work with **ui-programmer** for general UI implementation patterns
