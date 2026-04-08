@@ -524,16 +524,21 @@ namespace GitConsole
             return name.IndexOfAny(forbidden) < 0;
         }
 
-
+        // 修复：实现缺失的 GetEntryColor 方法（之前是一个意外的裸代码块）
+        private static Color GetEntryColor(string xy)
         {
             if (string.IsNullOrEmpty(xy)) return Color.white;
             char x = xy[0];
             char y = xy.Length > 1 ? xy[1] : ' ';
 
-            if (x != ' ' && x != '?') return ColStaged;       // 已暂存
+            // 已暂存（X 字段非空且不是 ?）
+            if (x != ' ' && x != '?') return ColStaged;
+            // 工作区变更
             if (y == 'M') return ColModified;
             if (y == 'D') return ColDeleted;
+            // 未追踪
             if (x == '?' || y == '?') return ColUntracked;
+            // 其他视为新增
             return ColAdded;
         }
 
