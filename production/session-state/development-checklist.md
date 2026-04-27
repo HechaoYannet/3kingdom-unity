@@ -13,8 +13,7 @@
 
 ## In Progress
 
-- [ ] PLAN-002 Expand the 6-week roadmap into a concrete backlog
-- [ ] PLAN-003 Prepare Unity-editor handoff list for rendering, camera, and battle scene setup
+- [ ] PLAN-004 Turn roadmap items into first implementation backlog after editor validation
 
 ## Next Up
 
@@ -28,4 +27,6 @@
 ## Done
 
 - [x] OPS-001 Create working branch `feature-battle-presentation-planning` (commit: `292edc1`)
-- [x] PLAN-001 Lock battle-presentation-first direction in design and architecture docs (commit: pending with current checkpoint)
+- [x] PLAN-001 Lock battle-presentation-first direction in design and architecture docs (commit: `7162d37`)
+- [x] PLAN-002 Expand the 6-week roadmap into a concrete backlog (commit: pending with current checkpoint)
+- [x] PLAN-003 Prepare Unity-editor handoff list for rendering, camera, and battle scene setup (commit: pending with current checkpoint)
