@@ -34,6 +34,20 @@ Current gap:
 - card identity is too presentation-light for template routing
 - `DoCardsAction` executes directly against runtime objects with no result payload boundary
 
+### `CardData`
+File: `Assets/Scripts/Card/CardData.cs`
+
+Current responsibilities:
+- carries `templateID`
+- carries card rarity and lightweight card metadata
+
+Current opportunity:
+- `templateID` should become the stable presentation-facing definition key
+- `rarity` can directly drive presentation style variants
+
+Current gap:
+- gameplay definition data is not yet rich enough to stand in for full rule-domain card definitions
+
 ### `Player`
 File: `Assets/Scripts/Character/Player.cs`
 
@@ -58,6 +72,19 @@ Current responsibilities:
 Current gap:
 - round transitions are not surfaced as battle events or logs
 
+### `CardManager`
+File: `Assets/Scripts/CardManage/CardManager.cs`
+
+Current responsibilities:
+- owns deck, discard, shuffle, dealing, and card zone movement
+
+Current opportunity:
+- card movement should be expressed through `RuleActionResult.stateChanges`
+
+Current gap:
+- discard/deck/hand transitions are not yet modeled as explicit state-change records
+- current discard handling should be audited because removal and discard semantics are not clearly separated
+
 ### `Role`
 File: `Assets/Scripts/Role/Role.cs`
 
@@ -68,6 +95,20 @@ Current responsibilities:
 
 Current gap:
 - tag changes and role-side effects are not emitted as structured result deltas
+
+### Presentation Consumers
+Files:
+- `Assets/Scripts/UI/UIFramework/UIManager.cs`
+- `Assets/Scripts/UI/UIFramework/ScreenSpaceUIManager.cs`
+- `Assets/Scripts/UI/UIFramework/WorldSpaceUIManager.cs`
+- `Assets/Scripts/UI/UIFramework/CardEffectsManager.cs`
+- `Assets/Scripts/UI/UICompnent/DamageTextController.cs`
+- `Assets/Scripts/UI/UICompnent/HealTextController.cs`
+- `Assets/Scripts/UI/UICompnent/TurnIndicator.cs`
+
+Current opportunity:
+- these are already strong downstream consumers for `PresentationDefinition`
+- they should render authored payloads, not infer gameplay directly from scene state
 
 ## Proposed Runtime Boundary
 
@@ -129,6 +170,18 @@ PresentationDefinition
 - fallbackPresentationId
 ```
 
+### 4. Stable Identity Types
+These should replace magic IDs and list-index assumptions over time.
+
+```text
+ActorId
+CardInstanceId
+CardDefinitionId
+ZoneId
+ActionRequestId
+ActionResultId
+```
+
 ## Mapping From Current Code To Proposed Schema
 
 ### `Player.currSelectedCardID`
@@ -143,6 +196,10 @@ PresentationDefinition
 - today: both identity and response routing
 - target state: retained as `sourceType`, and also used for default `actionFamily`
 
+### `CardData.templateID`
+- today: mostly content metadata
+- target state: stable `CardDefinitionId` and presentation lookup key
+
 ### `Player.ResponsingCard`
 - today: direct object reference used to drive response flow
 - target state: represented by `responseWindowOpened` and `responseCardType` in `RuleActionResult`
@@ -151,6 +208,10 @@ PresentationDefinition
 - today: mutated in place
 - target state: changes summarized in `targetResults[].tagsAdded` and `tagsRemoved`
 
+### `CardManager` zone movement
+- today: handled through manager methods and owner changes
+- target state: represented explicitly in `battleStateChanges[]` using stable `cardInstanceId` and `zoneId`
+
 ## First Non-Breaking Adoption Steps
 
 1. Keep current coroutine flow.
@@ -158,6 +219,7 @@ PresentationDefinition
 3. Wrap `UseCard()` and `DoCardsAction()` with request/result generation.
 4. Route UI/presentation from `RuleActionResult` instead of direct runtime inspection where possible.
 5. Introduce `PresentationDefinition` lookup only for the first action slice.
+6. Replace magic owner IDs (`0` deck, `1` discard, `2+` players) with explicit zone/actor identity gradually, not in one rewrite.
 
 ## First Test Targets Enabled By This Schema
 
@@ -166,10 +228,66 @@ PresentationDefinition
 - role tag add/remove/refresh remains deterministic
 - card response windows open only for response-capable action types
 
+## Worked Example: `Sha`
+
+### Request
+
+```text
+RuleActionRequest
+- requestId: req_001
+- actorPlayerId: actor_player_01
+- sourceKind: card
+- sourceId: card_inst_014
+- sourceType: Sha
+- targetPlayerIds: [actor_enemy_01]
+- declaredRoundState: Battling
+- isResponseAction: false
+```
+
+### Result
+
+```text
+RuleActionResult
+- requestId: req_001
+- resolvedActionType: normal_attack
+- actorPlayerId: actor_player_01
+- targetResults:
+  - targetPlayerId: actor_enemy_01
+  - hpDelta: -1
+  - cardsDrawn: 0
+  - cardsDiscarded: 0
+  - tagsAdded: []
+  - tagsRemoved: []
+  - wasBlocked: false
+  - wasDodged: false
+- battleStateChanges:
+  - move card_inst_014 from hand_zone_actor_player_01 to discard_zone
+- responseWindowOpened: true
+- responseCardType: Shan
+- presentationHintId: normal_attack_sha
+```
+
+### Presentation
+
+```text
+PresentationDefinition
+- presentationId: normal_attack_sha
+- actionFamily: normal_attack
+- cameraTemplateId: cam_attack_standard
+- animationCueId: anim_attack_basic
+- vfxCueIds: [vfx_card_sha_cast, vfx_hit_slash]
+- uiFeedbackStyleId: ui_damage_standard
+- authoredHitFrame: 18
+- resultOffset: 0
+- usesTimelineHeroMoment: false
+- fallbackPresentationId: normal_attack_generic
+```
+
 ## Risks
 
 - If schema work is skipped, presentation code will hardcode directly against `Player`/`Card` coroutines.
 - If result payloads try to carry full presentation logic, the rule/presentation boundary collapses again.
+- If stable IDs are skipped, replay/network/UI decoupling work will stay fragile.
 
 ## Acceptance Criteria
 
