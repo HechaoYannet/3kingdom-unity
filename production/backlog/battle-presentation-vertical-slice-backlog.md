@@ -44,6 +44,7 @@
 - [ ] Validate Cinemachine and Timeline package state
 - [ ] Capture baseline battle scene references
 - [ ] Prototype baseline and action cameras
+- [ ] Run `production/qa/editor-validation-checklist-battle-presentation.md`
 
 ## Resume Notes
 

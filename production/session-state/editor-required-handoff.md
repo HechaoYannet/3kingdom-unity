@@ -21,6 +21,7 @@
 - [ ] EDITOR-006 Prototype one baseline battle camera and one action camera using Cinemachine.
 - [ ] EDITOR-007 Verify whether critical first-slice battle effects can be done with Particle System + shader effects before depending on VFX Graph.
 - [ ] EDITOR-008 If VFX Graph is tested, validate target device compatibility and note fallback requirements for non-compute or lower-end targets.
+- [ ] EDITOR-009 Run `production/qa/editor-validation-checklist-battle-presentation.md` and record the outputs back into repo docs.
 
 ## Completed
 
