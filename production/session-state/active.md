@@ -13,14 +13,15 @@ Shift the repository from generic workflow bootstrap into battle-presentation-fi
 - define the AI-first production pipeline
 - break the next 6 weeks into resume-safe executable tasks
 - separate repo-local work from Unity-editor-only work
+- align milestone, sprint, and backlog artifacts to the new vertical slice
 
 ## Ready Next Actions
 
-1. Author the battle-presentation system GDD
-2. Author the battle-presentation-first ADR
-3. Expand the 6-week roadmap into an executable backlog
-4. Prepare Unity-editor handoff tasks for URP, Timeline, Cinemachine, and scene validation
-5. Start the first repo-local implementation tasks after planning documents are accepted
+1. Define runtime schema docs for action results and presentation templates
+2. Reverse-document `Assets/Scripts/AssetBundleFramework`
+3. Reverse-document `Assets/Scripts/Data`
+4. Reverse-document `Assets/Scripts/Event`
+5. Start first gameplay tests after schema docs are in place
 
 ## Current Risks
 
