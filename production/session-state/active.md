@@ -17,11 +17,11 @@ Shift the repository from generic workflow bootstrap into battle-presentation-fi
 
 ## Ready Next Actions
 
-1. Define runtime schema docs for action results and presentation templates
-2. Reverse-document `Assets/Scripts/AssetBundleFramework`
-3. Reverse-document `Assets/Scripts/Data`
-4. Reverse-document `Assets/Scripts/Event`
-5. Start first gameplay tests after schema docs are in place
+1. Reverse-document `Assets/Scripts/AssetBundleFramework`
+2. Reverse-document `Assets/Scripts/Data`
+3. Reverse-document `Assets/Scripts/Event`
+4. Start first gameplay tests now that schema docs are in place
+5. Add Role-system and UI/presentation ADRs
 
 ## Current Risks
 

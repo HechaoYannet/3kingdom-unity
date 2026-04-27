@@ -22,7 +22,7 @@
 - [ ] ARCH-003 Add Role-system ADR
 - [ ] ARCH-004 Add UI/presentation ADR
 - [ ] TEST-002 Add first EditMode gameplay tests
-- [ ] SCHEMA-001 Define runtime action-result and presentation-definition schema docs
+- [ ] QA-02 Capture first editor validation evidence after user handoff
 
 ## Done
 
@@ -31,3 +31,4 @@
 - [x] PLAN-002 Expand the 6-week roadmap into a concrete backlog (commit: `4d70a7e`)
 - [x] PLAN-003 Prepare Unity-editor handoff list for rendering, camera, and battle scene setup (commit: `4d70a7e`)
 - [x] PLAN-004 Turn roadmap items into first implementation backlog after editor validation (commit: pending with current checkpoint)
+- [x] SCHEMA-001 Define runtime action-result and presentation-definition schema docs (commit: pending with current checkpoint)

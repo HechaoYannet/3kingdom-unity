@@ -22,8 +22,8 @@
 | VIS-01 | Validation | Render route decision | User + tech art | No | Yes | PLAN-003 | Ready |
 | VIS-02 | Validation | Material/shader blocker audit | User + tech art | No | Yes | VIS-01 | Ready |
 | VIS-03 | Validation | Cinemachine/Timeline package validation | User + programming | No | Yes | VIS-01 | Ready |
-| BTL-01 | Runtime | Action result payload schema | Programming | Yes | No | PLAN-001 | Ready |
-| BTL-02 | Runtime | Presentation template schema | Programming | Yes | No | BTL-01 | Ready |
+| BTL-01 | Runtime | Action result payload schema | Programming | Yes | No | PLAN-001 | Done |
+| BTL-02 | Runtime | Presentation template schema | Programming | Yes | No | BTL-01 | Done |
 | BTL-03 | Runtime | First full action chain | Programming | Mixed | Mixed | BTL-01, BTL-02, VIS-03 | Blocked by editor validation |
 | BTL-04 | Runtime | Signature skill hero moment | Programming | Mixed | Mixed | BTL-03 | Blocked by editor validation |
 | TEST-02 | QA | First gameplay tests | Programming | Yes | No | BTL-01 | Ready |
@@ -32,8 +32,8 @@
 
 ## Repo-Local Tasks I Can Continue Immediately
 
-- [ ] Define `RuleActionRequest` and `RuleActionResult` schema docs
-- [ ] Define `PresentationDefinition` schema docs
+- [x] Define `RuleActionRequest` and `RuleActionResult` schema docs
+- [x] Define `PresentationDefinition` schema docs
 - [ ] Reverse-document Asset Bundle, Data, and Event systems
 - [ ] Add first deterministic gameplay tests if code seams allow it without editor work
 
