@@ -13,7 +13,6 @@
 
 ## In Progress
 
-- [ ] PLAN-001 Lock battle-presentation-first direction in design and architecture docs
 - [ ] PLAN-002 Expand the 6-week roadmap into a concrete backlog
 - [ ] PLAN-003 Prepare Unity-editor handoff list for rendering, camera, and battle scene setup
 
@@ -28,4 +27,5 @@
 
 ## Done
 
-- [x] OPS-001 Create working branch `feature-battle-presentation-planning` (commit: pending with first planning checkpoint)
+- [x] OPS-001 Create working branch `feature-battle-presentation-planning` (commit: `292edc1`)
+- [x] PLAN-001 Lock battle-presentation-first direction in design and architecture docs (commit: pending with current checkpoint)
