@@ -19,7 +19,6 @@
 
 ## Next Up
 
-- [ ] DOC-008 Refresh project fact docs after URP/editor validation
 - [ ] ARCH-003 Add Role-system ADR
 - [ ] ARCH-004 Add UI/presentation ADR
 - [ ] TEST-002 Add first EditMode gameplay tests
@@ -39,3 +38,4 @@
 - [x] QA-03B Backfill baseline scene/camera adjustment conclusion from editor validation (commit: `696d08f`)
 - [x] QA-03C Create dated editor validation report from the completed URP/editor pass (commit: `fccfca1`)
 - [x] VIS-04 Commit tracked URP/editor integration artifacts for the vertical slice branch (commit: `656e4af`)
+- [x] DOC-008 Refresh project fact docs after URP/editor validation (commit: `df64d48`)
