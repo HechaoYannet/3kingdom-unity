@@ -5,24 +5,28 @@
 
 ## Pending
 
-- [ ] EDITOR-001 Confirm current render pipeline state in Project Settings and document whether the vertical slice uses Built-in as a transition path or migrates to URP immediately.
-- [ ] EDITOR-002 Audit current materials/shaders for Built-in-only blockers:
+- [ ] EDITOR-001 确认当前渲染路线的最终书面结论，并记录竖切片是否以 Built-in 过渡还是立即转 URP。
+- [ ] EDITOR-002 将本次材质 / Shader 审查结果补录为文字结论：
   - Standard shader usage
   - surface shaders
   - `GrabPass`-style effects
   - custom post-process dependencies
-- [ ] EDITOR-003 If URP is chosen, install/configure URP assets and prepare separate quality assets for lower/mobile and higher/PC targets.
-- [ ] EDITOR-004 Validate current package state for Timeline, Cinemachine, and Shader Graph in the editor and record any compatibility issues.
-- [ ] EDITOR-005 Open the current battle scene and capture baseline screenshots/video for:
+- [ ] EDITOR-003 若选择 URP，安装 / 配置 URP 资产并准备高低质量档配置。
+- [ ] EDITOR-004 将 Timeline、Cinemachine、Shader Graph 的编辑器验证结果补录为文字结论。
+- [ ] EDITOR-005 若不提供截图，则至少补录当前战斗场景的文字观察结论：
   - default battlefield readability
   - 3D card drag flow
   - player/target framing
   - current UI feedback
-- [ ] EDITOR-006 Prototype one baseline battle camera and one action camera using Cinemachine.
-- [ ] EDITOR-007 Verify whether critical first-slice battle effects can be done with Particle System + shader effects before depending on VFX Graph.
-- [ ] EDITOR-008 If VFX Graph is tested, validate target device compatibility and note fallback requirements for non-compute or lower-end targets.
-- [ ] EDITOR-009 Run `production/qa/editor-validation-checklist-battle-presentation.md` and record the outputs back into repo docs.
+- [ ] EDITOR-006 将 baseline battle camera / action camera 的验证结果补录为文字结论。
+- [ ] EDITOR-007 将关键特效是否可先依赖 `Particle System + Shader` 的判断补录为文字结论。
+- [ ] EDITOR-008 若测试了 VFX Graph，将硬件兼容与降级要求补录为文字结论。
 
 ## Completed
 
-- [ ] None yet
+- [x] EDITOR-009 已于 2026-04-30 执行 `production/qa/editor-validation-checklist-battle-presentation.md`，并完成最小回填；截图未提供，详细结论待补。
+
+## Current Notes
+
+- 编辑器检查已执行，但当前对话未提供可验证的具体检查结果。
+- 本次仓库回填只记录“已完成检查”这一事实，以及后续需要补录的文字结论项。
