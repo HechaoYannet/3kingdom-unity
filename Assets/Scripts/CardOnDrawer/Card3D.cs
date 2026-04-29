@@ -1,167 +1,166 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 /// <summary>
-/// 3D ¿¨ÅÆºËĞÄÂß¼­ ¡ª¡ª Ê¹ÓÃ OnMouse ÏµÁĞÊÂ¼şÊµÏÖÍÏ×§
-/// ÒªÇó¿¨ÅÆÔ¤ÖÆÌåÉÏ±ØĞë´øÓĞ Collider£¨ÍÆ¼ö Box Collider£©
-/// PrefabÊµÀı»¯Ç°ÇëÈ·±£ÒÑÕıÈ·ÉèÖÃ¿¨ÅÆÊı¾İ£¨Card£©
+/// 3D å¡ç‰Œæ ¸å¿ƒé€»è¾‘ï¼Œè´Ÿè´£æ‹–æ‹½å’Œå‡ºç‰ŒåŒºæŠ•æ”¾ã€‚
 /// </summary>
 [RequireComponent(typeof(Collider))]
 public class Card3D : MonoBehaviour
 {
-    [Header("¿¨ÅÆÊı¾İ")]
-    public Card cardData;               // ¿¨ÅÆ½Å±¾Ä£ĞÍ£¬°üº¬¿¨ÅÆ¼¼ÄÜ¡¢ĞÅÏ¢ºÍĞ§¹ûÃèÊö
+    [Header("å¡ç‰Œæ•°æ®")]
+    public Card cardData;
 
-    [Header("ÍÏ×§ÉèÖÃ")]
-    public float dragHeightOffset = 1.0f;   // ÍÏ×§Ê±¿¨ÅÆÌáÉıµÄ¸ß¶È£¨ÊÀ½çµ¥Î»£©
-    public float dragScaleMultiplier = 1.2f;// ÍÏ×§Ê±·Å´ó±¶Êı
-    public LayerMask playZoneLayer;         // ´ò³öÇøÓòµÄ Layer£¬ÓÃÓÚ¼ì²â
+    [Header("æ‹–æ‹½è®¾ç½®")]
+    public float dragHeightOffset = 1.0f;
+    public float dragScaleMultiplier = 1.2f;
+    public LayerMask playZoneLayer;
 
-    // ÄÚ²¿×´Ì¬
-    [HideInInspector] public bool isDragging = false;
-    private Vector3 originalPosition;       // ÍÏ×§Ç°µÄÔ­Ê¼Î»ÖÃ£¨ÊÖÅÆÎ»ÖÃ£©
-    private Quaternion originalRotation;    // Ô­Ê¼Ğı×ª£¨ÊÖÅÆÉÈĞÎ³¯Ïò£©
-    private Vector3 originalScale;          // Ô­Ê¼Ëõ·Å
-    private float originalY;               // Ô­Ê¼ Y Öá¸ß¶È
+    [HideInInspector] public bool isDragging;
 
-    // ×é¼ş»º´æ
-    private Collider cardCollider;
+    private Vector3 originalPosition;
+    private Quaternion originalRotation;
+    private Vector3 originalScale;
+    private float originalY;
     private HandManager3D handManager;
 
-    // ÊÂ¼ş£ºµ±¿¨ÅÆÊı¾İ±ä¸üÊ±Í¨ÖªÊÓÍ¼Ë¢ĞÂ
     public event System.Action OnCardDataChanged;
 
     private void Awake()
     {
         cardData = GetComponent<Card>();
-        cardCollider = GetComponent<Collider>();
-        handManager = FindObjectOfType<HandManager3D>(); // »òÊ¹ÓÃµ¥Àı
+        handManager = FindObjectOfType<HandManager3D>();
         originalScale = transform.localScale;
     }
 
     private void Start()
     {
-        // Ê×´ÎË¢ĞÂÊÓÍ¼
         GetComponent<CardView3D>()?.RefreshUI();
     }
 
     /// <summary>
-    /// ³õÊ¼»¯¿¨ÅÆ£¨´Ó¿¨×éÉú³ÉÊ±µ÷ÓÃ£©
+    /// åˆå§‹åŒ–å¡ç‰Œå±•ç¤ºæ•°æ®ã€‚
     /// </summary>
+    /// <param name="card">é€»è¾‘å¡ç‰Œå¯¹è±¡ã€‚</param>
     public void Initialize(Card card)
     {
-        card.transform.SetParent(transform, false); // ½«¿¨ÅÆÊı¾İ¶ÔÏó×÷Îª×Ó¶ÔÏó£¬·½±ã¹ÜÀí
+        card.transform.SetParent(transform, false);
         cardData = card;
         OnCardDataChanged?.Invoke();
     }
 
-    // -------------------- Êó±ê½»»¥£¨Ğè Collider£©--------------------
     private void OnMouseDown()
     {
-        if (!CanDrag()) return;
+        if (!CanDrag())
+        {
+            return;
+        }
 
         isDragging = true;
         originalPosition = transform.position;
         originalRotation = transform.rotation;
         originalY = transform.position.y;
 
-        // ÊÓ¾õ·´À¡£ºÌáÉı¸ß¶È + ·Å´ó
         transform.position += Vector3.up * dragHeightOffset;
         transform.localScale = originalScale * dragScaleMultiplier;
-
-        // Í¨ÖªÊÖÅÆ¹ÜÀíÆ÷£º¿ªÊ¼ÍÏ×§£¬ÔİÊ±´ÓÊÖÅÆ²¼¾ÖÖĞÒÆ³ı
         handManager?.OnCardDragStart(this);
     }
 
     private void OnMouseDrag()
     {
-        if (!isDragging) return;
+        if (!isDragging)
+        {
+            return;
+        }
 
-        // ½«Êó±êÆÁÄ»×ø±ê×ª»»Îª 3D ÊÀ½ç×ø±ê£¬±£³Ö Y ÖáÎªÍÏ×§¸ß¶È
         Vector3 mousePos = Input.mousePosition;
-        mousePos.z = Camera.main.WorldToScreenPoint(originalPosition).z; // ±£³ÖÔ­Ê¼Éî¶È
+        mousePos.z = Camera.main.WorldToScreenPoint(originalPosition).z;
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
-        worldPos.y = originalY + dragHeightOffset; // ¹Ì¶¨ÍÏ×§¸ß¶È
+        worldPos.y = originalY + dragHeightOffset;
         transform.position = worldPos;
     }
 
     private void OnMouseUp()
     {
-        if (!isDragging) return;
+        if (!isDragging)
+        {
+            return;
+        }
 
         isDragging = false;
-
-        // »¹Ô­Ëõ·ÅºÍĞı×ª£¨Î»ÖÃÉÔºó¾ö¶¨£©
         transform.localScale = originalScale;
         transform.rotation = originalRotation;
 
-        // ¼ì²âÊÇ·ñÔÚ´ò³öÇøÓòÄÚ
         bool played = IsOverPlayZone(out PlayZone3D playZone);
+        if (played && CanPlayCard() && TryQueuePlayerCardPlay(playZone))
+        {
+            handManager?.OnCardDragEnd(this, true);
+            return;
+        }
 
-        if (played && CanPlayCard())
-        {
-            //PlayCard(playZone.ZoneID);
-            Debug.Log($"´ò³ö¿¨ÅÆ£º{cardData.cardName} µ½ÇøÓò {playZone.ZoneID}");
-        }
-        else
-        {
-            // Î´´ò³ö£º»Ø¹éÔ­Î»£¬²¢Í¨ÖªÊÖÅÆ¹ÜÀíÆ÷»Ö¸´²¼¾Ö
-            transform.position = originalPosition;
-            handManager?.OnCardDragEnd(this, false);
-        }
+        transform.position = originalPosition;
+        handManager?.OnCardDragEnd(this, false);
     }
 
-    // -------------------- ¸¨ÖúÅĞ¶¨ --------------------
     private bool CanDrag()
     {
-        // Ê¾ÀıÌõ¼ş£º¼º·½»ØºÏÇÒ·¨Á¦×ã¹»
-        //return TurnManager.Instance != null &&
-        //       TurnManager.Instance.IsPlayerTurn &&
-        //       ManaManager.Instance.CurrentMana >= cardData.manaCost;
-        return true; // ÏÈ·ÅĞĞ£¬ºóĞø¸ù¾İÓÎÏ·Âß¼­ÍêÉÆ
+        Player owner = PlayerManager.Instance != null ? PlayerManager.Instance.GetPlayerInstanceByID(cardData != null ? cardData.OwnerID : -1) : null;
+        return owner != null &&
+               owner.UsesHumanInput &&
+               RoundManager.instance != null &&
+               RoundManager.instance.CurrentTurnPlayer == owner &&
+               RoundManager.instance.RoundState == GRoundState.Battling;
     }
 
     private bool CanPlayCard()
     {
-        //return ManaManager.Instance.CurrentMana >= cardData.manaCost;
-        return true; // ÏÈ·ÅĞĞ£¬ºóĞø¸ù¾İÓÎÏ·Âß¼­ÍêÉÆ
+        return cardData != null;
     }
 
-    /// <summary>
-    /// ¼ì²âµ±Ç°¿¨ÅÆÊÇ·ñÎ»ÓÚ´ò³öÇøÓòÄÚ
-    /// </summary>
     private bool IsOverPlayZone(out PlayZone3D playZone)
     {
-        // ÔÚ¿¨ÅÆÎ»ÖÃ·¢ÉäÒ»¸öÏòÏÂµÄÉäÏß£¬¼ì²âÊÇ·ñÅöµ½ PlayZone µÄÅö×²Ìå
         Ray ray = new Ray(transform.position + Vector3.up * 0.1f, Vector3.down);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 2f, playZoneLayer))
+        if (Physics.Raycast(ray, out RaycastHit hit, 2f, playZoneLayer))
         {
-            PlayZone3D zone = hit.collider.GetComponent<PlayZone3D>();
-            playZone = zone;
-            return zone != null;
+            playZone = hit.collider.GetComponent<PlayZone3D>();
+            return playZone != null;
         }
+
         playZone = null;
         return false;
     }
 
     /// <summary>
-    /// ´ò³ö¿¨ÅÆ ¡ª¡ª ÏûºÄ·¨Á¦¡¢´¥·¢Ğ§¹û¡¢Ïú»Ù¶ÔÏó
+    /// åˆ·æ–°å¡ç‰Œå±•ç¤ºæ•°æ®ã€‚
     /// </summary>
-    //public void PlayCard(int target)
-    //{
-    //    // ÏûºÄ·¨Á¦
-    //    //ManaManager.Instance?.SpendMana(cardData.manaCost);
+    /// <param name="newAttack">ä¿ç•™çš„å¤–éƒ¨åˆ·æ–°æ¥å£ã€‚</param>
+    public void SetAttack(int newAttack)
+    {
+        OnCardDataChanged?.Invoke();
+    }
 
-    //    // ´¥·¢È«¾ÖÊÂ¼ş£¨¹©¼¼ÄÜÏµÍ³¼àÌı£©
-    //    EventManager.TriggerCardPlayed(cardData, target);
+    private bool TryQueuePlayerCardPlay(PlayZone3D playZone)
+    {
+        if (cardData == null || PlayerManager.Instance == null)
+        {
+            return false;
+        }
 
-    //    // ´ÓÊÖÅÆÒÆ³ı²¢Ïú»Ù
-    //    handManager?.RemoveCard(this);
-    //    Destroy(gameObject);
+        Player owner = PlayerManager.Instance.GetPlayerInstanceByID(cardData.OwnerID);
+        if (owner == null || !owner.UsesHumanInput)
+        {
+            return false;
+        }
 
-    //    Debug.Log($"´ò³ö¿¨ÅÆ£º{cardData.cardName}");
-    //}
+        int cardIndex = owner.currentCards.IndexOf(cardData);
+        if (cardIndex < 0)
+        {
+            return false;
+        }
 
-    // ¹©Íâ²¿µ÷ÓÃµÄÊı¾İ¸üĞÂ½Ó¿Ú
-    public void SetAttack(int newAttack) { /* ĞŞ¸ÄÔËĞĞÊ±Êı¾İ£¬²¢´¥·¢ÊÂ¼ş */ OnCardDataChanged?.Invoke(); }
+        owner.currSelectedCardID = cardIndex;
+        owner.TargetPlayerEnemyID = playZone != null && playZone.ZoneID != 0
+            ? playZone.ZoneID
+            : PlayerManager.Instance.GetFirstLivingOpponent(owner)?.PlayerID ?? 0;
+        owner.Confirm_ButtonClick();
+        return true;
+    }
 }
