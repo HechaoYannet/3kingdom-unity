@@ -19,9 +19,9 @@
 | PLAN-001 | Planning | Battle-presentation-first direction | Codex | Yes | No | None | Done |
 | PLAN-002 | Planning | 6-week roadmap and AI pipeline | Codex | Yes | No | PLAN-001 | Done |
 | PLAN-003 | Planning | Editor-required handoff list | Codex | Yes | No | PLAN-001 | Done |
-| VIS-01 | Validation | Render route decision | User + tech art | No | Yes | PLAN-003 | In Review |
-| VIS-02 | Validation | Material/shader blocker audit | User + tech art | No | Yes | VIS-01 | In Review |
-| VIS-03 | Validation | Cinemachine/Timeline package validation | User + programming | No | Yes | VIS-01 | In Review |
+| VIS-01 | Validation | Render route decision | User + tech art | No | Yes | PLAN-003 | Done - URP |
+| VIS-02 | Validation | Material/shader blocker audit | User + tech art | No | Yes | VIS-01 | Done - no obvious blockers |
+| VIS-03 | Validation | Cinemachine/Timeline package validation | User + programming | No | Yes | VIS-01 | Done - installed and usable |
 | BTL-01 | Runtime | Action result payload schema | Programming | Yes | No | PLAN-001 | Done |
 | BTL-02 | Runtime | Presentation template schema | Programming | Yes | No | BTL-01 | Done |
 | BTL-03 | Runtime | First full action chain | Programming | Mixed | Mixed | BTL-01, BTL-02, VIS-03 | Blocked by editor validation |
@@ -40,9 +40,9 @@
 ## Editor-Required Tasks For User
 
 - [x] Run `production/qa/editor-validation-checklist-battle-presentation.md`
-- [ ] Backfill the final written render-route conclusion
-- [ ] Backfill written shader/material blocker conclusions
-- [ ] Backfill written package-state conclusions
+- [x] Backfill the final written render-route conclusion
+- [x] Backfill written shader/material blocker conclusions
+- [x] Backfill written package-state conclusions
 - [ ] Backfill written baseline scene observations
 - [ ] Backfill written camera-validation conclusions
 

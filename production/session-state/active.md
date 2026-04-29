@@ -27,6 +27,6 @@ Shift the repository from generic workflow bootstrap into battle-presentation-fi
 ## Current Risks
 
 - Existing implementation still outpaces documentation
-- Current rendering path has been checked in-editor but is not yet frozen in writing
+- Current rendering path is now frozen to `URP`, but quality-tier details and scene/presentation observations are still not fully recorded
 - No executable test coverage yet for the gameplay core
 - Unity-editor-only migration steps cannot be validated from the CLI

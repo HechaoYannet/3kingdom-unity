@@ -22,7 +22,7 @@
 - [ ] ARCH-003 Add Role-system ADR
 - [ ] ARCH-004 Add UI/presentation ADR
 - [ ] TEST-002 Add first EditMode gameplay tests
-- [ ] QA-03 Backfill written conclusions from the completed editor validation pass
+- [ ] QA-03 Backfill remaining written conclusions from the completed editor validation pass
 
 ## Done
 
@@ -34,4 +34,5 @@
 - [x] SCHEMA-001 Define runtime action-result and presentation-definition schema docs (commit: `35edaef`)
 - [x] QA-01 Prepare editor validation checklist for battle-presentation slice (commit: `179b847`)
 - [x] DOC-007 Translate editor validation checklist to Chinese (commit: `116f203`)
-- [x] QA-02 Record that the first editor validation pass was executed without attached screenshots (commit: pending with current checkpoint)
+- [x] QA-02 Record that the first editor validation pass was executed without attached screenshots (commit: `8bf143a`)
+- [x] QA-03A Backfill render route, package state, and shader blocker conclusions from editor validation (commit: pending with current checkpoint)
