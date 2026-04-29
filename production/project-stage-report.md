@@ -1,265 +1,244 @@
 # Project Stage Analysis Report
 
-**Generated**: 2026-04-09
+**Generated**: 2026-04-30
 **Stage**: Production
-**Analysis Scope**: Full project
+**Analysis Scope**: Full project with battle-presentation planning and first editor validation pass
 
 ---
 
 ## Executive Summary
 
-This is an existing Unity/Tuanjie Engine project with substantial implementation (54+ C# files, 3 scenes) but missing design and architecture documentation. The project has complete game systems including Card, Character, Role, UI, Audio, and Data management systems. No design documents, architecture decisions, or production planning artifacts were found.
+This repository is an active Unity/Tuanjie production project with substantial gameplay code already in place and a much stronger documentation layer than earlier preparation passes. Since the 2026-04-27 report, the project has added a battle-presentation-first GDD, an ADR for the new presentation direction, a runtime action-schema document, a six-week roadmap, a vertical-slice backlog, and a dated editor validation report.
 
-**Current Focus**: Active development with implemented game systems
-**Blocking Issues**: Lack of design documentation makes understanding and maintaining systems difficult
-**Estimated Time to Next Stage**: Requires documentation effort before considering Polish stage
+The project remains firmly in Production because implementation still predates documentation and the new differentiator has not yet been proven with a playable slice. The main risk is no longer planning scarcity. The main risk is whether the team can convert an older deterministic card framework into a readable 3D battle presentation path without collapsing rule ownership into presentation scripts.
+
+**Current Focus**: Battle-presentation-first vertical-slice preparation on top of the existing deterministic card/turn framework  
+**Blocking Issues**: Missing GDDs for Event/Data/Asset loading; no ADR coverage yet for Role and UI systems; no executable automated tests yet; battle scene layout and baseline camera still need final agreement  
+**Estimated Time to Next Stage**: 1-2 focused production sprints to prove the first playable slice before any realistic Polish gate
 
 ---
 
 ## Completeness Overview
 
 ### Design Documentation
-- **Status**: 20% complete (2 systems documented)
-- **Files Found**: 2 documents in `design/`
-  - ✅ `design/gdd/card-system.md` - Card system design (reverse-documented)
-  - ✅ `design/gdd/character-system.md` - Character system design (reverse-documented)
-  - GDD sections: 2 files in `design/gdd/`
-  - Narrative docs: 0 files in `design/narrative/`
-  - Level designs: 0 files in `design/levels/`
+- **Status**: 60% complete
+- **Files Found**: 6 documents in `design/gdd/`
+  - Core reverse-documented systems exist for card, character, role, and UI
+  - `3d-battle-presentation-system.md` now captures the new product-facing direction
+  - `systems-index.md` exists as an index
 - **Key Gaps**:
-  - [ ] No game concept document
-  - [✅] Card system design documented
-  - [✅] Character system design documented
-  - [ ] No system design documents for Role, UI systems
-  - [ ] No narrative or level design documentation
+  - [ ] No GDD yet for Asset Bundle Framework, Event System, or Data Management
+  - [ ] Existing reverse-documented GDDs are still `In Review`
+  - [ ] No concise approved game-pillars document yet above the system layer
 
 ### Source Code
-- **Status**: 70% complete
+- **Status**: 75% complete
 - **Files Found**: 54+ C# files in `Assets/Scripts/`
 - **Major Systems Identified**:
-  - ✅ **Card System** (`Card/`, `CardManage/`, `CardOnDrawer/`) — Complete card game mechanics
-  - ✅ **Character System** (`Character/`) — Player, EnemyAI, PlayerManager
-  - ✅ **Role System** (`Role/`) — Role classes with specific implementations (HuangGai)
-  - ✅ **UI System** (`UI/`) — UIManager, UI components, screen management
-  - ✅ **Audio System** (`Audio/`) — AudioManage
-  - ✅ **Data Management** (`Data/`) — DataManage, Singleton, IOData
-  - ✅ **Asset Bundle Framework** (`AssetBundleFramework/`) — Complete asset management
-  - ✅ **Event System** (`Event/`) — EventManager
-  - ✅ **Tools** (`Tools/`) — Utility classes
+  - [x] Card System - implemented and reverse-documented
+  - [x] Character System - implemented and reverse-documented
+  - [x] Role System - implemented and reverse-documented
+  - [x] UI System - implemented and reverse-documented
+  - [x] Asset Bundle Framework - implemented, undocumented at GDD level
+  - [x] Data Management - implemented, undocumented at GDD level
+  - [x] Event System - implemented, undocumented at GDD level
+  - [ ] Audio System - very thin implementation, still mostly a placeholder
 - **Key Gaps**:
-  - [ ] No test coverage for implemented systems
-  - [ ] Documentation needed for system architecture
+  - [ ] No formal gameplay test coverage for implemented systems
+  - [ ] Several runtime systems still rely on singleton/global access patterns that are hard to validate safely
+  - [ ] The first runtime rule-result to presentation bridge is still only documented, not implemented
 
 ### Architecture Documentation
-- **Status**: 10% complete (1 ADR created)
-- **ADRs Found**: 1 decision documented in `docs/architecture/`
-  - ✅ `docs/architecture/card-system-architecture.md` - Card system architecture decisions
+- **Status**: 55% complete
+- **ADRs Found**: 4 architecture documents in `Docs/architecture/`
 - **Coverage**:
-  - ❌ **Engine Choice** — undocumented (Unity/Tuanjie Engine 1.5.3)
-  - ✅ **Card System Architecture** — documented (reverse-documented)
-  - ❌ **Data Flow** — neither documented nor decided
+  - [x] Card system architecture - documented
+  - [x] Character system architecture - documented
+  - [x] Battle-presentation-first direction - documented
+  - [x] Battle action schema boundary - documented
+  - [ ] Role system architecture - undocumented
+  - [ ] UI/presentation architecture - undocumented
+  - [ ] Event/data ownership architecture - undocumented
 - **Key Gaps**:
-  - [✅] 1 ADR created for Card system
-  - [ ] No architecture overview document
-  - [ ] Other system architectures undocumented
+  - [ ] No accepted Role-system ADR yet
+  - [ ] No accepted UI/presentation ADR yet
+  - [ ] No accepted ADRs yet for Data, Event, or Asset loading ownership
+  - [ ] Several older documents still require periodic freshness maintenance as project facts move
 
 ### Production Management
-- **Status**: 0% complete
+- **Status**: 75% complete
 - **Found**:
-  - Sprint plans: 0 in `production/sprints/`
-  - Milestones: 0 in `production/milestones/`
-  - Roadmap: Missing
+  - Sprint plans: 2 in `production/sprints/`
+  - Milestones: 2 in `production/milestones/`
+  - Roadmap: `Docs/planning/6-week-battle-presentation-roadmap.md`
+  - Backlog: `production/backlog/battle-presentation-vertical-slice-backlog.md`
+  - QA artifacts: dated editor validation checklist and report
 - **Key Gaps**:
-  - [ ] No sprint planning or milestone tracking
-  - [ ] No development workflow established
+  - [ ] No full epic/story tree yet for feature delivery across all systems
+  - [ ] Most completed work is still planning, schema, and validation prep rather than playable feature delivery
 
 ### Testing
-- **Status**: 0% coverage (estimated)
-- **Test Files**: 0 in `tests/`
+- **Status**: 15% coverage (estimated)
+- **Test Files**: scaffold only, no meaningful executable gameplay coverage yet
 - **Coverage by System**:
-  - Card System: 0% (estimated)
-  - Character System: 0% (estimated)
-  - Role System: 0% (estimated)
+  - Card System: 0% executable coverage
+  - Character System: 0% executable coverage
+  - Role System: 0% executable coverage
+  - UI System: 0% executable coverage
 - **Key Gaps**:
-  - [ ] No unit or integration tests
-  - [ ] High regression risk for existing functionality
+  - [ ] No EditMode tests for round flow, hand-size rules, or role tags
+  - [ ] CI still depends on configured Unity licensing and real runnable tests
 
-### Prototypes
-- **Active Prototypes**: 0 in `prototypes/`
-- **Archived**: 0 (experiments completed)
-- **Key Gaps**:
-  - [ ] No prototype documentation (project appears to be main development)
-
-### Engine & Platform
-- **Engine**: Unity 2022 LTS (Tuanjie Engine 1.5.3 compatible)
-- **Scene Formats**: Mixed (`.unity` and `.scene` files)
-- **Scenes Found**:
-  - `LoginScene.unity` (standard Unity format)
-  - `BattleScene.scene` (Tuanjie recommended format)
-  - `MainHome.scene` (Tuanjie recommended format)
-- **Tuanjie Documentation**: https://docs.unity.cn/cn/tuanjiemanual/1.5/Manual/
+### Editor Validation
+- **Status**: First pass completed
+- **Validated Facts**:
+  - [x] URP is active in project graphics settings
+  - [x] `Cinemachine`, `Timeline`, `Shader Graph`, and `VFX Graph` are installed
+  - [x] No immediate Built-in-to-URP blocker was recorded in the first pass
+- **Remaining Gaps**:
+  - [ ] Battle scene layout is not yet accepted as the slice baseline
+  - [ ] Camera placement and long-term camera organization still need review
 
 ---
 
 ## Stage Classification Rationale
 
-**Why Production Stage?**
+**Why Production?**
 
-- 54+ source files indicate active development
-- Multiple complete game systems implemented
-- 3 scene files for different game states
-- No design documentation suggests code-first development approach
+- Source implementation is already substantial and spans multiple gameplay and support systems
+- Documentation is catching up to existing implementation instead of guiding first implementation
+- Production tracking now exists around a live codebase and an in-progress vertical slice
 
-**Indicators for Production stage**:
-- Substantial source code (>10 files)
-- Multiple implemented game systems
-- Scene files for different game modes
+**Indicators for this stage**:
+- 10+ source files with multiple implemented systems
+- Reverse-documentation is active because systems already exist
+- Vertical-slice planning is being layered on top of existing runtime code
 
-**Next stage requirements (Polish)**:
-- [ ] Complete design documentation for existing systems
-- [ ] Architecture decisions documented
-- [ ] Test coverage established
-- [ ] Production planning in place
+**Next stage requirements**:
+- [ ] Approve the current GDD set and document the missing foundation systems
+- [ ] Add missing ADRs for Role, UI, Data/Event, and asset-loading strategy
+- [ ] Convert test scaffold into real EditMode/PlayMode coverage for core gameplay
+- [ ] Complete one rule-to-presentation action chain in-editor
 
 ---
 
-## Gaps Identified (with Clarifying Questions)
+## Gaps Identified
 
-### Critical Gaps (block progress)
+### Critical Gaps
 
-1. **Missing Design Documentation**
-   - **Impact**: Cannot understand system design intent, difficult to maintain or extend
-   - **Question**: Should we reverse-document from existing code or create fresh design docs?
-   - **Suggested Action**: `/reverse-document design Assets/Scripts/[system]` for each major system
+1. **Foundation systems remain undocumented**
+   - **Impact**: Asset loading, data ownership, and event flow are still inferred from code, which makes future changes risky
+   - **Suggested Action**: Reverse-document `Assets/Scripts/AssetBundleFramework`, `Assets/Scripts/Data`, and `Assets/Scripts/Event`
 
-2. **Missing Architecture Decisions**
-   - **Impact**: No record of technical choices, making future changes risky
-   - **Question**: Which architectural decisions were made during implementation?
-   - **Suggested Action**: `/architecture-decision` to document key technical choices
+2. **Architecture coverage is incomplete for active gameplay systems**
+   - **Impact**: Role and UI behavior now directly affect the battle-presentation slice, but their technical boundaries are still implicit
+   - **Suggested Action**: Create ADRs for role-system architecture and UI/presentation architecture
 
-### Important Gaps (affect quality/velocity)
+### Important Gaps
 
-3. **Missing Production Planning**
-   - **Impact**: No sprint planning or milestone tracking
-   - **Question**: Are you tracking work elsewhere (Jira, Trello, etc.)?
-   - **Suggested Action**: `/sprint-plan` to establish development workflow
+3. **Test infrastructure is scaffolded but not yet proving behavior**
+   - **Impact**: Regression risk remains high because no executable tests exist
+   - **Suggested Action**: Add first EditMode tests for round flow, hand-size rules, and role-tag behavior
 
-4. **Missing Tests**
-   - **Impact**: No verification of existing functionality, regression risk
-   - **Question**: Should tests be added for critical systems?
-   - **Suggested Action**: `/test-setup` to establish testing framework
+4. **The presentation route is selected but not yet proven with a playable slice**
+   - **Impact**: The project's new differentiator is still only documented, not yet demonstrated
+   - **Suggested Action**: Implement the first action chain and one signature-skill hero moment against the new schema boundary
 
-### Nice-to-Have Gaps (polish/best practices)
+### Nice-to-Have Gaps
 
-5. **Tuanjie Engine Specific Documentation**
-   - **Impact**: May miss Tuanjie-specific optimizations or features
-   - **Question**: Should we document Tuanjie Engine compatibility notes?
-   - **Suggested Action**: Update engine reference docs with Tuanjie manual links
+5. **No top-level approved product-pillar document**
+   - **Impact**: New contributors can understand systems but not necessarily the intended player promise at a glance
+   - **Suggested Action**: Capture a concise game concept and pillars document after system documentation is stabilized
 
 ---
 
 ## Recommended Next Steps
 
-### Immediate Priority (Do First)
-1. **Reverse-document existing systems** — Understand what's already built
-   - ✅ **Card System**: Completed - `design/gdd/card-system.md` created
-   - Suggested next: `/reverse-document design Assets/Scripts/Character`
-   - Estimated effort: Medium
+### Immediate Priority
+1. **Reverse-document the foundation systems**
+   - Suggested skill: `/reverse-document design Assets/Scripts/AssetBundleFramework`
+   - Estimated effort: M
+2. **Create missing ADR coverage for Role and UI**
+   - Suggested skill: `/architecture-decision`
+   - Estimated effort: M
 
-2. **Document architecture decisions** — Record technical choices
-   - ✅ **Card System Architecture**: Completed - `docs/architecture/card-system-architecture.md` created
-   - Suggested next: Document other system architectures
-   - Estimated effort: Medium
+### Short-Term
+3. **Write the first executable EditMode tests for core formulas and round logic**
+4. **Implement the first deterministic action -> presentation chain following the schema docs**
 
-### Short-Term (This Sprint/Week)
-3. **Establish production planning** — Track development progress
-   - Suggested skill: `/sprint-plan`
-   - Estimated effort: Small
-
-4. **Set up testing framework** — Add tests for critical systems
-   - Suggested skill: `/test-setup`
-   - Estimated effort: Medium
-
-### Medium-Term (Next Milestone)
-5. **Complete design documentation** — Full GDDs for all systems
-   - Suggested: `/design-system` for each major system
-   - Estimated effort: Large
-
-6. **Add Tuanjie Engine specific notes** — Document compatibility
-   - Suggested: Update `docs/engine-reference/unity/` with Tuanjie links
-   - Estimated effort: Small
+### Medium-Term
+5. **Create epics/stories from approved GDDs and ADRs**
+6. **Produce a master architecture document once the missing ADR set exists**
 
 ---
 
 ## Role-Specific Recommendations
 
-### For Programmers:
-- **Focus areas**: Architecture documentation, test setup, code review
-- **Blockers**: Missing design intent for existing systems
+### For Programmers
+- **Focus areas**: Testable seams, singleton isolation, missing ADRs, core logic tests, and the first presentation bridge
+- **Blockers**: Foundation behaviors still rely on undocumented ownership boundaries and the first action chain is not yet implemented
 - **Next tasks**:
-  1. Reverse-document Card system design
-  2. Document architecture decisions
-  3. Set up testing framework
+  1. Document data/event/asset-loading architecture
+  2. Add EditMode coverage for round flow and role limits
+  3. Build the first `RuleActionResult`-driven presentation hook
 
-### For Designers:
-- **Focus areas**: Game design documentation, system specifications
-- **Blockers**: Need to understand existing implementation
+### For Designers
+- **Focus areas**: Approve reverse-documented rules, align them to the battle-presentation direction, and fill missing system specs
+- **Blockers**: Several systems exist in code but not yet as stable design references
 - **Next tasks**:
-  1. Review reverse-documented systems
-  2. Create missing GDD sections
-  3. Document game balance and progression
+  1. Review card/character/role/UI/battle-presentation GDDs together
+  2. Reverse-document Event/Data/Asset systems where gameplay intent matters
 
-### For Producers:
-- **Focus areas**: Production planning, milestone tracking
-- **Blockers**: No current workflow or tracking
+### For Producers
+- **Focus areas**: Turn planning artifacts into a playable vertical-slice execution track
+- **Blockers**: The battle scene and camera baseline are not yet fully accepted
 - **Next tasks**:
-  1. Establish sprint planning
-  2. Define milestones
-  3. Set up development workflow
+  1. Track vertical-slice implementation against the current battle-presentation milestone
+  2. Define the first content or stabilization milestone after the slice is validated
 
 ---
 
 ## Follow-Up Skills to Run
 
-Based on gaps identified, consider running:
-
-- `/reverse-document design Assets/Scripts/[system]` — Document existing Card/Character/Role systems
-- `/architecture-decision` — Document technical architecture choices
-- `/sprint-plan` — Establish production planning
-- `/test-setup` — Add Unity testing framework
-- `/adopt` — Audit existing artifacts for template compliance
-- `/design-system` — Create GDDs for undocumented systems
+- `/reverse-document design Assets/Scripts/AssetBundleFramework`
+- `/reverse-document design Assets/Scripts/Data`
+- `/reverse-document design Assets/Scripts/Event`
+- `/architecture-decision`
+- `/design-review`
+- `/create-epics`
 
 ---
 
 ## Appendix: File Counts by Directory
 
-```
-Assets/Scripts/          54+ C# files
-  Card/                  8+ files
-  Character/             3 files  
-  Role/                  3+ files
-  UI/                    8+ files
-  Audio/                 1 file
-  Data/                  5 files
+```text
+design/
+  gdd/           6 files
+  narrative/     0 files
+  levels/        0 files
+
+Assets/Scripts/
   AssetBundleFramework/  10+ files
+  Card*/                 10+ files
+  Character/             3 files
+  Role/                  3+ files
+  UI/                    10+ files
+  Data/                  5 files
   Event/                 1 file
-  Tools/                 5+ files
+  Audio/                 1 file
 
-Scenes/                  3 files
-  LoginScene.unity       1 file
-  BattleScene.scene      1 file
-  MainHome.scene         1 file
+Docs/architecture/
+  ADR-style docs         4 files
 
-design/                  0 files
-docs/architecture/       0 files
-production/              0 files
-tests/                   0 files
-prototypes/              0 directories
+production/
+  sprints/               2 plans
+  milestones/            2 definitions
+
+tests/                   scaffold only
 ```
 
 ---
 
 **End of Report**
 
-*Generated by `/project-stage-detect` skill*
+*Updated during Codex battle-presentation planning on 2026-04-30*

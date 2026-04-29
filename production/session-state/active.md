@@ -3,18 +3,18 @@
 **Updated**: 2026-04-30
 **Stage**: Production
 **Current Branch**: `feature-battle-presentation-planning`
-**Current Sprint**: `production/sprints/sprint-01.md`
-**Current Milestone**: `production/milestones/production-prep-foundation.md`
+**Current Sprint**: `production/sprints/sprint-02.md`
+**Current Milestone**: `production/milestones/battle-presentation-vertical-slice.md`
 
 ## Focus
 
-Shift the repository from generic workflow bootstrap into battle-presentation-first production planning:
-- lock the 3D battle presentation technical route
-- define the AI-first production pipeline
-- break the next 6 weeks into resume-safe executable tasks
-- separate repo-local work from Unity-editor-only work
-- align milestone, sprint, and backlog artifacts to the new vertical slice
-- absorb the completed editor validation pass into repo docs without fabricating missing details
+Shift the repository from planning into battle-presentation-first slice execution:
+- preserve deterministic card/turn authority
+- route one action chain into 3D battle presentation
+- keep URP as the validated current slice route
+- finish missing reverse-documentation for foundation systems
+- add the first executable gameplay tests
+- keep scene/camera decisions traceable while the baseline is still under review
 
 ## Ready Next Actions
 
@@ -22,7 +22,7 @@ Shift the repository from generic workflow bootstrap into battle-presentation-fi
 2. Reverse-document `Assets/Scripts/Data`
 3. Reverse-document `Assets/Scripts/Event`
 4. Start first gameplay tests now that schema docs are in place
-5. Backfill the editor validation conclusions once the user provides or confirms the textual findings
+5. Define the first implementation ticket that binds one action result to one presentation template
 
 ## Current Risks
 

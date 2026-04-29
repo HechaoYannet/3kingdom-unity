@@ -19,10 +19,10 @@
 
 ## Next Up
 
+- [ ] DOC-008 Refresh project fact docs after URP/editor validation
 - [ ] ARCH-003 Add Role-system ADR
 - [ ] ARCH-004 Add UI/presentation ADR
 - [ ] TEST-002 Add first EditMode gameplay tests
-- [ ] QA-03 Backfill remaining written conclusions from the completed editor validation pass
 
 ## Done
 

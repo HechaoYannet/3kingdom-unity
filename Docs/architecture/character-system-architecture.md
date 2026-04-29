@@ -11,219 +11,116 @@ consequences: Provides documentation for maintenance and future development
 ## Status
 Reverse-documented from existing implementation
 
+## Date
+2026-04-09
+
+## Engine Compatibility
+
+| Field | Value |
+|-------|-------|
+| **Engine** | Unity 2022.3.62t7 + Tuanjie Engine 1.8.5 |
+| **Domain** | Core / Gameplay / Coroutine Timing |
+| **Knowledge Risk** | Medium |
+| **References Consulted** | `Docs/engine-reference/unity/VERSION.md`, `Docs/engine-reference/unity/modules/animation.md`, `Docs/engine-reference/unity/modules/ui.md` |
+| **Post-Cutoff APIs Used** | None explicitly documented |
+| **Verification Required** | Validate coroutine timing, turn timeout handling, and role/player coupling inside Unity 2022.3.62t7 + Tuanjie 1.8.5 with the current URP route |
+
+## ADR Dependencies
+
+| Field | Value |
+|-------|-------|
+| **Depends On** | None |
+| **Enables** | Future ADRs for role abilities, combat resolution, and persistence of player state |
+| **Blocks** | None |
+| **Ordering Note** | A later combat or health ADR should define damage ownership before broader gameplay implementation continues |
+
 ## Context
+
 The Character System manages player entities, AI opponents, and role integration in a turn-based Three Kingdoms card game. The system was implemented without formal architecture documentation. This ADR captures the architectural decisions discovered through code analysis.
+
+The current production direction places this system inside the deterministic rule core that must later emit stable action/result payloads for battle presentation.
 
 ## Decision
 
 ### 1. Inheritance-Based Entity System
-**Pattern**: Class Inheritance / Polymorphism
-**Location**: `EnemyAI.cs:6-7`
-```csharp
-public class EnemyAI : Player {
-    // Inherits all Player functionality
-    // Overrides specific methods for AI behavior
-}
-```
-
-**Rationale**:
-- Shared behavior between human and AI players
-- Code reuse for card management, health, turn states
-- Polymorphic handling in game systems (both are `Player` objects)
-- Easy to add new player types (e.g., different AI personalities)
-
-**Consequences**:
-- ✅ Maximum code reuse between human and AI players
-- ✅ Polymorphic handling in game systems
-- ✅ Easy to extend with new player types
-- ❌ Tight coupling between base and derived classes
-- ❌ Can't mix and match behaviors independently (inheritance hierarchy is rigid)
-- ❌ Base class changes affect all derived classes
+- `EnemyAI` inherits from `Player`
+- This maximizes code reuse but creates rigid hierarchy coupling
 
 ### 2. Singleton Player Manager
-**Pattern**: Singleton / Service Locator
-**Location**: `PlayerManager.cs:7,14-17`
-```csharp
-public static PlayerManager Instance { get; set; }
-private void Awake() {
-    Instance = this;
-}
-```
-
-**Rationale**:
-- Centralized access to all player instances
-- Simple player lookup by ID
-- Global game state management
-- Follows Unity pattern for manager classes
-
-**Consequences**:
-- ✅ Easy access from anywhere in codebase
-- ✅ Simple player ID lookup system
-- ✅ Centralized player management
-- ❌ Global state makes testing difficult
-- ❌ Tight coupling to `PlayerManager.Instance`
-- ❌ Not thread-safe (though Unity is single-threaded)
+- `PlayerManager` exposes global player access
+- This is simple but reduces testability and increases global state
 
 ### 3. Coroutine-Based Timing System
-**Pattern**: Coroutine / Async Pattern
-**Location**: Throughout `Player.cs` and `EnemyAI.cs`
-```csharp
-public virtual IEnumerator EnterRound() {
-    yield return StartCoroutine(UpdateTime());
-}
-protected override IEnumerator UpdateTime() {
-    yield return new WaitForSeconds(Random.Range(2, 3f));
-}
-```
-
-**Rationale**:
-- Natural fit for Unity's coroutine system
-- Easy to implement timed behaviors (AI delays, turn timers)
-- Non-blocking gameplay during waits
-- Simple sequential flow with `yield return`
-
-**Consequences**:
-- ✅ Natural Unity integration
-- ✅ Easy timed behavior implementation
-- ✅ Non-blocking gameplay
-- ❌ Coroutine management complexity (start/stop)
-- ❌ State can be hard to debug (coroutine execution flow)
-- ❌ Potential for coroutine leaks if not properly stopped
+- Turn timers and AI delays use Unity coroutines
+- This fits Unity well but complicates timing verification
 
 ### 4. State Flag Pattern for Turn Management
-**Pattern**: Boolean State Flags
-**Location**: `Player.cs:40-49`
-```csharp
-protected bool isInitiativeRound = false;
-protected bool isResponsingRound = false;
-public bool IsSubRound { get; set; } = false;
-protected bool isWaiting;
-```
-
-**Rationale**:
-- Simple boolean checks for game state
-- Easy to understand and debug
-- Minimal performance overhead
-- Natural for turn-based game states
-
-**Consequences**:
-- ✅ Simple and fast state checking
-- ✅ Easy to add new state flags
-- ✅ Clear in code what each flag means
-- ❌ State validation complexity (invalid combinations possible)
-- ❌ No compile-time checking for state transitions
-- ❌ Can lead to state explosion with many flags
+- Turn state is tracked through boolean flags
+- This is easy to read but can allow invalid state combinations
 
 ### 5. Composition with Role System
-**Pattern**: Composition / Has-A Relationship
-**Location**: `Player.cs:16-17`
-```csharp
-public List<Role> roles = new List<Role>();//no used
-public Role CurrentRole { get; protected set; }
-```
-
-**Rationale**:
-- Separates character identity from player mechanics
-- Allows role switching without changing player object
-- Roles can be designed independently
-- Follows composition-over-inheritance principle
-
-**Consequences**:
-- ✅ Flexible role assignment and switching
-- ✅ Roles can be designed/tested independently
-- ✅ Clean separation of concerns
-- ❌ Additional indirection (player → role → abilities)
-- ❌ Role-player communication overhead
-- ❌ Need to manage role lifecycle alongside player
+- Players hold roles rather than inheriting role behavior
+- This is flexible but adds another layer of coordination
 
 ### 6. Enum-Based UI Communication
-**Pattern**: Enum Message Passing
-**Location**: `Player.cs:405-410`
-```csharp
-public enum UIOperation {
-    NONE, OK, CANCEL
-}
-public UIOperation PlayerUIOperation { get; set; }
-```
-
-**Rationale**:
-- Simple communication between UI and game logic
-- Type-safe operation definitions
-- Easy to extend with new operations
-- Minimal overhead compared to events/delegates
-
-**Consequences**:
-- ✅ Simple and lightweight
-- ✅ Type-safe operation handling
-- ✅ Easy to add new operations
-- ❌ Limited to predefined operations
-- ❌ No payload data (just operation type)
-- ❌ Polling required to check operation state
+- `UIOperation` provides a lightweight bridge between UI and gameplay flow
 
 ## Alternatives Considered
 
-### For Inheritance vs Composition:
-- **Pure Composition**: Each player has components for human/AI behavior (more flexible but more complex)
-- **Strategy Pattern**: Inject behavior strategies at runtime (more testable but more setup)
-- **Current Inheritance**: Simple hierarchy with overrides (chosen for simplicity)
-
-### For Player Management:
-- **Dependency Injection**: Inject player references where needed (more testable but verbose)
-- **Event Bus**: Players emit events, systems subscribe (decoupled but harder to trace)
-- **Current Singleton**: Simple global access (chosen for ease of use)
-
-### For Timing System:
-- **Update() polling**: Check time each frame (simpler but less efficient)
-- **Unity's Invoke()**: Scheduled method calls (less flexible than coroutines)
-- **Current Coroutines**: Natural for sequenced timed behaviors (chosen for Unity integration)
-
-### For State Management:
-- **State Pattern**: Separate state classes (more organized but more classes)
-- **Enum State Machine**: Single state enum with switch statements (cleaner but less flexible)
-- **Current Boolean Flags**: Simple direct checks (chosen for simplicity)
+- Strategy-based behavior instead of inheritance
+- Dependency injection instead of singleton player lookup
+- A stricter state-machine model instead of distributed booleans
 
 ## Compliance with Project Standards
 
-### Adheres to:
+### Adheres To
 - Unity MonoBehaviour patterns
 - C# naming conventions
-- Composition over inheritance (for Role system)
-- Coroutine-based async patterns (Unity standard)
+- Coroutine-based async flow
 
-### Deviations from Best Practices:
-1. **Singleton Usage**: Conflicts with testability standards
-2. **Boolean State Flags**: Can lead to state explosion and validation issues
-3. **Hardcoded Player IDs**: Magic numbers (0=deck, 1=discard, 2+=players)
-4. **Tight Coupling**: `EnemyAI` tightly coupled to `Player` base class
+### Deviations
+1. Singleton usage reduces testability
+2. Boolean state flags can drift into invalid combinations
+3. Player IDs use magic numbers
+4. Presentation-facing action/result payloads are still absent
 
 ## Related Decisions
 
-### Connected Systems:
-1. **Card System**: Players interact with cards via `currentCards` and card methods
-2. **Role System**: Composition relationship for character abilities
-3. **UI System**: `UIOperation` enum for UI-game communication
-4. **Round Manager**: Players participate in round state machine
+### Connected Systems
+1. **Card System**
+2. **Role System**
+3. **UI System**
+4. **Round Manager**
 
-### Dependencies:
-- Unity Engine (coroutines, MonoBehaviour)
-- Card System (`Card` class, card checking methods)
-- Role System (`Role` class, faction system)
+### Dependencies
+- Unity 2022.3.62t7 + Tuanjie Engine 1.8.5
+- Card System
+- Role System
+- `Docs/architecture/battle-action-schema.md`
+
+## GDD Requirements Addressed
+
+| GDD System | Requirement | How This ADR Addresses It |
+|------------|-------------|---------------------------|
+| `design/gdd/character-system.md` | Represent both human players and AI opponents within one turn framework | Documents the inheritance-based entity model |
+| `design/gdd/character-system.md` | Enforce HP-driven hand limits and role composition | Documents the player-role composition pattern |
+| `design/gdd/character-system.md` | Support timed turns and AI response delays | Documents the coroutine-based timing model |
+
+## Performance Implications
+- **CPU**: Cheap at current scale, but polling-style logic and manager scans will degrade with more actors
+- **Memory**: Lightweight, though singleton/global references increase lifetime coupling
+- **Load Time**: Minimal in current form
+- **Network**: Current player ID conventions are local-only and would need redesign for network authority
 
 ## Verification
 
-### Architecture Validation:
-- [x] Inheritance hierarchy identified and documented
-- [x] Singleton pattern usage confirmed
-- [x] Coroutine timing system analyzed
-- [x] Composition with Role system validated
+- [x] Inheritance hierarchy identified
+- [x] Singleton usage documented
+- [x] Coroutine timing documented
+- [x] Role composition documented
 - [x] State flag pattern documented
-
-### Code Quality Issues:
-- [ ] Singleton creates global state and tight coupling
-- [ ] Boolean state flags lack validation
-- [ ] Hardcoded PlayerID meanings (magic numbers)
-- [ ] AI behavior is simplistic (random delays only)
-- [ ] Health/damage mechanics not implemented
+- [ ] Runtime action/result payload boundary still needs implementation
 
 ## Revision History
 - 2026-04-09: Initial reverse-documentation from existing code
+- 2026-04-30: Refreshed engine and deterministic-rule-core context facts after URP/editor validation
