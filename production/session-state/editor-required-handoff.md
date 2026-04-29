@@ -28,6 +28,7 @@
 - [x] EDITOR-001 已确认竖切片渲染路线为 `URP`。
 - [x] EDITOR-002 已确认本次检查未发现明显的 Built-in 迁移阻塞项。
 - [x] EDITOR-004 已确认 `Timeline`、`Cinemachine`、`Shader Graph`、`VFX Graph` 均已安装，其中前两者可正常使用。
+- [x] EDITOR-010 已生成 `production/qa/editor-validation-report-2026-04-30.md`，记录本次编辑器验证的已知工程事实。
 
 ## Current Notes
 

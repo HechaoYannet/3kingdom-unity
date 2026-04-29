@@ -53,6 +53,7 @@
 - `Shader Graph` and `VFX Graph` are installed
 - No obvious Built-in migration blockers were found
 - Current battle scene layout and baseline camera still need discussion and adjustment before they can be accepted as the slice baseline
+- A dated validation report now exists at `production/qa/editor-validation-report-2026-04-30.md`
 
 ## Resume Notes
 

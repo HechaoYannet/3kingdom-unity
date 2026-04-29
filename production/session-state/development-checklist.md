@@ -37,3 +37,4 @@
 - [x] QA-02 Record that the first editor validation pass was executed without attached screenshots (commit: `8bf143a`)
 - [x] QA-03A Backfill render route, package state, and shader blocker conclusions from editor validation (commit: `236dd1e`)
 - [x] QA-03B Backfill baseline scene/camera adjustment conclusion from editor validation (commit: pending with current checkpoint)
+- [x] QA-03C Create dated editor validation report from the completed URP/editor pass (commit: pending with current checkpoint)

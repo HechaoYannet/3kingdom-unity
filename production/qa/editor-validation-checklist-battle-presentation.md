@@ -5,6 +5,8 @@
 **最近执行**: 2026-04-30
 **使用时机**: 在 Unity/Tuanjie 编辑器中打开本分支项目，并验证“战斗表现优先”路线时使用。
 
+> 关联报告：`production/qa/editor-validation-report-2026-04-30.md`
+
 ## 本次执行说明
 
 - [x] 用户已于 2026-04-30 完成一次 Unity 编辑器检查
@@ -100,6 +102,7 @@
 - [x] `production/session-state/editor-required-handoff.md`
 - [x] `production/session-state/development-checklist.md`
 - [x] `production/backlog/battle-presentation-vertical-slice-backlog.md`
+- [x] `production/qa/editor-validation-report-2026-04-30.md`
 
 如后续补充了明确结论，还应同步更新：
 - `Docs/architecture/battle-presentation-first-architecture.md`
