@@ -38,3 +38,4 @@
   - `Cinemachine`、`Timeline` 已安装且可正常使用
   - `Shader Graph`、`VFX Graph` 已安装
   - 未发现明显的 Built-in 迁移阻塞项
+  - 当前战斗场景的布置与默认基线机位都需要进一步调整和讨论

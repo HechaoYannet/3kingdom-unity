@@ -46,6 +46,14 @@
 - [ ] Backfill written baseline scene observations
 - [ ] Backfill written camera-validation conclusions
 
+## Current Editor Findings
+
+- Render route is `URP`
+- `Cinemachine` and `Timeline` are installed and usable
+- `Shader Graph` and `VFX Graph` are installed
+- No obvious Built-in migration blockers were found
+- Current battle scene layout and baseline camera still need discussion and adjustment before they can be accepted as the slice baseline
+
 ## Resume Notes
 
 - If resuming in a new session, start by reading:

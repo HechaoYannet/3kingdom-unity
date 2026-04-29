@@ -30,3 +30,4 @@ Shift the repository from generic workflow bootstrap into battle-presentation-fi
 - Current rendering path is now frozen to `URP`, but quality-tier details and scene/presentation observations are still not fully recorded
 - No executable test coverage yet for the gameplay core
 - Unity-editor-only migration steps cannot be validated from the CLI
+- The current battle scene layout and default camera are not yet accepted as the vertical-slice baseline
