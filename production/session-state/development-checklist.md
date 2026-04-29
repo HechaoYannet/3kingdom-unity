@@ -23,7 +23,6 @@
 - [ ] ARCH-004 Add UI/presentation ADR
 - [ ] TEST-002 Add first EditMode gameplay tests
 - [ ] QA-03 Backfill remaining written conclusions from the completed editor validation pass
-- [ ] VIS-04 Commit tracked URP/editor integration artifacts for the vertical slice branch
 
 ## Done
 
@@ -39,3 +38,4 @@
 - [x] QA-03A Backfill render route, package state, and shader blocker conclusions from editor validation (commit: `236dd1e`)
 - [x] QA-03B Backfill baseline scene/camera adjustment conclusion from editor validation (commit: `696d08f`)
 - [x] QA-03C Create dated editor validation report from the completed URP/editor pass (commit: `fccfca1`)
+- [x] VIS-04 Commit tracked URP/editor integration artifacts for the vertical slice branch (commit: `656e4af`)
