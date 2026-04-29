@@ -33,3 +33,4 @@
 - [x] PLAN-004 Turn roadmap items into first implementation backlog after editor validation (commit: `b987e82`)
 - [x] SCHEMA-001 Define runtime action-result and presentation-definition schema docs (commit: `35edaef`)
 - [x] QA-01 Prepare editor validation checklist for battle-presentation slice (commit: `179b847`)
+- [x] DOC-007 Translate editor validation checklist to Chinese (commit: pending with current checkpoint)
