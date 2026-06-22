@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+# ============================================================
+# pre-commit hook — fast sanity checks before commit
+#
+# Checks:
+#   1. No .codely-cli/ files staged (auto-saves don't belong in repo)
+#   2. All staged Asset files have matching .meta (Unity requirement)
+#   3. No leftover Debug.Log in new/modified .cs files (use project logger)
+#   4. No files > 5MB without .gitattributes LFS tracking hint
+#
+# Bypass: SKIP_PRECOMMIT_HOOK=1
+# ============================================================
+
+[ -n "$SKIP_PRECOMMIT_HOOK" ] && exit 0
+EXIT_CODE=0
+HAS_WARNINGS=0
+
+# --- Check 1: no .codely-cli/ files ---
+CLI_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '^\.codely-cli/')
+if [ -n "$CLI_FILES" ]; then
+  echo "❌ 提交被阻止: .codely-cli/ 目录中的文件被暂存，不应提交"
+  echo "$CLI_FILES" | while read -r f; do echo "   $f"; done
+  echo ""
+  echo "   修复: git reset HEAD -- .codely-cli/"
+  EXIT_CODE=1
+fi
+
+# --- Check 2: Asset files must have matching .meta ---
+MISSING_META=""
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+while IFS= read -r FILE; do
+  case "$FILE" in
+    # Only check Asset files that need .meta
+    Assets/*.cs|Assets/*.shader|Assets/*.hlsl|Assets/*.prefab|Assets/*.unity|Assets/*.asset|Assets/*.mat|\
+    Assets/*.png|Assets/*.jpg|Assets/*.jpeg|Assets/*.mp3|Assets/*.wav|Assets/*.ogg|\
+    Assets/*.fbx|Assets/*.blend|Assets/*.obj|Assets/*.anim|Assets/*.controller|\
+    Assets/*.anim|Assets/*.overrideController|Assets/*.physicMaterial|\
+    Assets/*.physicMaterial2D|Assets/*.inputactions|Assets/*.inputsettings)
+      META_FILE="${FILE}.meta"
+      if ! git diff --cached --name-only | grep -qFx "$META_FILE"; then
+        # Check if meta file exists at all (might be untracked)
+        if [ ! -f "$META_FILE" ]; then
+          # New asset without meta — Unity hasn't generated it yet
+          continue
+        fi
+        # Meta file exists but is not staged — warn
+        MISSING_META="$MISSING_META  $FILE → 缺少 $META_FILE\n"
+      fi
+      ;;
+  esac
+done <<< "$STAGED_FILES"
+
+if [ -n "$MISSING_META" ]; then
+  echo "⚠️  警告: 以下 Asset 文件缺少对应的 .meta 文件暂存"
+  echo -e "$MISSING_META"
+  echo "  自动修复: git add <missing.meta>"
+  HAS_WARNINGS=1
+fi
+
+# --- Check 3: no residual Debug.Log in new/modified .cs files ---
+DEBUG_LOGS=$(git diff --cached -U0 -- '*.cs' | grep '^+.*Debug\.Log(' | grep -v '//' | head -5)
+if [ -n "$DEBUG_LOGS" ]; then
+  echo "⚠️  警告: 暂存的 .cs 文件中发现 Debug.Log() 调用"
+  echo "$DEBUG_LOGS" | while read -r line; do echo "   $line"; done
+  echo "   建议: 使用项目日志系统 (AudioManage.Log / DataManage.Log) 或确认有意保留"
+  echo ""
+  echo "   如果有意保留，使用: SKIP_PRECOMMIT_HOOK=1 git commit ..."
+  echo "   或将对应的 Debug.Log 行添加 // intent 注释"
+  HAS_WARNINGS=1
+fi
+
+# --- Check 4: large files without LFS ---
+LARGE_FILES=$(git diff --cached --name-only --diff-filter=A | while read -r f; do
+  if [ -f "$f" ]; then
+    SIZE=$(stat -c%s "$f" 2>/dev/null || stat -f%z "$f" 2>/dev/null || echo 0)
+    if [ "$SIZE" -gt 5242880 ]; then
+      echo "$f ($(( SIZE / 1048576 ))MB)"
+    fi
+  fi
+done)
+
+if [ -n "$LARGE_FILES" ]; then
+  echo "⚠️  警告: 暂存了超过 5MB 的二进制文件"
+  echo "$LARGE_FILES" | while read -r lf; do echo "   $lf"; done
+  echo "   建议: 考虑使用 Git LFS 追踪大文件"
+  HAS_WARNINGS=1
+fi
+
+# --- Result ---
+if [ $EXIT_CODE -ne 0 ]; then
+  exit 1
+fi
+
+if [ $HAS_WARNINGS -eq 0 ]; then
+  echo "✓ pre-commit 检查通过"
+fi
+
+exit 0

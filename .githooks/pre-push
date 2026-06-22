@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# ============================================================
+# pre-push hook — integrity checks before pushing
+#
+# Checks:
+#   1. No .codely-cli/ files in any commit being pushed
+#   2. All Assets files in pushed commits have matching .meta
+#   3. No merge conflict markers in staged/committed files
+#   4. Repository doesn't exceed 500MB (warn before push fails)
+#
+# Bypass: SKIP_PREPUSH_HOOK=1
+# ============================================================
+
+[ -n "$SKIP_PREPUSH_HOOK" ] && exit 0
+
+REMOTE="$1"
+URL="$2"
+EXIT_CODE=0
+
+# Read stdin: <local ref> <local sha> <remote ref> <remote sha>
+while IFS=' ' read -r LOCAL_REF LOCAL_SHA REMOTE_REF REMOTE_SHA; do
+  # Skip if deleting branch
+  if [ "0000000000000000000000000000000000000000" = "$LOCAL_SHA" ]; then
+    continue
+  fi
+
+  # Get range of new commits
+  if [ "0000000000000000000000000000000000000000" = "$REMOTE_SHA" ]; then
+    # New branch — check all commits
+    RANGE="$LOCAL_SHA"
+  else
+    RANGE="$REMOTE_SHA..$LOCAL_SHA"
+  fi
+
+  echo "检查范围: $RANGE → $URL"
+
+  # --- Check 1: .codely-cli/ in pushed commits ---
+  CLI_IN_COMMITS=$(git log "$RANGE" --name-only --pretty=format: | grep '^\.codely-cli/' | sort -u)
+  if [ -n "$CLI_IN_COMMITS" ]; then
+    echo "❌ 推送被阻止: 以下 .codely-cli/ 文件存在被推送的 commit 中"
+    echo "$CLI_IN_COMMITS" | while read -r f; do echo "   $f"; done
+    echo ""
+    echo "   修复: 这些文件不该被提交，需要 amend 相关 commit 并移除"
+    EXIT_CODE=1
+  fi
+
+  # --- Check 2: missing .meta for Asset files ---
+  FILES_IN_RANGE=$(git log "$RANGE" --name-only --pretty=format: | sort -u)
+  MISSING=""
+  while IFS= read -r F; do
+    case "$F" in
+      Assets/*.cs|Assets/*.shader|Assets/*.hlsl|Assets/*.prefab|Assets/*.unity|Assets/*.asset|Assets/*.mat|\
+      Assets/*.png|Assets/*.jpg|Assets/*.jpeg|Assets/*.mp3|Assets/*.wav|Assets/*.ogg|Assets/*.fbx)
+        META="$F.meta"
+        if ! echo "$FILES_IN_RANGE" | grep -qFx "$META"; then
+          if [ ! -f "$META" ]; then
+            MISSING="$MISSING  $F → $META 不存在\n"
+          fi
+        fi
+        ;;
+    esac
+  done <<< "$FILES_IN_RANGE"
+
+  if [ -n "$MISSING" ]; then
+    echo "❌ 推送被阻止: 检测到 Asset 文件缺少 .meta 文件"
+    echo -e "$MISSING"
+    echo ""
+    echo "   修复: 在 Unity Editor 中重新导入这些 Asset，Unity 会自动生成 .meta"
+    EXIT_CODE=1
+  fi
+
+  # --- Check 3: merge conflict markers ---
+  CONFLICT_MARKERS=$(git diff "$RANGE" | grep -E '^\+<<<<<<< |^\+=======|^\+>>>>>>> ' | head -3)
+  if [ -n "$CONFLICT_MARKERS" ]; then
+    echo "❌ 推送被阻止: 检测到未解决的合并冲突标记"
+    echo "$CONFLICT_MARKERS"
+    EXIT_CODE=1
+  fi
+
+  # --- Check 4: repo size warning ---
+  REPO_SIZE=$(du -sm .git 2>/dev/null | cut -f1 || echo 0)
+  if [ "$REPO_SIZE" -gt 500 ]; then
+    echo "⚠️  仓库 .git 目录大小: ${REPO_SIZE}MB (超过 500MB)"
+    echo "   远程推送可能较慢，考虑运行 'git gc --aggressive' 清理"
+  fi
+done
+
+if [ $EXIT_CODE -ne 0 ]; then
+  exit 1
+fi
+
+echo "✓ pre-push 检查通过"
+exit 0

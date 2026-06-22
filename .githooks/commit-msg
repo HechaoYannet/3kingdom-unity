@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# ============================================================
+# commit-msg hook — enforce commit message format
+#
+# Rules:
+#   1. Subject line must exist and not be empty
+#   2. Subject line min 8 chars, max 72 chars
+#   3. Must start with uppercase letter or ticket prefix
+#      (e.g. "OPS-003" / "feat:" / "Refactor")
+#   4. Reject single-word messages
+#
+# Bypass: set SKIP_COMMIT_MSG_HOOK=1 to skip all checks
+# ============================================================
+
+[ -n "$SKIP_COMMIT_MSG_HOOK" ] && exit 0
+
+COMMIT_MSG_FILE="$1"
+
+# Read first line (subject)
+read -r SUBJECT < "$COMMIT_MSG_FILE"
+
+# --- Rule 1: subject must exist ---
+if [ -z "$SUBJECT" ]; then
+  echo "❌ 提交被阻止: commit message 不能为空"
+  echo ""
+  echo "  期望格式: <动词> <描述>"
+  echo "  例如:     'Refactor card damage calculation'"
+  echo "           'OPS-004 sync project config'"
+  echo "           'fix: hover animation jitter on high-FPS'"
+  exit 1
+fi
+
+# --- Rule 2: minimum length (allow ticket prefixes) ---
+CLEAN_SUBJECT=$(echo "$SUBJECT" | sed 's/^[A-Z]\+-[0-9]\+ //')
+if [ ${#CLEAN_SUBJECT} -lt 8 ]; then
+  echo "❌ 提交被阻止: commit 标题太短 (至少 8 个字符)"
+  echo "  当前: '$SUBJECT' (${#CLEAN_SUBJECT} 字符)"
+  echo ""
+  echo "  期望格式: <动词> <描述>"
+  echo "  例如:     'Refactor card damage calculation'"
+  exit 1
+fi
+
+# --- Rule 3: subject line width ---
+if [ ${#SUBJECT} -gt 72 ]; then
+  echo "⚠️  警告: commit 标题超过 72 字符 (当前 ${#SUBJECT})"
+  echo "  考虑缩短为更精简的概括"
+fi
+
+# --- Rule 4: reject single-word ---
+WORD_COUNT=$(echo "$CLEAN_SUBJECT" | wc -w)
+if [ "$WORD_COUNT" -lt 2 ]; then
+  echo "❌ 提交被阻止: commit 标题不能是单个词"
+  echo "  当前: '$SUBJECT'"
+  echo ""
+  echo "  期望格式: <动词> <描述>"
+  echo "  例如:     'materal change' → 'Update card material properties'"
+  exit 1
+fi
+
+# --- Rule 5: subject must start with uppercase letter or ticket prefix ---
+if ! echo "$SUBJECT" | grep -qE '^[A-Z]'; then
+    echo "❌ 提交被阻止: 标题必须以大写字母或 ticket-id (OPS-001) 开头"
+    echo "  当前: '$SUBJECT'"
+    exit 1
+fi
+
+exit 0
