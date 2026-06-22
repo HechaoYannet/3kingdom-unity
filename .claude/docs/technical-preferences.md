@@ -5,10 +5,10 @@
 
 ## Engine & Language
 
-- **Engine**: Unity 2022 LTS (Tuanjie Engine 1.5.3 compatible)
+- **Engine**: Unity `2022.3.62t7` + Tuanjie Engine `1.8.5`
 - **Language**: C#
-- **Rendering**: [TO BE CONFIGURED]
-- **Physics**: [TO BE CONFIGURED]
+- **Rendering**: URP (`com.unity.render-pipelines.universal` `14.1.0`) is active for the current battle-presentation vertical slice
+- **Physics**: Unity built-in 3D physics, no custom project-wide physics route documented yet
 
 ## Input & Platform
 
@@ -43,22 +43,27 @@
 
 - **Framework**: NUnit (Unity Test Framework)
 - **Minimum Coverage**: [TO BE CONFIGURED]
-- **Required Tests**: Balance formulas, gameplay systems, networking (if applicable)
+- **Required Tests**: Balance formulas, deterministic gameplay systems, battle action pipeline boundaries, networking (if applicable)
 
 ## Forbidden Patterns
 
-<!-- Add patterns that should never appear in this project's codebase -->
-- [None configured yet — add as architectural decisions are made]
+- AI-authored or runtime-nondeterministic systems must not own authoritative combat outcomes
+- Do not couple new battle-presentation logic directly to scene-only side effects when a deterministic result payload can be emitted instead
 
 ## Allowed Libraries / Addons
 
-<!-- Add approved third-party dependencies here -->
-- [None configured yet — add as dependencies are approved]
+- `com.unity.render-pipelines.universal` `14.1.0`
+- `com.unity.cinemachine` `2.10.7`
+- `com.unity.timeline` `1.7.7`
+- `com.unity.visualeffectgraph` `14.1.0`
+- `cn.tuanjie.ai.graph` `1.0.6`
 
 ## Architecture Decisions Log
 
-<!-- Quick reference linking to full ADRs in docs/architecture/ -->
-- [No ADRs yet — use /architecture-decision to create one]
+- `Docs/architecture/card-system-architecture.md`
+- `Docs/architecture/character-system-architecture.md`
+- `Docs/architecture/battle-presentation-first-architecture.md`
+- `Docs/architecture/battle-action-schema.md`
 
 ## Engine Specialists
 
@@ -67,16 +72,13 @@
 <!-- to know which specialist to spawn for engine-specific validation. -->
 
 - **Primary**: unity-specialist
-- **Language/Code Specialist**: unity-specialist (C# review — primary covers it)
-- **Shader Specialist**: unity-shader-specialist (Shader Graph, HLSL, URP/HDRP materials)
-- **UI Specialist**: unity-ui-specialist (UI Toolkit UXML/USS, UGUI Canvas, runtime UI)
-- **Additional Specialists**: unity-dots-specialist (ECS, Jobs system, Burst compiler), unity-addressables-specialist (asset loading, memory management, content catalogs)
-- **Routing Notes**: Invoke primary for architecture and general C# code review. Invoke DOTS specialist for any ECS/Jobs/Burst code. Invoke shader specialist for rendering and visual effects. Invoke UI specialist for all interface implementation. Invoke Addressables specialist for asset management systems.
+- **Language/Code Specialist**: unity-specialist
+- **Shader Specialist**: unity-shader-specialist
+- **UI Specialist**: unity-ui-specialist
+- **Additional Specialists**: unity-dots-specialist, unity-addressables-specialist
+- **Routing Notes**: Invoke primary for architecture and general C# code review. Invoke DOTS specialist for ECS/Jobs/Burst work. Invoke shader specialist for rendering and visual effects. Invoke UI specialist for interface implementation. Invoke Addressables specialist for asset management systems.
 
 ### File Extension Routing
-
-<!-- Skills use this table to select the right specialist per file type. -->
-<!-- If a row says [TO BE CONFIGURED], fall back to Primary for that file type. -->
 
 | File Extension / Type | Specialist to Spawn |
 |-----------------------|---------------------|

@@ -13,6 +13,12 @@ public class GamePlaying : MonoBehaviour
 
     public GameState gameState;
     private GameResult gameResult;
+
+    /// <summary>
+    /// 游戏结束时触发。参数为胜负结果。
+    /// </summary>
+    public System.Action<GameResult> OnGameResult;
+
     //状态控制
     public GameState GameState
     {
@@ -32,6 +38,7 @@ public class GamePlaying : MonoBehaviour
                     break;
                 case GameState.Over:
                     Debug.Log("游戏结束");
+                    OnGameResult?.Invoke(gameResult);
                     break;
             }
         }
