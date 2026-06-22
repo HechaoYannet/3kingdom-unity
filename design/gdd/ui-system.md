@@ -67,9 +67,13 @@ Core feedback types include:
 - Camera placement and long-term camera organization still require review
 
 ### Card Interaction System
-- Click/drag card play
-- Hover or focus for details
-- Highlight playable cards
+- Persistent hand cards are presented as screen-space layered 2D widgets with back, body, and front layers
+- Mobile-first interaction uses upward drag as the primary play gesture
+- Secondary support path allows tap-to-select card, then tap target to commit
+- Response cards should be playable without drag; the current baseline is tap-to-respond
+- Hover or focus should lift the card, increase readability, and drive subtle layered parallax
+- Playable and non-playable cards must be visually distinguished during both initiative and response windows
+- Cards that require a target should surface an explicit target-selection layer instead of silently resolving to a hidden target when possible
 
 ### Visual Effects Pipeline
 - Bezier-style card travel can support draw and play effects
@@ -102,9 +106,10 @@ Core feedback types include:
 - [x] World-space feedback hooks exist
 - [x] Card interaction framework exists
 - [x] Battle-feedback direction is defined
+- [x] Screen-space layered hand HUD baseline exists
 - [ ] Finalized battle camera baseline
 - [ ] Complete screen flow implementation
-- [ ] Mobile touch optimization
+- [ ] Mobile touch feel validated on device
 - [ ] Keyboard shortcut support
 - [ ] Settings, pause, and tutorial flows
 
@@ -114,4 +119,6 @@ Core feedback types include:
 - Core UI framework exists, but battle-presentation integration is still incomplete
 - Visual effects route is now planned against URP
 - Cinemachine/Timeline tooling is available, but the baseline battle camera setup is still under review
-- Basic input handling exists
+- A runtime battle HUD bootstrap now creates a screen-space hand layer without relying on the inactive legacy battle-scene canvas setup
+- The first layered hand HUD baseline now includes drag-to-play, click-target secondary flow, and response-card tap submission
+- Input System package and `Both` active input handling are now enabled at the project level, but final editor validation is still required

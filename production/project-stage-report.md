@@ -13,7 +13,7 @@ This repository is an active Unity/Tuanjie production project with substantial g
 The project remains firmly in Production because implementation still predates documentation and the new differentiator has not yet been proven with a playable slice. The main risk is no longer planning scarcity. The main risk is whether the team can convert an older deterministic card framework into a readable 3D battle presentation path without collapsing rule ownership into presentation scripts.
 
 **Current Focus**: Battle-presentation-first vertical-slice preparation on top of the existing deterministic card/turn framework  
-**Blocking Issues**: Missing GDDs for Event/Data/Asset loading; no ADR coverage yet for Role and UI systems; no executable automated tests yet; battle scene layout and baseline camera still need final agreement  
+**Blocking Issues**: Missing GDDs for Event/Data/Asset loading; no ADR coverage yet for Role systems; no executable automated tests yet; battle scene layout and baseline camera still need final agreement  
 **Estimated Time to Next Stage**: 1-2 focused production sprints to prove the first playable slice before any realistic Polish gate
 
 ---
@@ -49,19 +49,18 @@ The project remains firmly in Production because implementation still predates d
   - [ ] The first runtime rule-result to presentation bridge is still only documented, not implemented
 
 ### Architecture Documentation
-- **Status**: 55% complete
-- **ADRs Found**: 4 architecture documents in `Docs/architecture/`
+- **Status**: 65% complete
+- **ADRs Found**: 5 architecture documents in `Docs/architecture/`
 - **Coverage**:
   - [x] Card system architecture - documented
   - [x] Character system architecture - documented
   - [x] Battle-presentation-first direction - documented
   - [x] Battle action schema boundary - documented
+  - [x] UI/presentation architecture - documented
   - [ ] Role system architecture - undocumented
-  - [ ] UI/presentation architecture - undocumented
   - [ ] Event/data ownership architecture - undocumented
 - **Key Gaps**:
   - [ ] No accepted Role-system ADR yet
-  - [ ] No accepted UI/presentation ADR yet
   - [ ] No accepted ADRs yet for Data, Event, or Asset loading ownership
   - [ ] Several older documents still require periodic freshness maintenance as project facts move
 
@@ -116,7 +115,7 @@ The project remains firmly in Production because implementation still predates d
 
 **Next stage requirements**:
 - [ ] Approve the current GDD set and document the missing foundation systems
-- [ ] Add missing ADRs for Role, UI, Data/Event, and asset-loading strategy
+- [ ] Add missing ADRs for Role, Data/Event, and asset-loading strategy
 - [ ] Convert test scaffold into real EditMode/PlayMode coverage for core gameplay
 - [ ] Complete one rule-to-presentation action chain in-editor
 

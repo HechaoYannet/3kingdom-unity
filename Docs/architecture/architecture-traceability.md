@@ -2,19 +2,19 @@
 
 ## Document Status
 
-- **Last Updated**: 2026-04-27
-- **Engine**: Unity 2022 LTS (Tuanjie Engine 1.5.3 compatible)
+- **Last Updated**: 2026-04-30
+- **Engine**: Unity 2022.3 LTS (Tuanjie Engine 1.8.5)
 - **GDDs Indexed**: 4
-- **ADRs Indexed**: 2
-- **Last Review**: Initial manual bootstrap during Codex brownfield preparation
+- **ADRs Indexed**: 4
+- **Last Review**: Updated during first battle UI/runtime architecture pass
 
 ## Coverage Summary
 
 | Status | Count | Percentage |
 |--------|-------|-----------|
-| Covered | 4 | 50% |
+| Covered | 5 | 62.5% |
 | Partial | 2 | 25% |
-| Gap | 2 | 25% |
+| Gap | 1 | 12.5% |
 | **Total** | **8** | |
 
 ---
@@ -29,8 +29,8 @@
 | TR-character-002 | `design/gdd/character-system.md` | Character System | Turn timing and AI delays rely on coroutine sequencing | `Docs/architecture/character-system-architecture.md` | Covered | Coroutine timing trade-offs documented |
 | TR-role-001 | `design/gdd/role-system.md` | Role System | Roles own HP-based hand limits, skills, and tags | - | Gap | Needs a dedicated role-system ADR |
 | TR-role-002 | `design/gdd/role-system.md` | Role System | Active/passive skill execution must integrate with rounds and UI | - | Gap | Needs a role ability execution ADR or a broader gameplay authority ADR |
-| TR-ui-001 | `design/gdd/ui-system.md` | UI System | UI uses both screen-space HUD and world-space feedback layers | - | Partial | Existing GDD captures it, but no UI architecture ADR exists yet |
-| TR-ui-002 | `design/gdd/ui-system.md` | UI System | Camera, card effects, and presentation flow coordinate with gameplay events | - | Partial | Requires a UI/presentation ADR and integration verification |
+| TR-ui-001 | `design/gdd/ui-system.md` | UI System | UI uses both screen-space HUD and world-space feedback layers | `Docs/architecture/ui-presentation-architecture.md` | Covered | Ownership is now explicit between screen HUD, world feedback, and overlay FX |
+| TR-ui-002 | `design/gdd/ui-system.md` | UI System | Camera, card effects, and presentation flow coordinate with gameplay events | `Docs/architecture/ui-presentation-architecture.md`, `Docs/architecture/battle-presentation-first-architecture.md` | Partial | Screen-space target selection baseline now exists, but world-space target feedback and in-editor camera validation still remain |
 
 ---
 
@@ -44,8 +44,7 @@
 - [ ] TR-role-002: Skill execution and phase integration - GDD: `design/gdd/role-system.md` - Suggested ADR: "role-skill-execution"
 
 ### Feature Layer Gaps (should resolve before feature sprint)
-- [ ] TR-ui-001: Dual-space UI ownership boundaries - GDD: `design/gdd/ui-system.md` - Suggested ADR: "ui-system-architecture"
-- [ ] TR-ui-002: Presentation/event flow for card effects and camera transitions - GDD: `design/gdd/ui-system.md` - Suggested ADR: "presentation-event-flow"
+- [ ] TR-ui-002: Presentation/event flow for card effects and camera transitions - GDD: `design/gdd/ui-system.md` - Follow-up: validate target selection UX and accepted camera baseline in-editor
 
 ### Presentation Layer Gaps (can defer to implementation)
 - [ ] TR-card-002: Cross-platform validation for input, drag, and camera interactions - Suggested follow-up: PlayMode tests plus manual device checks
@@ -66,6 +65,8 @@
 |-----|-------|---------------------------|-------------|
 | `Docs/architecture/card-system-architecture.md` | Card System Architecture Decisions | TR-card-001, TR-card-002 | Medium |
 | `Docs/architecture/character-system-architecture.md` | Character System Architecture Decisions | TR-character-001, TR-character-002 | Medium |
+| `Docs/architecture/battle-runtime-architecture.md` | Battle Runtime Architecture | TR-card-001, TR-character-001 | Medium |
+| `Docs/architecture/ui-presentation-architecture.md` | UI Presentation Architecture | TR-ui-001, TR-ui-002 | Medium |
 
 ---
 

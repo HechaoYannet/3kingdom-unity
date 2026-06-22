@@ -16,11 +16,11 @@
 - [ ] DOC-004 Reverse-document `Assets/Scripts/AssetBundleFramework`
 - [ ] DOC-005 Reverse-document `Assets/Scripts/Data`
 - [ ] DOC-006 Reverse-document `Assets/Scripts/Event`
+- [ ] ARCH-004 Add UI/presentation ADR and first screen-space hand HUD foundation
 
 ## Next Up
 
 - [ ] ARCH-003 Add Role-system ADR
-- [ ] ARCH-004 Add UI/presentation ADR
 - [ ] TEST-002 Add first EditMode gameplay tests
 
 ## Done
