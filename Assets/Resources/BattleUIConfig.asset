@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a351f14f4a2580948954062a109fa8b2, type: 3}
+  m_Name: BattleUIConfig
+  m_EditorClassIdentifier: 
+  baseCardSpacing: 240
+  maxSpacingWidth: 1600
+  fanAngleRange: 16
+  hoverLift: 60
+  hoverScale: 1.08
+  selectedScale: 1.04
+  baseYOffset: 20
+  arcDropFactor: 24
+  commitThreshold: 220
+  commitHeightRatio: 0.5
+  cardWidth: 220
+  cardHeight: 300
+  backLayerRatio: 0.88
+  artLayerRatio: 0.94
+  frontLayerRatio: 0.98
+  dimmedAlpha: 0.55
+  nonInteractableAlpha: 0.34
+  frameAlpha: 0.001
+  cardBackAlpha: 0.96
+  targetButtonSpacing: 248
+  positionLerpSpeed: 16
+  rotationLerpSpeed: 18
+  alphaLerpSpeed: 18
+  parallaxLerpSpeed: 18
+  parallaxHoverAmount: 16
+  parallaxIdleAmount: 6
+  parallaxGyroMultiplier: 6
+  backLayerParallax: -0.35
+  artLayerParallax: 0.18
+  frontLayerParallax: 0.42
+  normalHintColor: {r: 0.88, g: 0.82, b: 0.64, a: 0.72}
+  discardHintColor: {r: 1, g: 0.6, b: 0.3, a: 0.9}
+  responseHintColor: {r: 1, g: 0.35, b: 0.35, a: 0.9}
+  waitingHintColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+  guideLineCanCommitColor: {r: 0.98, g: 0.88, b: 0.32, a: 0.72}
+  guideLineDefaultColor: {r: 0.96, g: 0.78, b: 0.28, a: 0.16}
+  cardBackgroundColor: {r: 0.08, g: 0.09, b: 0.13, a: 0.96}
+  cardArtFallbackColor: {r: 0.23, g: 0.25, b: 0.31, a: 1}
+  cardTextColor: {r: 0.97, g: 0.94, b: 0.87, a: 1}
+  dragHintColor: {r: 0.96, g: 0.91, b: 0.72, a: 0.82}
