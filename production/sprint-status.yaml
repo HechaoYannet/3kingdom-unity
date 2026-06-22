@@ -1,0 +1,83 @@
+# Auto-generated during brownfield preparation.
+# Update statuses alongside sprint execution.
+
+sprint: 1
+goal: "Turn the current brownfield repository into a workflow-ready production workspace."
+start: "2026-04-27"
+end: "2026-05-08"
+generated: "2026-04-27"
+updated: "2026-04-27"
+
+stories:
+  - id: "DOC-01"
+    name: "Bootstrap and maintain systems index"
+    file: "design/gdd/systems-index.md"
+    priority: must-have
+    status: ready-for-dev
+    owner: ""
+    estimate_days: 1
+    blocker: ""
+    completed: ""
+  - id: "DOC-02"
+    name: "Reverse-document Asset Bundle Framework"
+    file: "design/gdd/asset-bundle-framework.md"
+    priority: must-have
+    status: ready-for-dev
+    owner: ""
+    estimate_days: 2
+    blocker: ""
+    completed: ""
+  - id: "DOC-03"
+    name: "Reverse-document Data Management and Event System"
+    file: "design/gdd/data-management.md"
+    priority: must-have
+    status: ready-for-dev
+    owner: ""
+    estimate_days: 2
+    blocker: ""
+    completed: ""
+  - id: "ARCH-01"
+    name: "Create ADRs for Role and UI system ownership"
+    file: "Docs/architecture/"
+    priority: must-have
+    status: ready-for-dev
+    owner: ""
+    estimate_days: 2
+    blocker: ""
+    completed: ""
+  - id: "TEST-01"
+    name: "Add first executable EditMode tests"
+    file: "tests/EditMode/"
+    priority: must-have
+    status: backlog
+    owner: ""
+    estimate_days: 2
+    blocker: "Requires DOC-03 and ARCH-01"
+    completed: ""
+  - id: "QA-01"
+    name: "Refresh QA plan after first test cases exist"
+    file: "production/qa/qa-plan-sprint-01.md"
+    priority: should-have
+    status: backlog
+    owner: ""
+    estimate_days: 1
+    blocker: "Requires TEST-01"
+    completed: ""
+  - id: "ARCH-02"
+    name: "Bootstrap master architecture outline"
+    file: "Docs/architecture/architecture.md"
+    priority: should-have
+    status: backlog
+    owner: ""
+    estimate_days: 1
+    blocker: "Requires ARCH-01"
+    completed: ""
+  - id: "PROD-01"
+    name: "Create first epic/story tree from approved docs"
+    file: "production/"
+    priority: nice-to-have
+    status: backlog
+    owner: ""
+    estimate_days: 1
+    blocker: "Requires approved GDDs and ARCH-01"
+    completed: ""

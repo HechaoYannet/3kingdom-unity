@@ -17,7 +17,7 @@ By the end of this roadmap, the project should have a playable vertical slice th
 - 1 signature skill
 - 1 reusable standard-action presentation template
 - 1 reusable hero-moment presentation template
-- baseline HUD plus world-space result feedback
+- layered screen-space hand HUD plus world-space result feedback
 - first executable gameplay tests
 
 ## Workstreams
@@ -91,6 +91,7 @@ Repo-local tasks:
 Unity-editor-required tasks:
 - [ ] Stage 2 roles/characters in battle scene
 - [ ] Build one signature-skill hero-moment sequence
+- [ ] Accept the screen-space hand HUD baseline, target-selection flow, and drag interaction feel
 - [ ] Add world-space damage/heal feedback
 
 Exit criteria:

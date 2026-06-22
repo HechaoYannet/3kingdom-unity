@@ -22,7 +22,7 @@ public static  class AudioMixerHelper
     }
     public static AudioMixerGroup GetAudioMixerGroup(this AudioSource audioSource, int index)
     {
-        AudioMixerGroup[] audioMixerGroup = ResourcesLoad<AudioMixer>.LoadRes("Mixer/AudioMixer").FindMatchingGroups("Master");
+        AudioMixerGroup[] audioMixerGroup = Resources.Load<AudioMixer>("Mixer/AudioMixer").FindMatchingGroups("Master");
 
         return audioMixerGroup[index];
     }

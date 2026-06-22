@@ -21,12 +21,16 @@ EditorBuildSettings:
     path: Assets/Scenes/BattleScene.scene
     guid: 68f1a63f0a3729a4cb97a1a6cb8ce9a6
   m_BuildProfiles: []
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.input.settings: {fileID: 11400000, guid: 0d37f286b697de645965039d1c4a5020, type: 2}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: b62275533f4632b40b4bfd87315be511, type: 3}
   m_SlimFeaturesWeixinMiniGame:
+    ACLDecompression: 0
     AllocateOverhead: 1
     DecompressASTC: 0
     DecompressDXT: 1
     DecompressETC: 1
     FreeTypeSfntPng: 1
     LightProbe: 2
+    RootMotion: 0
     UseStringInternPool: 2

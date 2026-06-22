@@ -1,106 +1,119 @@
-# Editor Validation Checklist: Battle Presentation Vertical Slice
+# 编辑器验证清单：战斗表现竖切片
 
-**Status**: Ready
-**Created**: 2026-04-27
-**Use When**: Opening Unity/Tuanjie Editor to validate the battle-presentation-first path on this branch.
+**状态**: 已执行，部分结论已补录
+**创建时间**: 2026-04-27
+**最近执行**: 2026-04-30
+**使用时机**: 在 Unity/Tuanjie 编辑器中打开本分支项目，并验证“战斗表现优先”路线时使用。
 
-## Output Required
+> 关联报告：`production/qa/editor-validation-report-2026-04-30.md`
 
-When you complete this checklist, record:
-- final render-path decision
-- package validation notes
-- material/shader blockers
-- baseline battle scene screenshots
-- one short video clip if a camera prototype is built
+## 本次执行说明
 
-Store evidence under:
-- `production/qa/evidence/` if you export screenshots/video outside the repo, or
-- a short markdown note beside this checklist if you are only reporting findings
+- [x] 用户已于 2026-04-30 完成一次 Unity 编辑器检查
+- [x] 本次回填不附截图
+- [ ] 相机原型、场景观察、特效路线的文字结论仍需补录
 
-## Step 1: Confirm Branch and Open Project
+## 需要产出的结果
 
-- [ ] Confirm the branch is `feature-battle-presentation-planning`
-- [ ] Open the project in the intended Unity/Tuanjie editor version
-- [ ] Note any package import or compilation errors before changing anything
+完成本清单后，应至少记录以下内容：
+- 最终渲染路线决策
+- 包与工具链验证备注
+- 材质 / Shader 阻塞项
+- 战斗场景基线观察结果
+- 如果已经做出相机原型，补一段文字说明
 
-## Step 2: Confirm Render Path Baseline
+如果没有截图或视频，也至少要补一份文字结论。
 
-- [ ] Open Project Settings and check whether a Render Pipeline Asset is currently assigned
-- [ ] Record whether the current battle slice starts from Built-in or URP
-- [ ] If Built-in, note any obvious dependency on legacy shaders/materials
-- [ ] If URP is already active, record which URP asset(s) are bound to quality tiers
+## 步骤 1：确认分支并打开项目
 
-## Step 3: Audit Material and Shader Blockers
+- [x] 确认当前分支为 `feature-battle-presentation-planning`
+- [x] 使用目标 Unity / Tuanjie 编辑器版本打开项目
+- [ ] 在做任何改动前发现的包导入错误或编译错误：待补文字结论
 
-Check representative battle-scene materials and note blockers:
-- [ ] Standard shader usage
-- [ ] Surface shader usage
-- [ ] `GrabPass` or image-effect style dependencies
-- [ ] Custom materials that break visually under URP test conversion
+## 步骤 2：确认当前渲染路径基线
 
-Record:
-- asset path
-- blocker type
-- severity: low / medium / high
-- workaround guess if obvious
+- [x] 已在 `Project Settings` 中检查当前是否指定 `Render Pipeline Asset`
+- [x] 当前战斗竖切片以 `URP` 为渲染路线
+- [ ] 当前绑定了哪些 `URP Asset` 到哪些质量档位：待补文字结论
 
-## Step 4: Validate Package State
+## 步骤 3：审查材质与 Shader 阻塞项
 
-- [ ] Confirm whether Cinemachine is installed and import-clean
-- [ ] Confirm whether Timeline is installed and import-clean
-- [ ] Confirm whether Shader Graph is installed or absent
-- [ ] Confirm whether VFX Graph is installed or absent
+- [x] 已执行代表性战斗场景材质检查
+- [x] 本次检查未发现明显的 Built-in 迁移阻塞项
+- [x] `Standard Shader` 未构成明显阻塞项
+- [x] `Surface Shader` 未构成明显阻塞项
+- [x] `GrabPass` 或旧式图像效果依赖未构成明显阻塞项
+- [x] 在 URP 测试转换下未发现明显会出错的自定义材质阻塞项
 
-Record any version or compatibility issue that blocks:
-- camera rigs
-- Timeline authorement
-- shader authoring
-- effect authoring
+建议后续补录格式：
+- 资源路径
+- 阻塞类型
+- 严重程度：`low / medium / high`
+- 可能绕过方案
 
-## Step 5: Baseline Battle Scene Capture
+## 步骤 4：验证包状态
 
-- [ ] Open the current battle scene
-- [ ] Capture one default full-battle framing screenshot
-- [ ] Capture one screenshot showing current 3D card interaction state
-- [ ] Capture one screenshot showing current HUD/result readability
+- [x] 已检查 `Cinemachine`
+- [x] 已检查 `Timeline`
+- [x] 已检查 `Shader Graph`
+- [x] 已检查 `VFX Graph`
 
-Questions to answer:
-- Can the player clearly read actor positions?
-- Is the current camera angle usable as a baseline battle view?
-- Does current UI clash with a future cinematic camera approach?
+待补文字结论：
+- [x] `Cinemachine` 已安装且可正常使用
+- [x] `Timeline` 已安装且可正常使用
+- [x] `Shader Graph` 已安装
+- [x] `VFX Graph` 已安装
+- [ ] 是否存在阻塞相机、Timeline、Shader、特效制作的版本或兼容性问题：待补文字结论
 
-## Step 6: First Camera Prototype
+## 步骤 5：采集战斗场景基线
 
-- [ ] Build or validate one baseline battle camera
-- [ ] Build or validate one action-emphasis camera
-- [ ] Test a simple blend between them
+- [x] 已打开当前战斗场景
+- [x] 默认全局战斗机位观察结果：目前不能直接作为最终基线机位，需要调整
+- [ ] 当前 3D 卡牌交互状态观察结果：待补文字结论
+- [ ] 当前 HUD / 结果反馈可读性观察结果：待补文字结论
 
-Record:
-- whether the blend feels readable
-- whether current scene layout supports stronger camera moves
-- any occlusion or framing problems
+需要补录的问题：
+- 玩家能否清楚读到角色站位？待补文字结论
+- 当前镜头角度能否作为默认战斗基线机位？目前需要调整，并且要结合战斗场景布置一起讨论
+- 当前 UI 是否会与后续更强的镜头演出产生冲突？
 
-## Step 7: Effect Path Decision
+## 步骤 6：制作第一版相机原型
 
-- [ ] Decide whether the first slice can rely on Particle System + shaders for critical effects
-- [ ] If testing VFX Graph, note whether target hardware requirements are acceptable
-- [ ] Confirm fallback expectation for lower-end/mobile-compatible targets
+- [x] 已执行相机相关检查或验证
+- [ ] 是否已搭建默认战斗相机：待补文字结论
+- [ ] 是否已搭建动作强调相机：待补文字结论
+- [ ] 是否已测试两者之间的 blend：待补文字结论
 
-## Step 8: Report Back Into Repo
+需要补录：
+- blend 是否清晰可读
+- 当前场景布局是否支持更强的相机运动
+- 是否存在遮挡或构图问题
 
-Update these files after the editor pass:
-- `production/session-state/editor-required-handoff.md`
-- `production/session-state/development-checklist.md`
-- `production/backlog/battle-presentation-vertical-slice-backlog.md`
+## 步骤 7：确定特效路线
 
-If major findings change the route, also update:
+- [x] 已执行特效路线相关检查
+- [ ] 第一版竖切片的关键特效能否先依赖 `Particle System + Shader`：待补文字结论
+- [ ] 如果测试了 `VFX Graph`，目标硬件要求是否可接受：待补文字结论
+- [ ] 低配 / 移动兼容档的降级预期：待补文字结论
+
+## 步骤 8：回填到仓库文档
+
+本次已完成的最小回填：
+- [x] `production/session-state/editor-required-handoff.md`
+- [x] `production/session-state/development-checklist.md`
+- [x] `production/backlog/battle-presentation-vertical-slice-backlog.md`
+- [x] `production/qa/editor-validation-report-2026-04-30.md`
+
+如后续补充了明确结论，还应同步更新：
 - `Docs/architecture/battle-presentation-first-architecture.md`
 - `Docs/planning/6-week-battle-presentation-roadmap.md`
 
-## Exit Criteria
+## 当前完成标准
 
-- [ ] Render route decision is explicit
-- [ ] Package/toolchain state is explicit
-- [ ] Scene readability baseline is documented
-- [ ] Camera prototype feasibility is documented
-- [ ] Effect fallback expectations are documented
+- [x] 已记录“编辑器检查已执行”
+- [x] 已明确“本次未附截图”
+- [x] 渲染路线决策已明确
+- [x] 包 / 工具链状态已明确
+- [ ] 场景可读性基线已部分明确，当前结论是“战斗场景布置和基线机位需要调整并讨论”
+- [ ] 相机原型可行性已明确
+- [ ] 特效降级预期已明确
