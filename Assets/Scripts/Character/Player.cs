@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float initiativeTurnTimeLimit = 30f;
     [SerializeField] private float responseTimeLimit = 10f;
     [SerializeField] protected int maxInitiativeActionsPerTurn = 1;
+    [SerializeField] private Transform cardContainer;
 
     public int PlayerID { get; protected set; }
     public Role CurrentRole { get; protected set; }
@@ -23,10 +24,34 @@ public class Player : MonoBehaviour
     public int TargetPlayerEnemyID { get; set; }
     public bool IsAlive => CurrentHP > 0;
     public virtual bool UsesHumanInput => true;
+    /// <summary>
+    /// 当前是否处于主动出牌输入窗口。
+    /// </summary>
+    public bool IsInitiativeInputActive => isInitiativeRound;
+
+    /// <summary>
+    /// 当前是否处于响应输入窗口。
+    /// </summary>
+    public bool IsResponseInputActive => isResponsingRound;
+
+    /// <summary>
+    /// 当前是否允许玩家通过 UI 提交输入。
+    /// </summary>
+    public bool CanReceiveManualInput => UsesHumanInput && IsAlive && (isInitiativeRound || isResponsingRound || isRefusingPhase);
+    /// <summary>
+    /// 当前是否处于弃牌阶段等待手动选择。
+    /// </summary>
+    public bool IsRefusingInputActive => isRefusingPhase;
+    /// <summary>
+    /// 当前玩家运行时卡牌容器。
+    /// </summary>
+    public Transform CardContainer => cardContainer;
+    public event System.Action<Player> HandChanged;
 
     protected bool isInitiativeRound;
     protected bool isResponsingRound;
     protected bool isWaiting;
+    protected bool isRefusingPhase;
 
     /// <summary>
     /// 设置玩家运行时 ID。
@@ -79,8 +104,10 @@ public class Player : MonoBehaviour
         isResponsingRound = false;
         isWaiting = false;
         IsSubRound = false;
+        isRefusingPhase = false;
         currentCards.Clear();
         checkingCards.Clear();
+        NotifyHandChanged();
 
         if (CurrentRole != null)
         {
@@ -107,6 +134,7 @@ public class Player : MonoBehaviour
         checkingCards.Clear();
         currSelectedCardID = -1;
         ResponsingCard = null;
+        NotifyHandChanged();
     }
 
     /// <summary>
@@ -129,9 +157,15 @@ public class Player : MonoBehaviour
             return;
         }
 
-        card.gameObject.SetActive(true);
+        card.gameObject.SetActive(false);
+        if (cardContainer != null)
+        {
+            card.transform.SetParent(cardContainer, false);
+        }
+
         card.SetOwnerByID(PlayerID);
         currentCards.Add(card);
+        NotifyHandChanged();
     }
 
     /// <summary>
@@ -208,10 +242,24 @@ public class Player : MonoBehaviour
     public virtual IEnumerator EnterRefusing()
     {
         int maxCards = GetMaxCardsLimit();
-        while (currentCards.Count > maxCards)
+
+        if (UsesHumanInput)
         {
-            DiscardCardFromHand(currentCards.Count - 1);
-            yield return null;
+            isRefusingPhase = true;
+            while (currentCards.Count > maxCards && IsAlive)
+            {
+                yield return null;
+            }
+            isRefusingPhase = false;
+        }
+        else
+        {
+            // AI 弃牌阶段也要检查存活，防止死亡后仍在弃牌
+            while (currentCards.Count > maxCards && IsAlive)
+            {
+                DiscardCardFromHand(currentCards.Count - 1);
+                yield return null;
+            }
         }
     }
 
@@ -257,7 +305,7 @@ public class Player : MonoBehaviour
 
         if (PlayerUIOperation == UIOperation.OK && IsCurrentSelectionPlayable())
         {
-            UseCard(currSelectedCardID, GetResolvedTarget());
+            UseCard(currSelectedCardID, ResolveTargetForCard(currentCards[currSelectedCardID]));
         }
         else
         {
@@ -287,6 +335,16 @@ public class Player : MonoBehaviour
         PlayerUIOperation = UIOperation.CANCEL;
     }
 
+    /// <summary>
+    /// 判断给定手牌索引在当前输入窗口内是否可用。
+    /// </summary>
+    /// <param name="cardIndex">手牌索引。</param>
+    /// <returns>是否允许当前玩家使用该牌。</returns>
+    public bool CanPlayCardAt(int cardIndex)
+    {
+        return CheckCard(cardIndex);
+    }
+
     protected virtual IEnumerator UpdateTime()
     {
         isInitiativeRound = true;
@@ -305,10 +363,14 @@ public class Player : MonoBehaviour
 
             while (PlayerUIOperation == UIOperation.NONE && elapsed < initiativeTurnTimeLimit)
             {
-                while (isWaiting)
+                float waitElapsed = 0f;
+                float maxWaitTime = initiativeTurnTimeLimit * 0.5f;
+                while (isWaiting && waitElapsed < maxWaitTime)
                 {
                     yield return null;
+                    waitElapsed += Time.deltaTime;
                 }
+                isWaiting = false;
 
                 yield return null;
                 elapsed += Time.deltaTime;
@@ -344,6 +406,12 @@ public class Player : MonoBehaviour
         if (isResponsingRound && ResponsingCard != null)
         {
             return currentCards[cardID].IsCardResponsible(ResponsingCard.CardType);
+        }
+
+        // 弃牌阶段所有手牌均可选择弃置
+        if (isRefusingPhase)
+        {
+            return true;
         }
 
         return false;
@@ -419,7 +487,7 @@ public class Player : MonoBehaviour
         }
 
         Card card = currentCards[currSelectedCardID];
-        Player target = GetResolvedTarget();
+        Player target = ResolveTargetForCard(card);
         UseCard(currSelectedCardID, target);
 
         if (card.IsCardResponsible() && target != null && target.IsAlive)
@@ -445,9 +513,10 @@ public class Player : MonoBehaviour
         card.SetOwnerByID(1);
         card.DoCardsAction(this, target);
         CardManager.instance?.DiscardCard(card);
+        NotifyHandChanged();
     }
 
-    protected void DiscardCardFromHand(int cardId)
+    public void DiscardCardFromHand(int cardId)
     {
         if (cardId < 0 || cardId >= currentCards.Count)
         {
@@ -457,6 +526,29 @@ public class Player : MonoBehaviour
         Card card = currentCards[cardId];
         currentCards.RemoveAt(cardId);
         CardManager.instance?.DiscardCard(card);
+        NotifyHandChanged();
+    }
+
+    /// <summary>
+    /// 根据当前牌型解析本次结算是否需要显式敌方目标。
+    /// </summary>
+    /// <param name="card">当前准备结算的卡牌。</param>
+    /// <returns>需要时返回敌方目标，否则返回 null。</returns>
+    protected Player ResolveTargetForCard(Card card)
+    {
+        return CardNeedsEnemyTarget(card) ? GetResolvedTarget() : null;
+    }
+
+    /// <summary>
+    /// 判断当前牌型是否需要解析敌方目标。
+    /// </summary>
+    /// <param name="card">待判断的卡牌。</param>
+    /// <returns>是否需要敌方目标。</returns>
+    protected virtual bool CardNeedsEnemyTarget(Card card)
+    {
+        // Current playable card set only requires explicit enemy targets on response-triggering attacks.
+        // Replace this heuristic with data-driven targeting metadata when more card types are added.
+        return card != null && card.IsCardResponsible();
     }
 
     protected Player GetResolvedTarget()
@@ -473,6 +565,14 @@ public class Player : MonoBehaviour
     protected int GetMaxCardsLimit()
     {
         return CurrentRole != null ? CurrentRole.GetMaxCardsNum() : currentCards.Count;
+    }
+
+    /// <summary>
+    /// 主动广播手牌变化，供表现层刷新。
+    /// </summary>
+    protected void NotifyHandChanged()
+    {
+        HandChanged?.Invoke(this);
     }
 }
 

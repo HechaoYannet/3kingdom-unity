@@ -10,6 +10,12 @@ public class Sha : Card
     public override Sprite cardImage { get; protected set; }
     public override string CardType { get; protected set; } = "Sha";
 
+    private void Awake()
+    {
+        if (cardImage == null)
+            cardImage = Resources.Load<Sprite>("UI/Card/杀");
+    }
+
     public override void DoCardsAction(Player user, Player target)
     {
         base.DoCardsAction(user, target);
@@ -24,6 +30,10 @@ public class Sha : Card
         }
 
         target.TakeDamage(1, GetLastUser(), this);
+
+        // 伤害飘字
+        if (target.transform != null)
+            BattleFeedback.ShowDamage(1, target.transform.position + Vector3.up * 1.5f);
     }
 
     public override bool IsCardResponsible(string cardType)

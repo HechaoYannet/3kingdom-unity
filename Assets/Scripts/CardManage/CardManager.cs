@@ -19,6 +19,8 @@ public class CardManager : MonoBehaviour
 
     [SerializeField] private int openingHandSize = 4;
     [SerializeField] private int turnDrawCount = 2;
+    [SerializeField] private Transform runtimeCardRoot;
+    [SerializeField] private Transform discardCardRoot;
     [SerializeField] private List<DeckEntry> deckTemplate = new List<DeckEntry>
     {
         new DeckEntry { cardResource = "Sha", count = 6 },
@@ -124,6 +126,12 @@ public class CardManager : MonoBehaviour
 
         card.SetOwnerByID(1);
         card.gameObject.SetActive(false);
+        Transform discardParent = discardCardRoot != null ? discardCardRoot : runtimeCardRoot;
+        if (discardParent != null)
+        {
+            card.transform.SetParent(discardParent, false);
+        }
+
         if (!usedCards.Contains(card))
         {
             usedCards.Add(card);
@@ -231,20 +239,25 @@ public class CardManager : MonoBehaviour
     private Card CreateCardInstance(string cardResource)
     {
         GameObject prefab = Resources.Load<GameObject>($"Prefabs/Cards/{cardResource}");
-        GameObject cardObject = prefab != null ? Instantiate(prefab) : new GameObject(cardResource);
+        Transform parent = runtimeCardRoot != null ? runtimeCardRoot : transform;
+        GameObject cardObject = prefab != null ? Instantiate(prefab, parent) : new GameObject(cardResource);
+        if (prefab == null)
+        {
+            cardObject.transform.SetParent(parent, false);
+        }
+
         cardObject.name = cardResource;
 
         Card card = cardObject.GetComponent<Card>();
+
         if (card == null)
+
         {
+
             card = AddMissingCardLogic(cardObject, cardResource);
+
         }
 
-        Card3D card3D = cardObject.GetComponent<Card3D>();
-        if (card3D != null)
-        {
-            card3D.cardData = card;
-        }
 
         return card;
     }

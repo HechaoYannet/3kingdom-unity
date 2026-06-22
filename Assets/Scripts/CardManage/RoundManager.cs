@@ -27,6 +27,12 @@ public class RoundManager : MonoBehaviour
         StopAllCoroutines();
         PlayerManager.Instance.InitializePlayersForBattle();
         CardManager.instance.ResetForBattle();
+        BattleUIBootstrap bootstrap = BattleUIBootstrap.EnsureRuntimeUI();
+        if (bootstrap != null)
+        {
+            bootstrap.BindBattle();
+        }
+
         IsBattleRunning = true;
         roundLoop = StartCoroutine(UpdateRound());
         StartCoroutine(CheckGameOver());

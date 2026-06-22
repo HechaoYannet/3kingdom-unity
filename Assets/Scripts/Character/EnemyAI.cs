@@ -37,7 +37,7 @@ public class EnemyAI : Player
         if (CheckAllCards(out List<int> playableIndices) && BasicBattleAI.TryChooseResponseCard(playableIndices, currentCards, ResponsingCard, out int selectedIndex))
         {
             currSelectedCardID = selectedIndex;
-            UseCard(selectedIndex, GetResolvedTarget());
+            UseCard(selectedIndex, ResolveTargetForCard(currentCards[selectedIndex]));
         }
         else
         {
