@@ -145,9 +145,6 @@ $RECYCLE.BIN/
 *.lnk
 
 # === Codely CLI ===
-.codely-cli/auto-saves/
-.codely-cli/tmp/
-.codely-cli/plans/
-.codely-cli/settings.json
+.codely-cli/
 screenshots/
 Packages/manifest.json.bak
