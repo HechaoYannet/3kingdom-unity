@@ -2,67 +2,42 @@
 #define REEND_SDF_INCLUDED
 
 // ── Signed Distance Field primitives for UI shaders ──
+// 约定：正值 = 内部（可见），负值 = 外部（裁剪）
 
-/// Returns signed distance to a cut-corner octagon rectangle.
-/// positive = inside, negative = outside
+/// 切角矩形 SDF（八边形）。正值 = 内部，负值 = 外部。
+/// uv: [0,1] 范围
+/// halfSize: 矩形的半宽半高（与 uv 同空间）
+/// cornerSize: 切角大小（与 halfSize 同空间）
 float sdCutCorner(float2 uv, float2 halfSize, float cornerSize)
 {
-    // Normalize uv from [0,1] to [-halfSize, +halfSize]
+    // 将 uv 从 [0,1] 映射到 [-halfSize, +halfSize]
     float2 p = (uv - 0.5) * 2.0 * halfSize;
+    float2 q = abs(p);
 
-    // Reflect into first quadrant
-    float2 q = abs(p) - halfSize + cornerSize;
+    // 矩形距离：到最近边的距离（正值 = 内部）
+    float rectDist = min(halfSize.x - q.x, halfSize.y - q.y);
 
-    // Distance to the octagon = max(distance to inner rect, 0) + min(max(q.x, q.y), 0)
-    // Actually use the standard rounded-rect SDF with zero radius for the straight parts,
-    // and the corner cut creates a 45-degree chamfer.
+    // 切角距离：45度斜面的距离（正值 = 切角内侧）
+    // 切角线方程：q.x + q.y = halfSize.x + halfSize.y - cornerSize
+    float chamferDist = (halfSize.x + halfSize.y - cornerSize) - (q.x + q.y);
 
-    // Chamfer distance: distance from point to the 45-degree cut line at each corner
-    float2 cornerPos = halfSize - cornerSize;
-    float d;
-
-    if (p.x > cornerPos.x && p.y > cornerPos.y)
-    {
-        // Inside top-right corner region: distance to the 45-degree cut
-        float2 c = p - cornerPos;
-        d = (c.x + c.y - cornerSize) * 0.7071; // 1/sqrt(2)
-    }
-    else if (p.x < -cornerPos.x && p.y > cornerPos.y)
-    {
-        float2 c = float2(-p.x - cornerSize, p.y - cornerSize) * float2(-1, 1);
-        d = (c.x + c.y - cornerSize) * 0.7071;
-    }
-    else if (p.x > cornerPos.x && p.y < -cornerPos.y)
-    {
-        float2 c = float2(p.x - cornerSize, -p.y - cornerSize) * float2(1, -1);
-        d = (c.x + c.y - cornerSize) * 0.7071;
-    }
-    else if (p.x < -cornerPos.x && p.y < -cornerPos.y)
-    {
-        float2 c = float2(-p.x - cornerSize, -p.y - cornerSize);
-        d = (c.x + c.y - cornerSize) * 0.7071;
-    }
-    else
-    {
-        // Inside the axis-aligned region: standard rect SDF
-        d = -min(min(halfSize.x - abs(p.x), halfSize.y - abs(p.y)), 0.0);
-    }
-
-    return d;
+    // 两者取最小值 = 切角矩形的交集
+    return min(rectDist, chamferDist);
 }
 
-/// Standard rect SDF
+/// 标准矩形 SDF。正值 = 内部，负值 = 外部。
 float sdRect(float2 uv, float2 halfSize)
 {
-    float2 d = abs((uv - 0.5) * 2.0 * halfSize) - halfSize;
-    return -min(max(d.x, d.y), 0.0) + length(max(d, 0.0));
+    float2 p = (uv - 0.5) * 2.0 * halfSize;
+    float2 q = abs(p);
+    return min(halfSize.x - q.x, halfSize.y - q.y);
 }
 
-/// Diamond SDF (45-degree rotated square)
+/// 菱形 SDF（45度旋转正方形）。正值 = 内部，负值 = 外部。
 float sdDiamond(float2 uv, float size)
 {
     float2 p = (uv - 0.5) * size;
-    return (abs(p.x) + abs(p.y) - size * 0.5) * 0.7071;
+    return (size * 0.5 - (abs(p.x) + abs(p.y))) * 0.7071;
 }
 
 #endif

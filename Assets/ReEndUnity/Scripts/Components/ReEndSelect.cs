@@ -85,7 +85,15 @@ namespace ReEndUnity
             return this;
         }
 
-        public ReEndSelect SetOptions(List<string> options) { Options.Clear(); foreach (var o in options) AddOption(o); return this; }
+        public ReEndSelect SetOptions(List<string> options)
+        {
+            // 销毁旧的选项按钮 GameObject
+            for (int i = _dropdownContent.transform.childCount - 1; i >= 0; i--)
+                Destroy(_dropdownContent.transform.GetChild(i).gameObject);
+            Options.Clear();
+            foreach (var o in options) AddOption(o);
+            return this;
+        }
         public ReEndSelect SetValue(string v) { Value = v; if (_built) ApplyTheme(); return this; }
         public ReEndSelect SetPlaceholder(string ph) { Placeholder = ph; if (_built) ApplyTheme(); return this; }
         public ReEndSelect SetOnValueChanged(System.Action<string> cb) { OnValueChanged = cb; return this; }

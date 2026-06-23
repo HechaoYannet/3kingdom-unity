@@ -36,11 +36,11 @@ namespace ReEndUnity.Editor
             DrawSection("Animation", ref _showAnimation, "durationInstant", "durationFast", "durationNormal", "durationSlow", "durationSlower");
             DrawSection("Type Scale", ref _showType, "displayXlSize", "displayLgSize", "h1Size", "h2Size", "h3Size", "h4Size", "bodyLgSize", "bodySize", "bodySmSize", "captionSize", "overlineSize");
 
-            if (GUI.changed)
+            if (serializedObject.hasModifiedProperties)
             {
                 EditorUtility.SetDirty(theme);
-                serializedObject.ApplyModifiedProperties();
             }
+            serializedObject.ApplyModifiedProperties();
 
             EditorGUILayout.Space(12);
             if (GUILayout.Button("Apply Theme to Scene", GUILayout.Height(30)))

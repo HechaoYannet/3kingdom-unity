@@ -52,8 +52,8 @@ namespace ReEndUnity
         public override void ApplyTheme()
         {
             CheckImage.color = Checked ? Theme.primary : Theme.surface3;
-            var mat = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
-            mat.SetFloat("_CornerSize", 4);
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            mat.SetFloat("_CornerSize", 0.04f);
             CheckImage.material = mat;
 
             Label.text = Checked ? $"◆ {LabelText}" : $"◇ {LabelText}";

@@ -24,8 +24,8 @@ namespace ReEndUnity
             var img = gameObject.AddComponent<Image>();
             img.color = Theme.popover;
             img.raycastTarget = true;
-            var mat = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
-            mat.SetFloat("_CornerSize", 4);
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            mat.SetFloat("_CornerSize", 0.04f);
             img.material = mat;
 
             gameObject.SetActive(false);

@@ -13,6 +13,7 @@ namespace ReEndUnity
         {
             get
             {
+                if (_digits == null) return string.Empty;
                 var chars = new char[_digits.Length];
                 for (int i = 0; i < _digits.Length; i++)
                     chars[i] = _digits[i].text.Length > 0 ? _digits[i].text[0] : ' ';
@@ -22,6 +23,7 @@ namespace ReEndUnity
 
         private TMP_InputField[] _digits;
         private int _currentIndex;
+        private bool _isUpdating; // 重入保护
 
         protected override void BuildInternal()
         {
@@ -66,9 +68,12 @@ namespace ReEndUnity
 
         private void OnDigitChanged(int index, string value)
         {
+            if (_isUpdating) return; // 重入保护：防止 .text 赋值再次触发 onValueChanged
             if (!string.IsNullOrEmpty(value))
             {
+                _isUpdating = true;
                 _digits[index].text = value[value.Length - 1].ToString().ToUpper();
+                _isUpdating = false;
                 if (index < Length - 1)
                 {
                     _digits[index + 1].Select();
@@ -82,10 +87,11 @@ namespace ReEndUnity
 
         public override void ApplyTheme()
         {
+            if (_digits == null) return;
             foreach (var d in _digits)
             {
                 d.image.color = Theme.surface2;
-                var mat = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
+                var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
                 mat.SetFloat("_CornerSize", Theme.clipCornerSm);
                 d.image.material = mat;
             }
@@ -95,6 +101,7 @@ namespace ReEndUnity
         public ReEndOTPInput SetOnComplete(System.Action<string> cb) { OnComplete = cb; return this; }
         public void Clear()
         {
+            if (_digits == null) return;
             foreach (var d in _digits) d.text = "";
             _currentIndex = 0;
             _digits[0].Select();

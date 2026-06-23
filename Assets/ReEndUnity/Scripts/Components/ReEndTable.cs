@@ -42,7 +42,9 @@ namespace ReEndUnity
         {
             // Headers
             foreach (Transform t in _headerRow.transform) Destroy(t.gameObject);
-            float colW = RectTransform.rect.width / Mathf.Max(Headers.Count, 1);
+            float colW = RectTransform.rect.width;
+            if (colW <= 0) colW = 600; // 在首次构建时 rect.width 可能为 0，使用默认宽度
+            colW /= Mathf.Max(Headers.Count, 1);
             for (int i = 0; i < Headers.Count; i++)
             {
                 int idx = i;

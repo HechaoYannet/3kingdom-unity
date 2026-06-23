@@ -146,5 +146,6 @@ $RECYCLE.BIN/
 
 # === Codely CLI ===
 .codely-cli/
+.com-unity-codely.json
 screenshots/
 Packages/manifest.json.bak

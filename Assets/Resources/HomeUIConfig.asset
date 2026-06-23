@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a1bdde7c325cec4783c8fe3f2768672, type: 3}
+  m_Name: HomeUIConfig
+  m_EditorClassIdentifier: 
+  stackWidth: 360
+  stackRightMargin: 24
+  cardSpacing: 12
+  primaryCardHeight: 200
+  standardCardHeight: 120
+  smallCardHeight: 80
+  artZoneWidthRatio: 0.55
+  titleFontSize: 56
+  subtitleFontSize: 16
+  topBarHeight: 48
+  resourceItemSpacing: 16
+  resourceItemWidth: 90
+  bottomLeftSize: {x: 200, y: 80}
+  bottomRightSize: {x: 200, y: 80}
+  cornerMargin: 24
+  referenceResolution: {x: 1920, y: 1080}
+  matchWidthOrHeight: 0.5
+  entrySlide: 12
+  entryScale: 27
+  bgFadeDuration: 0.3
+  titleSlideDuration: 0.5
+  cardSlideDuration: 0.35
+  cardStaggerDelay: 0.1
+  topBarDuration: 0.3
+  cornerFadeDuration: 0.25
+  footerFadeDuration: 0.2
+  backgroundColor: {r: 0.031, g: 0.031, b: 0.063, a: 1}
+  gridAlpha: {r: 1, g: 1, b: 1, a: 0.04}
+  cardBackground: {r: 0, g: 0, b: 0, a: 0}
+  cardHover: {r: 0, g: 0, b: 0, a: 0}
+  accentGold: {r: 0, g: 0, b: 0, a: 0}
+  accentRed: {r: 0, g: 0, b: 0, a: 0}
+  accentCyan: {r: 0, g: 0, b: 0, a: 0}
+  textPrimary: {r: 0, g: 0, b: 0, a: 0}
+  textMuted: {r: 0, g: 0, b: 0, a: 0}

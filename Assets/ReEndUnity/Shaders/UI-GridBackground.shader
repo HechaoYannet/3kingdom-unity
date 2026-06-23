@@ -6,8 +6,8 @@ Shader "ReEnd/UI/GridBackground"
         _Color ("Tint", Color) = (1,1,1,1)
 
         _GridColor ("Grid Color", Color) = (1, 1, 1, 0.03)
-        _GridSize ("Grid Size", Range(10, 200)) = 60
-        _GridWidth ("Grid Line Width", Range(0.5, 4)) = 1
+        _GridSize ("Grid Size", Range(2, 50)) = 10
+        _GridWidth ("Grid Line Width", Range(0.001, 0.05)) = 0.005
 
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
@@ -26,6 +26,8 @@ Shader "ReEnd/UI/GridBackground"
             "IgnoreProjector"="True"
             "RenderType"="Transparent"
             "PreviewType"="Plane"
+            "CanUseSpriteAtlas"="True"
+            "RenderPipeline"="UniversalPipeline"
         }
 
         Stencil
@@ -55,6 +57,13 @@ Shader "ReEnd/UI/GridBackground"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Assets/ReEndUnity/Shaders/Include/ReEndCommon.hlsl"
 
+            CBUFFER_START(UnityPerMaterial)
+                float4 _Color;
+                float4 _GridColor;
+                float _GridSize;
+                float _GridWidth;
+            CBUFFER_END
+
             Varyings Vert(Attributes input)
             {
                 return VertDefault(input);
@@ -65,11 +74,12 @@ Shader "ReEnd/UI/GridBackground"
                 half4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
                 half4 color = tex * _Color * input.color;
 
-                float2 screenUV = input.positionCS.xy;
-                float2 grid = abs(frac(screenUV / _GridSize) - 0.5) * 2.0;
+                // 使用 UV 空间绘制网格（不依赖屏幕分辨率）
+                float2 gridUV = input.uv * _GridSize;
+                float2 grid = abs(frac(gridUV) - 0.5) * 2.0;
 
-                float lineX = 1.0 - smoothstep(0, _GridWidth, grid.x * _GridSize);
-                float lineY = 1.0 - smoothstep(0, _GridWidth, grid.y * _GridSize);
+                float lineX = 1.0 - smoothstep(0.0, _GridWidth, grid.x);
+                float lineY = 1.0 - smoothstep(0.0, _GridWidth, grid.y);
                 float gridLine = max(lineX, lineY);
 
                 color.rgb = lerp(color.rgb, _GridColor.rgb, gridLine * _GridColor.a);

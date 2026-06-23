@@ -18,14 +18,14 @@ namespace ReEndUnity
         protected override void BuildInternal()
         {
             BackgroundImage = gameObject.GetComponent<Image>() ?? gameObject.AddComponent<Image>();
-            var mat = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
-            mat.SetFloat("_CornerSize", 12);
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            mat.SetFloat("_CornerSize", 0.12f);
             BackgroundImage.material = mat;
 
             // Corner brackets (4 child images with CornerBracket shader)
             var bracketGo = CreateChild(transform, "Brackets");
             var bracketImg = bracketGo.AddComponent<Image>();
-            bracketImg.material = new Material(Shader.Find("ReEnd/UI/CornerBracket"));
+            bracketImg.material = GetOrCreateMaterial("ReEnd/UI/CornerBracket");
             bracketImg.raycastTarget = false;
             Stretch(bracketImg.rectTransform);
 

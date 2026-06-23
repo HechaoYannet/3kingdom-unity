@@ -44,6 +44,7 @@ namespace ReEndUnity
                 rt.anchorMin = new Vector2(0, 0.5f);
                 rt.sizeDelta = new Vector2(80, 20);
                 rt.anchoredPosition = new Vector2(x, 0);
+                txt.ForceMeshUpdate(); // 确保 preferredWidth 在首次构建时可用
                 x += txt.preferredWidth + 4;
 
                 if (!isLast)

@@ -6,7 +6,7 @@ Shader "ReEnd/UI/Glow"
         _Color ("Tint", Color) = (1,1,1,1)
 
         _GlowColor ("Glow Color", Color) = (1, 0.83, 0.16, 0.3)
-        _GlowRadius ("Glow Radius", Range(0, 40)) = 12
+        _GlowRadius ("Glow Radius", Range(0, 0.5)) = 0.1
 
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
@@ -25,6 +25,8 @@ Shader "ReEnd/UI/Glow"
             "IgnoreProjector"="True"
             "RenderType"="Transparent"
             "PreviewType"="Plane"
+            "CanUseSpriteAtlas"="True"
+            "RenderPipeline"="UniversalPipeline"
         }
 
         Stencil
@@ -54,8 +56,11 @@ Shader "ReEnd/UI/Glow"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Assets/ReEndUnity/Shaders/Include/ReEndCommon.hlsl"
 
-            float4 _GlowColor;
-            float _GlowRadius;
+            CBUFFER_START(UnityPerMaterial)
+                float4 _Color;
+                float4 _GlowColor;
+                float _GlowRadius;
+            CBUFFER_END
 
             Varyings Vert(Attributes input)
             {
@@ -67,24 +72,11 @@ Shader "ReEnd/UI/Glow"
                 half4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
                 half4 color = tex * _Color * input.color;
 
-                // Radial distance from center
-                float2 center = float2(0.5, 0.5);
-                float dist = distance(input.uv, center);
+                // 基于到 UV 边缘的最近距离计算发光强度
+                float edgeDist = min(min(input.uv.x, 1.0 - input.uv.x), min(input.uv.y, 1.0 - input.uv.y));
 
-                // Glow falloff from edge of shape outward
-                float glowAlpha = _GlowColor.a;
-
-                // Sample glow in 4 directions and blend
-                float2 texelSize = _MainTex_TexelSize.xy * _GlowRadius;
-                float glow = 0;
-                glow += SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv + float2(texelSize.x, 0)).a;
-                glow += SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv + float2(-texelSize.x, 0)).a;
-                glow += SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv + float2(0, texelSize.y)).a;
-                glow += SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv + float2(0, -texelSize.y)).a;
-                glow *= 0.25;
-
-                // Glow is strongest where the source texture has low alpha but surround has high alpha
-                float glowFactor = glow * (1.0 - tex.a) * glowAlpha;
+                // 在 _GlowRadius 范围内从边缘向内发光
+                float glowFactor = smoothstep(_GlowRadius, 0.0, edgeDist) * _GlowColor.a;
 
                 color.rgb = lerp(color.rgb, _GlowColor.rgb, glowFactor);
                 color.a = max(color.a, glowFactor);

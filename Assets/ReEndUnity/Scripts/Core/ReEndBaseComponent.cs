@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,9 +23,47 @@ namespace ReEndUnity
 
         public Image BackgroundImage { get; protected set; }
 
+        // ── Per-instance material cache (每个组件实例缓存自己的 Material，避免 ApplyTheme 反复 new 导致泄漏) ──
+        private readonly Dictionary<string, Material> _instanceMaterials = new();
+
+        protected Material GetOrCreateMaterial(string shaderName)
+        {
+            if (!_instanceMaterials.TryGetValue(shaderName, out var mat))
+            {
+                var shader = Shader.Find(shaderName);
+                if (shader == null)
+                {
+                    Debug.LogError($"[ReEndUnity] Shader not found: {shaderName}");
+                    return null;
+                }
+                mat = new Material(shader);
+                _instanceMaterials[shaderName] = mat;
+            }
+            return mat;
+        }
+
+        // ── 事件清理注册 ──
+        private readonly List<Action> _cleanupActions = new();
+        protected void RegisterCleanup(Action action) => _cleanupActions.Add(action);
+
         protected virtual void Awake()
         {
             EnsureBuilt();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            foreach (var action in _cleanupActions)
+            {
+                try { action?.Invoke(); } catch { /* 忽略清理异常 */ }
+            }
+            _cleanupActions.Clear();
+            // 清理本实例缓存的 Material
+            foreach (var kvp in _instanceMaterials)
+            {
+                if (kvp.Value != null) Destroy(kvp.Value);
+            }
+            _instanceMaterials.Clear();
         }
 
         public void EnsureBuilt()
@@ -32,25 +71,36 @@ namespace ReEndUnity
             if (!_built)
             {
                 _theme = ReEndThemeManager.Current;
+                if (_theme == null)
+                {
+                    Debug.LogError("[ReEndUnity] Theme is null — ensure ReEndTheme-Dark.asset exists in Resources.");
+                    _built = true;
+                    BuildInternal();
+                    return;
+                }
+                _built = true;
                 BuildInternal();
                 ApplyTheme();
-                _built = true;
             }
         }
 
         public void Rebuild()
         {
-            _built = false;
+            // 先销毁所有子物体，避免重复创建
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                Destroy(transform.GetChild(i).gameObject);
+            }
             _theme = ReEndThemeManager.Current;
-            BuildInternal();
-            ApplyTheme();
             _built = true;
+            BuildInternal();
+            if (_theme != null) ApplyTheme();
         }
 
         public void RefreshTheme()
         {
             _theme = ReEndThemeManager.Current;
-            ApplyTheme();
+            if (_theme != null) ApplyTheme();
         }
 
         /// <summary>Create child objects and components. Do NOT apply theme here.</summary>

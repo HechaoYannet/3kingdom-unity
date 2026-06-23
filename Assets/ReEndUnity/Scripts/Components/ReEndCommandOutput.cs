@@ -20,7 +20,7 @@ namespace ReEndUnity
 
             var scanGo = CreateChild(transform, "Scanline");
             var scanImg = scanGo.AddComponent<Image>();
-            scanImg.material = new Material(Shader.Find("ReEnd/UI/Scanline"));
+            scanImg.material = GetOrCreateMaterial("ReEnd/UI/Scanline");
             scanImg.raycastTarget = false;
             Stretch(scanImg.rectTransform);
 

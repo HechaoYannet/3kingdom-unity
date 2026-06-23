@@ -17,8 +17,8 @@ namespace ReEndUnity
             _bg = gameObject.AddComponent<Image>();
             _bg.raycastTarget = true;
             _bg.color = Theme.primary;
-            var mat = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
-            mat.SetFloat("_CornerSize", 4);
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            mat.SetFloat("_CornerSize", 0.04f);
             _bg.material = mat;
 
             var txt = CreateChild<TextMeshProUGUI>(transform, "Arrow");

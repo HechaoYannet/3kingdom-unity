@@ -24,8 +24,8 @@ namespace ReEndUnity
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 160);
 
             BackgroundImg = gameObject.AddComponent<Image>();
-            BackgroundImg.material = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
-            BackgroundImg.material.SetFloat("_CornerSize", 12);
+            BackgroundImg.material = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            BackgroundImg.material.SetFloat("_CornerSize", 0.12f);
 
             _overlay = CreateChild<Image>(transform, "Overlay");
             _overlay.color = new Color(0.8f, 1f, 0.25f, 0.05f);
@@ -35,7 +35,7 @@ namespace ReEndUnity
             // Glow behind value
             var glowGo = CreateChild(transform, "Glow");
             var glowImg = glowGo.AddComponent<Image>();
-            glowImg.material = new Material(Shader.Find("ReEnd/UI/Glow"));
+            glowImg.material = GetOrCreateMaterial("ReEnd/UI/Glow");
             glowImg.color = new Color(1f, 0.83f, 0.16f, 0.1f);
             glowImg.raycastTarget = false;
             var gRT = glowImg.rectTransform;

@@ -23,8 +23,8 @@ namespace ReEndUnity
         protected override void BuildInternal()
         {
             BackgroundImage = gameObject.AddComponent<Image>();
-            BackgroundImage.material = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
-            BackgroundImage.material.SetFloat("_CornerSize", 8);
+            BackgroundImage.material = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            BackgroundImage.material.SetFloat("_CornerSize", 0.08f);
 
             // Portrait
             PortraitImage = CreateChild<Image>(transform, "Portrait");

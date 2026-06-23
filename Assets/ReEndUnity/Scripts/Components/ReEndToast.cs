@@ -45,19 +45,24 @@ namespace ReEndUnity
 
         private static void UpdatePositions()
         {
+            // 移除已销毁的 toast 条目
+            for (int i = _activeToasts.Count - 1; i >= 0; i--)
+            {
+                if (_activeToasts[i] == null)
+                    _activeToasts.RemoveAt(i);
+            }
+            // 重新排列剩余 toast
             for (int i = 0; i < _activeToasts.Count; i++)
             {
-                var t = _activeToasts[i];
-                if (t == null) continue;
-                t.RectTransform.anchoredPosition = new Vector2(0, -(i * 52));
+                _activeToasts[i].RectTransform.anchoredPosition = new Vector2(0, -(i * 52));
             }
         }
 
         protected override void BuildInternal()
         {
             BackgroundImage = gameObject.AddComponent<Image>();
-            var mat = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
-            mat.SetFloat("_CornerSize", 4);
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            mat.SetFloat("_CornerSize", 0.04f);
             BackgroundImage.material = mat;
 
             var textGo = CreateChild(transform, "Message");
@@ -86,16 +91,15 @@ namespace ReEndUnity
             _timer -= Time.deltaTime;
             if (_timer <= 0)
             {
-                _activeToasts.Remove(this);
-                UpdatePositions();
                 Destroy(gameObject);
             }
         }
 
-        void OnDestroy()
+        protected override void OnDestroy()
         {
             _activeToasts.Remove(this);
             UpdatePositions();
+            base.OnDestroy();
         }
 
         public static void DismissAll()

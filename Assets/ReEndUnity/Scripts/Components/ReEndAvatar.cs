@@ -16,8 +16,8 @@ namespace ReEndUnity
         protected override void BuildInternal()
         {
             BackgroundImage = gameObject.GetComponent<Image>() ?? gameObject.AddComponent<Image>();
-            var mat = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
-            mat.SetFloat("_CornerSize", 8);
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            mat.SetFloat("_CornerSize", 0.08f);
             BackgroundImage.material = mat;
             BackgroundImage.raycastTarget = false;
 

@@ -17,13 +17,13 @@ namespace ReEndUnity
         {
             BackgroundImage = gameObject.AddComponent<Image>();
             BackgroundImage.color = Theme.efBlack;
-            var mat = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
-            mat.SetFloat("_CornerSize", 4);
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            mat.SetFloat("_CornerSize", 0.04f);
             BackgroundImage.material = mat;
 
             var scanGo = CreateChild(transform, "Scanline");
             var scanImg = scanGo.AddComponent<Image>();
-            scanImg.material = new Material(Shader.Find("ReEnd/UI/Scanline"));
+            scanImg.material = GetOrCreateMaterial("ReEnd/UI/Scanline");
             scanImg.raycastTarget = false;
             Stretch(scanImg.rectTransform);
 

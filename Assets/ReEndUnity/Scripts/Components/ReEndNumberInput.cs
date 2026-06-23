@@ -66,6 +66,7 @@ namespace ReEndUnity
             Stretch(tRT);
             InputField = gameObject.AddComponent<TMP_InputField>();
             InputField.textComponent = text;
+            InputField.textViewport = text.rectTransform;
             InputField.contentType = TMP_InputField.ContentType.DecimalNumber;
             InputField.onEndEdit.AddListener(v =>
             {

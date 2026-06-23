@@ -56,7 +56,7 @@ namespace ReEndUnity
             LabelText.text = Label;
             LabelText.fontSize = Theme.bodySmSize;
             LabelText.color = Theme.textMuted;
-            ValueText.text = Value ?? Options[0];
+            ValueText.text = Value ?? (Options.Count > 0 ? Options[0] : string.Empty);
             ValueText.fontSize = Theme.bodySize;
             ValueText.color = Theme.textPrimary;
 

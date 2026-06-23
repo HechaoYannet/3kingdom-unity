@@ -62,7 +62,7 @@ namespace ReEndUnity
             };
 
             BackgroundImage.color = bg;
-            var mat = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
             mat.SetFloat("_CornerSize", Theme.clipCornerSm);
             BackgroundImage.material = mat;
 

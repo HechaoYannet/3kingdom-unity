@@ -49,7 +49,13 @@ namespace ReEndUnity
 
         public ReEndRadioGroup SetOptions(List<string> options)
         {
-            Options = options;
+            // 先销毁旧的 Checkbox 项并清空列表
+            foreach (var item in _items)
+            {
+                if (item != null) Destroy(item.gameObject);
+            }
+            _items.Clear();
+            Options.Clear();
             for (int i = 0; i < options.Count; i++)
                 AddOption(options[i]);
             return this;

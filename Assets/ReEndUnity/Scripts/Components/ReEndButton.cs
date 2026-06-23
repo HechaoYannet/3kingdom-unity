@@ -57,7 +57,7 @@ namespace ReEndUnity
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Mathf.Max(h * 2, 120));
 
             // Clip corner
-            var mat = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
             mat.SetFloat("_CornerSize", Theme.clipCornerMd);
             BackgroundImage.material = mat;
 

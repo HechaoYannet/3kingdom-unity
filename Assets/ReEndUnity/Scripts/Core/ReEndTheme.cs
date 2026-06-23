@@ -109,11 +109,11 @@ namespace ReEndUnity
         public float space32 = 128;
 
         [Header("Corner")]
-        public float clipCornerSm = 8;
-        public float clipCornerMd = 12;
-        public float clipCornerLg = 16;
-        public float bracketSize  = 24;
-        public float bracketWidth = 2;
+        public float clipCornerSm = 0.08f;
+        public float clipCornerMd = 0.12f;
+        public float clipCornerLg = 0.16f;
+        public float bracketSize  = 0.15f;
+        public float bracketWidth = 0.01f;
         public Color bracketColor = new Color(1f, 0.83f, 0.16f, 0.4f);
 
         [Header("Radius")]

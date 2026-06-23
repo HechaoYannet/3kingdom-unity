@@ -5,8 +5,8 @@ Shader "ReEnd/UI/Scanline"
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
 
-        _ScanlineOpacity ("Scanline Opacity", Range(0, 0.1)) = 0.02
-        _ScanlineSpacing ("Scanline Spacing", Range(1, 8)) = 2
+        _ScanlineOpacity ("Scanline Opacity", Range(0, 0.5)) = 0.1
+        _ScanlineSpacing ("Scanline Spacing", Range(2, 100)) = 20
 
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
@@ -25,6 +25,8 @@ Shader "ReEnd/UI/Scanline"
             "IgnoreProjector"="True"
             "RenderType"="Transparent"
             "PreviewType"="Plane"
+            "CanUseSpriteAtlas"="True"
+            "RenderPipeline"="UniversalPipeline"
         }
 
         Stencil
@@ -54,6 +56,12 @@ Shader "ReEnd/UI/Scanline"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Assets/ReEndUnity/Shaders/Include/ReEndCommon.hlsl"
 
+            CBUFFER_START(UnityPerMaterial)
+                float4 _Color;
+                float _ScanlineOpacity;
+                float _ScanlineSpacing;
+            CBUFFER_END
+
             Varyings Vert(Attributes input)
             {
                 return VertDefault(input);
@@ -64,8 +72,8 @@ Shader "ReEnd/UI/Scanline"
                 half4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
                 half4 color = tex * _Color * input.color;
 
-                // Scanline pattern: darken every Nth pixel row
-                float lines = frac(input.positionCS.y / _ScanlineSpacing);
+                // 使用 UV 空间绘制扫描线（分辨率无关）
+                float lines = frac(input.uv.y * _ScanlineSpacing);
                 float scan = 1.0 - _ScanlineOpacity * step(0.5, lines);
 
                 color.rgb *= scan;

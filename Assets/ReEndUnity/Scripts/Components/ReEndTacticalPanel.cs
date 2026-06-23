@@ -19,16 +19,16 @@ namespace ReEndUnity
         {
             BackgroundImage = gameObject.GetComponent<Image>() ?? gameObject.AddComponent<Image>();
             BackgroundImage.color = Theme.card;
-            var mat = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
-            mat.SetFloat("_CornerSize", 12);
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            mat.SetFloat("_CornerSize", 0.12f);
             BackgroundImage.material = mat;
 
             // Corner brackets
             var bracketGo = CreateChild(transform, "Brackets");
             _brackets = bracketGo.AddComponent<Image>();
-            _brackets.material = new Material(Shader.Find("ReEnd/UI/CornerBracket"));
-            _brackets.material.SetFloat("_BracketSize", 24);
-            _brackets.material.SetFloat("_BracketWidth", 2);
+            _brackets.material = GetOrCreateMaterial("ReEnd/UI/CornerBracket");
+            _brackets.material.SetFloat("_BracketSize", 0.15f);
+            _brackets.material.SetFloat("_BracketWidth", 0.01f);
             _brackets.material.SetColor("_BracketColor", Theme.bracketColor);
             _brackets.raycastTarget = false;
             Stretch(_brackets.rectTransform);
@@ -36,7 +36,7 @@ namespace ReEndUnity
             // Scanline
             var scanGo = CreateChild(transform, "Scanline");
             _scanline = scanGo.AddComponent<Image>();
-            _scanline.material = new Material(Shader.Find("ReEnd/UI/Scanline"));
+            _scanline.material = GetOrCreateMaterial("ReEnd/UI/Scanline");
             _scanline.raycastTarget = false;
             Stretch(_scanline.rectTransform);
 

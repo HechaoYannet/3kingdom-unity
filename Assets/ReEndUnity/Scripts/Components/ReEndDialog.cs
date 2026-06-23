@@ -34,8 +34,8 @@ namespace ReEndUnity
 
             // Panel
             BackgroundImage = gameObject.GetComponent<Image>() ?? gameObject.AddComponent<Image>();
-            var mat = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
-            mat.SetFloat("_CornerSize", 12);
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            mat.SetFloat("_CornerSize", 0.12f);
             BackgroundImage.material = mat;
 
             float w = Size switch
@@ -97,7 +97,7 @@ namespace ReEndUnity
             ccRT.anchorMin = new Vector2(1, 0);
             ccRT.anchorMax = new Vector2(1, 0);
             ccRT.pivot = new Vector2(1, 0);
-            ccRT.anchoredPosition = new Vector2(-cbRT.rect.width - 20, 12);
+            ccRT.anchoredPosition = new Vector2(-140, 12); // 初始位置，ApplyTheme 中会根据 ConfirmBtn 宽度修正
 
             gameObject.SetActive(false);
         }
@@ -121,6 +121,9 @@ namespace ReEndUnity
             MessageText.color = Theme.textSecondary;
             ConfirmBtn.SetText(ConfirmText).RefreshTheme();
             CancelBtn.SetText(CancelText).RefreshTheme();
+            // 在按钮 ApplyTheme 后修正 CancelBtn 位置（此时 ConfirmBtn 宽度已确定）
+            var cbRT = ConfirmBtn.RectTransform;
+            CancelBtn.RectTransform.anchoredPosition = new Vector2(-cbRT.rect.width - 20, 12);
         }
 
         public ReEndDialog SetTitle(string t) { Title = t; if (_built) ApplyTheme(); return this; }

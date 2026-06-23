@@ -27,6 +27,7 @@ namespace ReEndUnity
             _btns.Clear();
 
             float totalW = RectTransform.rect.width;
+            if (totalW <= 0) totalW = 400; // 在首次构建时 rect.width 可能为 0，使用默认宽度
             float tabW = totalW / Mathf.Max(TabLabels.Count, 1);
 
             for (int i = 0; i < TabLabels.Count; i++)

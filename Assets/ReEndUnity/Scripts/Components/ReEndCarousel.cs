@@ -34,6 +34,9 @@ namespace ReEndUnity
 
             _next = CreateChild<Button>(transform, "Next");
             _next.onClick.AddListener(() => GoTo(CurrentIndex + 1));
+            var nImg = _next.gameObject.AddComponent<Image>();
+            nImg.color = new Color(0, 0, 0, 0.3f);
+            _next.GetComponent<RectTransform>().sizeDelta = new Vector2(32, 240);
 
             // Dots
             _dotsContainer = CreateChild(transform, "Dots");

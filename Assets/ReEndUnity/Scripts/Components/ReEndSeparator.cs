@@ -36,14 +36,12 @@ namespace ReEndUnity
                     Line.material = null;
                     break;
                 case ReEndSeparatorStyle.Gradient:
-                    Line.material = Direction == ReEndDirection.Horizontal
-                        ? new Material(Shader.Find("ReEnd/UI/Glow"))
-                        : new Material(Shader.Find("ReEnd/UI/Glow"));
+                    Line.material = GetOrCreateMaterial("ReEnd/UI/Glow");
                     Line.color = Theme.primary;
                     break;
                 case ReEndSeparatorStyle.Glow:
                     Line.color = Theme.primary;
-                    Line.material = new Material(Shader.Find("ReEnd/UI/Glow"));
+                    Line.material = GetOrCreateMaterial("ReEnd/UI/Glow");
                     break;
                 case ReEndSeparatorStyle.Dashed:
                     Line.color = Theme.borderDefault;

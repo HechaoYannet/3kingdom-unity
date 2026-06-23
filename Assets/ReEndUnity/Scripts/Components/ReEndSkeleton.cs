@@ -59,14 +59,14 @@ namespace ReEndUnity
 
                 case ReEndSkeletonVariant.Avatar:
                     bg.color = Theme.surface2;
-                    bg.material = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
-                    bg.material.SetFloat("_CornerSize", 8);
+                    bg.material = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+                    bg.material.SetFloat("_CornerSize", 0.08f);
                     break;
 
                 case ReEndSkeletonVariant.Card:
                     bg.color = Theme.surface1;
-                    bg.material = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
-                    bg.material.SetFloat("_CornerSize", 12);
+                    bg.material = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+                    bg.material.SetFloat("_CornerSize", 0.12f);
                     // Avatar row
                     var avRow = CreateChild(transform, "Avatar");
                     var avImg = avRow.AddComponent<Image>();

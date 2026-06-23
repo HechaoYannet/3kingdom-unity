@@ -5,8 +5,8 @@ Shader "ReEnd/UI/ClipCorner"
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
 
-        _CornerSize ("Corner Size", Range(0, 32)) = 12
-        _ClipSoftness ("Clip Softness", Range(0, 2)) = 0.5
+        _CornerSize ("Corner Size", Range(0, 0.5)) = 0.1
+        _ClipSoftness ("Clip Softness", Range(0.001, 0.05)) = 0.01
 
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
@@ -28,6 +28,7 @@ Shader "ReEnd/UI/ClipCorner"
             "RenderType"="Transparent"
             "PreviewType"="Plane"
             "CanUseSpriteAtlas"="True"
+            "RenderPipeline"="UniversalPipeline"
         }
 
         Stencil
@@ -59,6 +60,12 @@ Shader "ReEnd/UI/ClipCorner"
             #include "Assets/ReEndUnity/Shaders/Include/ReEndCommon.hlsl"
             #include "Assets/ReEndUnity/Shaders/Include/ReEndSDF.hlsl"
 
+            CBUFFER_START(UnityPerMaterial)
+                float4 _Color;
+                float _CornerSize;
+                float _ClipSoftness;
+            CBUFFER_END
+
             Varyings Vert(Attributes input)
             {
                 return VertDefault(input);
@@ -69,12 +76,14 @@ Shader "ReEnd/UI/ClipCorner"
                 half4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
                 half4 color = tex * _Color * input.color;
 
-                // Compute cut-corner clip from rect size
-                float2 halfSize = _MainTex_TexelSize.zw * 0.5;
+                // 使用 UV 空间（0~1）计算切角，不依赖纹理像素尺寸
+                // halfSize 固定为 (0.5, 0.5)，cornerSize 为 UV 空间比例
+                float2 halfSize = float2(0.5, 0.5);
                 float d = sdCutCorner(input.uv, halfSize, _CornerSize);
 
-                // Soft edge
-                float alpha = smoothstep(0, _ClipSoftness, d);
+                // SDF：正值 = 内部（可见），负值 = 外部（裁剪）
+                // smoothstep 在边界处做柔和过渡
+                float alpha = smoothstep(0.0, _ClipSoftness, d);
                 color.a *= alpha;
 
                 clip(color.a - 0.001);

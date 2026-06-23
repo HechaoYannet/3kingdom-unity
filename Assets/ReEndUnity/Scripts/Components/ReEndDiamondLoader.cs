@@ -15,7 +15,7 @@ namespace ReEndUnity
 
             Diamond = gameObject.AddComponent<Image>();
             Diamond.raycastTarget = false;
-            var mat = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
             Diamond.material = mat;
 
             // Create diamond shape by rotating a square

@@ -3,27 +3,11 @@
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-CBUFFER_START(UnityPerMaterial)
-    float4 _MainTex_TexelSize;
-    float4 _Color;
-    float _CornerSize;
-    float _GlowRadius;
-    float4 _GlowColor;
-    float _ScanlineOpacity;
-    float _ScanlineSpacing;
-    float _GridSize;
-    float _GridWidth;
-    float4 _GridColor;
-    float _BracketSize;
-    float _BracketWidth;
-    float4 _BracketColor;
-    float _ClipSoftness;
-CBUFFER_END
-
+// ── 共享纹理声明 ──
 TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex);
 
-// ── Shared vertex-to-fragment struct ──
+// ── 共享顶点/片元结构 ──
 struct Attributes
 {
     float4 positionOS : POSITION;
@@ -38,7 +22,7 @@ struct Varyings
     float4 color : COLOR;
 };
 
-// ── Standard UI vertex shader ──
+// ── 标准 UI 顶点着色器 ──
 Varyings VertDefault(Attributes input)
 {
     Varyings output;

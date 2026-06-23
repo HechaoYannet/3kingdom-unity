@@ -18,8 +18,8 @@ namespace ReEndUnity
         {
             BackgroundImage = gameObject.AddComponent<Image>();
             BackgroundImage.color = Theme.card;
-            var mat = new Material(Shader.Find("ReEnd/UI/ClipCorner"));
-            mat.SetFloat("_CornerSize", 12);
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            mat.SetFloat("_CornerSize", 0.12f);
             BackgroundImage.material = mat;
 
             RectTransform.anchorMin = new Vector2(0, 0);

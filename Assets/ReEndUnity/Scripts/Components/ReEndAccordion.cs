@@ -88,7 +88,6 @@ namespace ReEndUnity
             }
 
             ContentArea.sizeDelta = new Vector2(0, Expanded ? _contentHeight : 0);
-            Indicator.rectTransform.localRotation = Quaternion.Euler(0, 0, Expanded ? 0 : 0);
         }
 
         public ReEndAccordion SetTitle(string t) { Title = t; if (_built) ApplyTheme(); return this; }
