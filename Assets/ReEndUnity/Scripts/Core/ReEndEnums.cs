@@ -27,7 +27,8 @@ namespace ReEndUnity
         Danger,
         Info,
         Online,
-        Offline
+        Offline,
+        Scanning
     }
 
     public enum ReEndSeverity
@@ -64,37 +65,12 @@ namespace ReEndUnity
         Vertical
     }
 
-    public enum ReEndSkeletonVariant
-    {
-        Line,
-        Text,
-        Avatar,
-        Card
-    }
-
-    public enum ReEndChartType
-    {
-        Line,
-        Bar,
-        Area,
-        Pie
-    }
-
     public enum ReEndInputState
     {
         Default,
         Focused,
         Error,
         Disabled
-    }
-
-    public enum ReEndEmptyStatePreset
-    {
-        NoData,
-        NoResults,
-        Error,
-        Maintenance,
-        Empty
     }
 
     public enum ReEndTabsVariant
@@ -120,18 +96,6 @@ namespace ReEndUnity
         BottomRight,
         BottomCenter,
         BottomLeft
-    }
-
-    public enum ReEndViewMode
-    {
-        Grid,
-        List
-    }
-
-    public enum ReEndSortDirection
-    {
-        Ascending,
-        Descending
     }
 
     public enum ReEndAccentColor
@@ -176,11 +140,4 @@ namespace ReEndUnity
         Xl
     }
 
-    public enum ReEndSnapPoint
-    {
-        Hidden,
-        Quarter,
-        Half,
-        Full
-    }
 }

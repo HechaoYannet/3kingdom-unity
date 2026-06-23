@@ -5,8 +5,9 @@ Shader "ReEnd/UI/Scanline"
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
 
-        _ScanlineOpacity ("Scanline Opacity", Range(0, 0.5)) = 0.1
-        _ScanlineSpacing ("Scanline Spacing", Range(2, 100)) = 20
+        _ScanlineOpacity ("Scanline Opacity", Range(0, 0.1)) = 0.015
+        _ScanlineSpacing ("Scanline Spacing", Range(10, 400)) = 120
+        [Toggle] _DarkOverlay ("Dark Overlay (Light Mode)", Float) = 0
 
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
@@ -60,6 +61,7 @@ Shader "ReEnd/UI/Scanline"
                 float4 _Color;
                 float _ScanlineOpacity;
                 float _ScanlineSpacing;
+                float _DarkOverlay;
             CBUFFER_END
 
             Varyings Vert(Attributes input)
@@ -69,15 +71,15 @@ Shader "ReEnd/UI/Scanline"
 
             half4 Frag(Varyings input) : SV_Target
             {
-                half4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
-                half4 color = tex * _Color * input.color;
+                // 细密扫描线：模拟 CRT/终端效果
+                float phase = frac(input.uv.y * _ScanlineSpacing);
+                float darkLine = (1.0 - smoothstep(0.35, 0.5, phase)) * smoothstep(0.0, 0.15, phase);
 
-                // 使用 UV 空间绘制扫描线（分辨率无关）
-                float lines = frac(input.uv.y * _ScanlineSpacing);
-                float scan = 1.0 - _ScanlineOpacity * step(0.5, lines);
-
-                color.rgb *= scan;
-                return color;
+                // 暗色模式：白色扫描线（web rgba(255,255,255,0.015)）
+                // 亮色模式：黑色扫描线（web rgba(0,0,0,0.04)）
+                float3 overlayColor = lerp(float3(1, 1, 1), float3(0, 0, 0), _DarkOverlay);
+                float overlayAlpha = _ScanlineOpacity * darkLine;
+                return half4(overlayColor, overlayAlpha);
             }
             ENDHLSL
         }

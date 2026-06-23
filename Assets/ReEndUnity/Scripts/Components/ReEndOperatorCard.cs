@@ -8,7 +8,7 @@ namespace ReEndUnity
     {
         public string OperatorName { get; set; } = "OPERATOR";
         public string Role { get; set; }
-        public string Class { get; set; }
+        public string OperatorClass { get; set; }
         public int Level { get; set; } = 1;
         public Sprite Portrait { get; set; }
         public float Atk { get; set; }
@@ -19,12 +19,14 @@ namespace ReEndUnity
         public TMP_Text NameText { get; private set; }
         public TMP_Text RoleText { get; private set; }
         public TMP_Text ClassText { get; private set; }
+        public TMP_Text StatsText { get; private set; }
 
         protected override void BuildInternal()
         {
             BackgroundImage = gameObject.AddComponent<Image>();
             BackgroundImage.material = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
             BackgroundImage.material.SetFloat("_CornerSize", 0.08f);
+            BackgroundImage.material.SetFloat("_RTOnly", 1);
 
             // Portrait
             PortraitImage = CreateChild<Image>(transform, "Portrait");
@@ -59,7 +61,16 @@ namespace ReEndUnity
             var cRT = ClassText.rectTransform;
             cRT.anchorMin = new Vector2(0, 0);
             cRT.sizeDelta = new Vector2(60, 20);
-            cRT.anchoredPosition = new Vector2(96, 8);
+            cRT.anchoredPosition = new Vector2(96, 20);
+
+            // Stats (ATK / DEF / TECH)
+            StatsText = CreateChild<TextMeshProUGUI>(transform, "Stats");
+            StatsText.alignment = TextAlignmentOptions.Left;
+            StatsText.raycastTarget = false;
+            var sRT = StatsText.rectTransform;
+            sRT.anchorMin = new Vector2(0, 0);
+            sRT.sizeDelta = new Vector2(160, 18);
+            sRT.anchoredPosition = new Vector2(96, 4);
 
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 240);
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 96);
@@ -80,15 +91,19 @@ namespace ReEndUnity
             RoleText.fontSize = Theme.bodySmSize;
             RoleText.color = Theme.textMuted;
 
-            ClassText.text = Class?.ToUpper();
+            ClassText.text = OperatorClass?.ToUpper();
             ClassText.fontSize = Theme.overlineSize;
             ClassText.color = Theme.primary;
+
+            StatsText.text = $"ATK {Atk:F0}  DEF {Def:F0}  TECH {Tech:F0}";
+            StatsText.fontSize = Theme.captionSize;
+            StatsText.color = Theme.textSecondary;
         }
 
         public ReEndOperatorCard SetOperatorName(string n) { OperatorName = n; if (_built) ApplyTheme(); return this; }
         public ReEndOperatorCard SetRole(string r) { Role = r; if (_built) ApplyTheme(); return this; }
-        public ReEndOperatorCard SetClass(string c) { Class = c; if (_built) ApplyTheme(); return this; }
+        public ReEndOperatorCard SetClass(string c) { OperatorClass = c; if (_built) ApplyTheme(); return this; }
         public ReEndOperatorCard SetPortrait(Sprite p) { Portrait = p; if (_built) ApplyTheme(); return this; }
-        public ReEndOperatorCard SetStats(float atk, float def, float tech) { Atk = atk; Def = def; Tech = tech; return this; }
+        public ReEndOperatorCard SetStats(float atk, float def, float tech) { Atk = atk; Def = def; Tech = tech; if (_built) ApplyTheme(); return this; }
     }
 }

@@ -8,39 +8,192 @@ namespace ReEndUnity.Editor
     public class ReEndEffectTunerWindow : EditorWindow
     {
         private GameObject _target;
-        private readonly List<Image> _clipCornerImages = new();
-        private readonly List<Image> _glowImages = new();
-        private readonly List<Image> _bracketImages = new();
-        private readonly List<Image> _gridImages = new();
-        private readonly List<Image> _scanlineImages = new();
 
-        private bool _showClip = true;
-        private bool _showGlow = true;
-        private bool _showBracket = true;
-        private bool _showGrid = true;
-        private bool _showScanline = true;
+        // ── 按 shader 分组的 Image 列表 ──
+        private readonly Dictionary<string, List<Image>> _shaderGroups = new();
+        private readonly List<string> _shaderOrder = new();
 
-        // 缓存当前参数值
-        private float _cornerSize = 0.12f;
-        private float _clipSoftness = 0.01f;
-        private Color _glowColor = new(1f, 0.83f, 0.16f, 0.3f);
-        private float _glowRadius = 0.1f;
-        private Color _bracketColor = new(1f, 0.83f, 0.16f, 0.4f);
-        private float _bracketSize = 0.15f;
-        private float _bracketWidth = 0.01f;
-        private Color _gridColor = new(1f, 1f, 1f, 0.03f);
-        private float _gridSize = 10f;
-        private float _gridWidth = 0.005f;
-        private float _scanlineOpacity = 0.1f;
-        private float _scanlineSpacing = 20f;
+        // ── 每组 foldout 状态 ──
+        private readonly Dictionary<string, bool> _foldouts = new();
+
+        // ── 参数缓存（按 shader+property 唯一） ──
+        private readonly Dictionary<string, object> _paramCache = new();
 
         private Vector2 _scrollPos;
+
+        // ── Shader 中文标签 ──
+        private static readonly Dictionary<string, string> ShaderLabels = new()
+        {
+            { "ReEnd/UI/ClipCorner",      "切角 ClipCorner" },
+            { "ReEnd/UI/Glow",            "发光 Glow" },
+            { "ReEnd/UI/CornerBracket",   "四角括号 CornerBracket" },
+            { "ReEnd/UI/GridBackground",  "网格背景 GridBackground" },
+            { "ReEnd/UI/Scanline",        "扫描线 Scanline" },
+            { "ReEnd/UI/MatrixDot",       "矩阵点阵 MatrixDot" },
+            { "ReEnd/UI/GradientLine",    "渐变线 GradientLine" },
+            { "ReEnd/UI/HoloSweep",       "全息扫光 HoloSweep" },
+            { "ReEnd/UI/FrequencyBar",    "频谱柱 FrequencyBar" },
+            { "ReEnd/UI/Diamond",         "菱形 Diamond" },
+            { "ReEnd/UI/Glass",           "毛玻璃 Glass" },
+            { "ReEnd/UI/Noise",           "噪声 Noise" },
+            { "ReEnd/UI/Glitch",          "故障 Glitch" },
+            { "ReEnd/UI/RadialGlow",      "径向发光 RadialGlow" },
+            { "ReEnd/UI/TopoContour",     "等高线 TopoContour" },
+        };
+
+        // ── 属性元数据 ──
+        private class PropMeta
+        {
+            public string Name;
+            public string Display;
+            public string Type; // "Range", "Color", "Float", "Toggle"
+            public float Min;
+            public float Max;
+        }
+
+        // ── 每个 shader 的可调属性列表（排除通用属性） ──
+        private static readonly Dictionary<string, PropMeta[]> ShaderProps = new()
+        {
+            ["ReEnd/UI/ClipCorner"] = new[]
+            {
+                P("_CornerSize", "Corner Size", "Range", 0f, 0.5f),
+                P("_ClipSoftness", "Clip Softness", "Range", 0.001f, 0.05f),
+                P("_RTOnly", "RT Only Cut", "Toggle", 0, 1),
+            },
+            ["ReEnd/UI/Glow"] = new[]
+            {
+                P("_GlowColor", "Glow Color", "Color"),
+                P("_GlowRadius", "Glow Radius", "Range", 0f, 0.5f),
+                P("_GlowFalloff", "Glow Falloff", "Range", 0.1f, 2f),
+                P("_GlowPulse", "Glow Pulse", "Range", 0f, 0.5f),
+                P("_GlowPulseSpeed", "Pulse Speed", "Range", 0.1f, 5f),
+            },
+            ["ReEnd/UI/CornerBracket"] = new[]
+            {
+                P("_BracketColor", "Bracket Color", "Color"),
+                P("_BracketSize", "Bracket Size", "Range", 0.05f, 0.5f),
+                P("_BracketWidth", "Bracket Width", "Range", 0.002f, 0.05f),
+                P("_FourCorners", "Four Corners", "Toggle", 0, 1),
+            },
+            ["ReEnd/UI/GridBackground"] = new[]
+            {
+                P("_GridColor", "Grid Color", "Color"),
+                P("_GridSize", "Grid Size", "Range", 10f, 120f),
+                P("_GridWidth", "Grid Line Width", "Range", 0.001f, 0.03f),
+                P("_GridMajorScale", "Major Grid Scale", "Range", 2f, 10f),
+                P("_DiagonalOpacity", "Diagonal Opacity", "Range", 0f, 0.15f),
+                P("_AspectRatio", "Aspect Ratio (W/H)", "Float"),
+            },
+            ["ReEnd/UI/Scanline"] = new[]
+            {
+                P("_ScanlineOpacity", "Scanline Opacity", "Range", 0f, 0.1f),
+                P("_ScanlineSpacing", "Scanline Spacing", "Range", 10f, 400f),
+                P("_DarkOverlay", "Dark Overlay", "Toggle", 0, 1),
+            },
+            ["ReEnd/UI/MatrixDot"] = new[]
+            {
+                P("_DotColor", "Dot Color", "Color"),
+                P("_DotInactiveColor", "Inactive Color", "Color"),
+                P("_DotColumns", "Columns", "Range", 4f, 80f),
+                P("_DotRows", "Rows", "Range", 4f, 80f),
+                P("_DotSize", "Dot Size", "Range", 0.01f, 0.3f),
+                P("_DutyCycle", "Duty Cycle", "Range", 0.01f, 0.5f),
+                P("_Static", "Static", "Toggle", 0, 1),
+            },
+            ["ReEnd/UI/GradientLine"] = new[]
+            {
+                P("_LineColor", "Line Color", "Color"),
+                P("_GradientSharpness", "Gradient Sharpness", "Range", 0.1f, 2f),
+                P("_Direction", "Direction (H↔V)", "Range", 0f, 1f),
+            },
+            ["ReEnd/UI/HoloSweep"] = new[]
+            {
+                P("_SweepColor", "Sweep Color", "Color"),
+                P("_SweepPosition", "Sweep Position", "Range", -0.2f, 1.2f),
+                P("_SweepWidth", "Sweep Width", "Range", 0.01f, 0.3f),
+                P("_SweepOpacity", "Sweep Opacity", "Range", 0f, 1f),
+                P("_ShimmerOpacity", "Shimmer Opacity", "Range", 0f, 1f),
+                P("_ShimmerAngle", "Shimmer Angle", "Range", 0f, 360f),
+            },
+            ["ReEnd/UI/FrequencyBar"] = new[]
+            {
+                P("_BarColor", "Bar Color", "Color"),
+                P("_BarCount", "Bar Count", "Range", 4f, 64f),
+                P("_BarWidth", "Bar Width", "Range", 0.1f, 1f),
+                P("_BarSpeed", "Bar Speed", "Range", 0.1f, 5f),
+                P("_BarMinScale", "Min Scale", "Range", 0f, 0.5f),
+                P("_BarMaxScale", "Max Scale", "Range", 0.5f, 1f),
+                P("_BarGlow", "Bar Glow", "Range", 0f, 0.3f),
+                P("_BarStagger", "Bar Stagger", "Range", 0f, 0.5f),
+            },
+            ["ReEnd/UI/Diamond"] = new[]
+            {
+                P("_DiamondColor", "Diamond Color", "Color"),
+                P("_DiamondSize", "Diamond Size", "Range", 0.02f, 0.5f),
+                P("_DiamondCount", "Diamond Count", "Range", 1f, 20f),
+                P("_DiamondSpacing", "Spacing", "Range", 0f, 0.3f),
+                P("_DiamondRotate", "Rotation", "Range", 0f, 360f),
+                P("_DiamondSoftness", "Edge Softness", "Range", 0.001f, 0.1f),
+            },
+            ["ReEnd/UI/Glass"] = new[]
+            {
+                P("_GlassColor", "Glass Color", "Color"),
+                P("_GlassNoiseStrength", "Noise Strength", "Range", 0f, 0.1f),
+                P("_GlassNoiseScale", "Noise Scale", "Range", 1f, 50f),
+                P("_BorderColor", "Border Color", "Color"),
+                P("_BorderWidth", "Border Width", "Range", 0f, 0.05f),
+                P("_CornerSize", "Corner Size", "Range", 0f, 0.5f),
+                P("_EdgeSoftness", "Edge Softness", "Range", 0f, 0.1f),
+            },
+            ["ReEnd/UI/Noise"] = new[]
+            {
+                P("_NoiseOpacity", "Noise Opacity", "Range", 0f, 0.15f),
+                P("_NoiseScale", "Noise Scale", "Range", 0.2f, 10f),
+                P("_NoiseSpeed", "Noise Speed", "Range", 0f, 0.05f),
+                P("_NoiseOctaves", "Noise Octaves", "Range", 1f, 5f),
+            },
+            ["ReEnd/UI/Glitch"] = new[]
+            {
+                P("_GlitchInterval", "Glitch Interval", "Range", 0.5f, 10f),
+                P("_GlitchDuration", "Glitch Duration", "Range", 0.01f, 0.5f),
+                P("_GlitchOffsetX", "Offset X", "Range", 0f, 20f),
+                P("_GlitchOffsetY", "Offset Y", "Range", 0f, 10f),
+                P("_GlitchColor1", "Color 1 (Cyan)", "Color"),
+                P("_GlitchColor2", "Color 2 (Red)", "Color"),
+            },
+            ["ReEnd/UI/RadialGlow"] = new[]
+            {
+                P("_GlowColor", "Glow Color", "Color"),
+                P("_GlowCenterX", "Center X", "Range", 0f, 1f),
+                P("_GlowCenterY", "Center Y", "Range", 0f, 1f),
+                P("_GlowRadiusX", "Radius X", "Range", 0.05f, 1f),
+                P("_GlowRadiusY", "Radius Y", "Range", 0.05f, 1f),
+                P("_GlowFalloff", "Falloff", "Range", 0.1f, 3f),
+                P("_GlowPulse", "Pulse", "Range", 0f, 0.5f),
+            },
+            ["ReEnd/UI/TopoContour"] = new[]
+            {
+                P("_ContourColor", "Contour Color", "Color"),
+                P("_ContourMajorColor", "Major Contour Color", "Color"),
+                P("_ContourLevels", "Contour Levels", "Range", 4f, 32f),
+                P("_ContourWidth", "Contour Width", "Range", 0.001f, 0.05f),
+                P("_ContourScale", "Noise Scale", "Range", 0.5f, 4f),
+                P("_ContourSpeed", "Scroll Speed", "Range", 0f, 0.5f),
+                P("_NoiseSeed", "Noise Seed", "Range", 0f, 100f),
+            },
+        };
+
+        private static PropMeta P(string name, string display, string type, float min = 0, float max = 1)
+            => new() { Name = name, Display = display, Type = type, Min = min, Max = max };
+
+        // ── 属性缓存 key ──
+        private static string CKey(string shader, string prop) => $"{shader}::{prop}";
 
         [MenuItem("Window/ReEnd Effect Tuner")]
         public static void Open()
         {
             var w = GetWindow<ReEndEffectTunerWindow>("ReEnd Effect Tuner");
-            w.minSize = new Vector2(320, 480);
+            w.minSize = new Vector2(340, 480);
         }
 
         private void OnEnable()
@@ -63,11 +216,8 @@ namespace ReEndUnity.Editor
 
         private void ScanForShaders()
         {
-            _clipCornerImages.Clear();
-            _glowImages.Clear();
-            _bracketImages.Clear();
-            _gridImages.Clear();
-            _scanlineImages.Clear();
+            _shaderGroups.Clear();
+            _shaderOrder.Clear();
 
             if (_target == null) return;
 
@@ -76,109 +226,55 @@ namespace ReEndUnity.Editor
             {
                 if (img.material == null) continue;
                 var shaderName = img.material.shader != null ? img.material.shader.name : "";
-                switch (shaderName)
+                if (!ShaderProps.ContainsKey(shaderName)) continue;
+
+                if (!_shaderGroups.ContainsKey(shaderName))
                 {
-                    case "ReEnd/UI/ClipCorner":
-                        _clipCornerImages.Add(img);
-                        ReadClipCornerParams(img.material);
-                        break;
-                    case "ReEnd/UI/Glow":
-                        _glowImages.Add(img);
-                        ReadGlowParams(img.material);
-                        break;
-                    case "ReEnd/UI/CornerBracket":
-                        _bracketImages.Add(img);
-                        ReadBracketParams(img.material);
-                        break;
-                    case "ReEnd/UI/GridBackground":
-                        _gridImages.Add(img);
-                        ReadGridParams(img.material);
-                        break;
-                    case "ReEnd/UI/Scanline":
-                        _scanlineImages.Add(img);
-                        ReadScanlineParams(img.material);
-                        break;
+                    _shaderGroups[shaderName] = new List<Image>();
+                    _shaderOrder.Add(shaderName);
                 }
+                _shaderGroups[shaderName].Add(img);
+
+                // 从首个材质读取参数缓存
+                if (_shaderGroups[shaderName].Count == 1)
+                    ReadParams(shaderName, img.material);
             }
         }
 
-        // ── 读取当前 material 参数 ──
-
-        private void ReadClipCornerParams(Material mat)
+        private void ReadParams(string shaderName, Material mat)
         {
-            if (mat.HasProperty("_CornerSize")) _cornerSize = mat.GetFloat("_CornerSize");
-            if (mat.HasProperty("_ClipSoftness")) _clipSoftness = mat.GetFloat("_ClipSoftness");
-        }
-        private void ReadGlowParams(Material mat)
-        {
-            if (mat.HasProperty("_GlowColor")) _glowColor = mat.GetColor("_GlowColor");
-            if (mat.HasProperty("_GlowRadius")) _glowRadius = mat.GetFloat("_GlowRadius");
-        }
-        private void ReadBracketParams(Material mat)
-        {
-            if (mat.HasProperty("_BracketColor")) _bracketColor = mat.GetColor("_BracketColor");
-            if (mat.HasProperty("_BracketSize")) _bracketSize = mat.GetFloat("_BracketSize");
-            if (mat.HasProperty("_BracketWidth")) _bracketWidth = mat.GetFloat("_BracketWidth");
-        }
-        private void ReadGridParams(Material mat)
-        {
-            if (mat.HasProperty("_GridColor")) _gridColor = mat.GetColor("_GridColor");
-            if (mat.HasProperty("_GridSize")) _gridSize = mat.GetFloat("_GridSize");
-            if (mat.HasProperty("_GridWidth")) _gridWidth = mat.GetFloat("_GridWidth");
-        }
-        private void ReadScanlineParams(Material mat)
-        {
-            if (mat.HasProperty("_ScanlineOpacity")) _scanlineOpacity = mat.GetFloat("_ScanlineOpacity");
-            if (mat.HasProperty("_ScanlineSpacing")) _scanlineSpacing = mat.GetFloat("_ScanlineSpacing");
+            if (!ShaderProps.TryGetValue(shaderName, out var props)) return;
+            foreach (var p in props)
+            {
+                if (!mat.HasProperty(p.Name)) continue;
+                var key = CKey(shaderName, p.Name);
+                if (p.Type == "Color")
+                    _paramCache[key] = mat.GetColor(p.Name);
+                else
+                    _paramCache[key] = mat.GetFloat(p.Name);
+            }
         }
 
-        // ── 批量更新 material ──
+        private void ApplyAll()
+        {
+            foreach (var shaderName in _shaderOrder)
+            {
+                if (!_shaderGroups.TryGetValue(shaderName, out var imgs)) continue;
+                if (!ShaderProps.TryGetValue(shaderName, out var props)) continue;
 
-        private void ApplyClipCorner()
-        {
-            foreach (var img in _clipCornerImages)
-            {
-                if (img == null || img.material == null) continue;
-                img.material.SetFloat("_CornerSize", _cornerSize);
-                img.material.SetFloat("_ClipSoftness", _clipSoftness);
-            }
-        }
-        private void ApplyGlow()
-        {
-            foreach (var img in _glowImages)
-            {
-                if (img == null || img.material == null) continue;
-                img.material.SetColor("_GlowColor", _glowColor);
-                img.material.SetFloat("_GlowRadius", _glowRadius);
-            }
-        }
-        private void ApplyBracket()
-        {
-            foreach (var img in _bracketImages)
-            {
-                if (img == null || img.material == null) continue;
-                img.material.SetColor("_BracketColor", _bracketColor);
-                img.material.SetFloat("_BracketSize", _bracketSize);
-                img.material.SetFloat("_BracketWidth", _bracketWidth);
-            }
-        }
-        private void ApplyGrid()
-        {
-            foreach (var img in _gridImages)
-            {
-                if (img == null || img.material == null) continue;
-                img.material.SetColor("_GridColor", _gridColor);
-                img.material.SetFloat("_GridSize", _gridSize);
-                img.material.SetFloat("_GridWidth", _gridWidth);
-            }
-        }
-        private void ApplyScanline()
-        {
-            foreach (var img in _scanlineImages)
-            {
-                if (img == null || img.material == null) continue;
-                img.material.SetFloat("_ScanlineOpacity", _scanlineOpacity);
-                img.material.SetFloat("_ScanlineSpacing", _scanlineSpacing);
+                foreach (var img in imgs)
+                {
+                    if (img == null || img.material == null) continue;
+                    foreach (var p in props)
+                    {
+                        var key = CKey(shaderName, p.Name);
+                        if (!_paramCache.TryGetValue(key, out var val)) continue;
+                        if (p.Type == "Color")
+                            img.material.SetColor(p.Name, (Color)val);
+                        else
+                            img.material.SetFloat(p.Name, (float)val);
+                    }
+                }
             }
         }
 
@@ -188,7 +284,6 @@ namespace ReEndUnity.Editor
         {
             _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
 
-            // 目标信息
             EditorGUILayout.LabelField("ReEnd Effect Tuner", EditorStyles.boldLabel);
             EditorGUILayout.Space(4);
 
@@ -200,110 +295,99 @@ namespace ReEndUnity.Editor
             }
 
             EditorGUILayout.LabelField("选中对象", _target.name, EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("ClipCorner", $"{_clipCornerImages.Count} 个");
-            EditorGUILayout.LabelField("Glow", $"{_glowImages.Count} 个");
-            EditorGUILayout.LabelField("CornerBracket", $"{_bracketImages.Count} 个");
-            EditorGUILayout.LabelField("GridBackground", $"{_gridImages.Count} 个");
-            EditorGUILayout.LabelField("Scanline", $"{_scanlineImages.Count} 个");
 
-            if (_clipCornerImages.Count == 0 && _glowImages.Count == 0 &&
-                _bracketImages.Count == 0 && _gridImages.Count == 0 && _scanlineImages.Count == 0)
+            // 统计
+            int totalImages = 0;
+            foreach (var kvp in _shaderGroups)
+                totalImages += kvp.Value.Count;
+
+            if (totalImages == 0)
             {
-                EditorGUILayout.HelpBox("未在选中对象上找到 ReEnd shader material。\n请选中包含 ReEnd 组件（Button、Card、HUDOverlay 等）的 GameObject。", MessageType.Warning);
+                EditorGUILayout.HelpBox("未在选中对象上找到 ReEnd shader material。\n请选中包含 ReEnd 组件的 GameObject。", MessageType.Warning);
                 EditorGUILayout.EndScrollView();
                 return;
+            }
+
+            // 摘要
+            foreach (var shaderName in _shaderOrder)
+            {
+                var label = ShaderLabels.TryGetValue(shaderName, out var cn) ? cn : shaderName;
+                EditorGUILayout.LabelField(label, $"{_shaderGroups[shaderName].Count} 个");
             }
 
             EditorGUILayout.Space(8);
 
             EditorGUI.BeginChangeCheck();
 
-            // ClipCorner
-            if (_clipCornerImages.Count > 0)
+            foreach (var shaderName in _shaderOrder)
             {
-                _showClip = EditorGUILayout.Foldout(_showClip, $"切角 ClipCorner ({_clipCornerImages.Count})", true);
-                if (_showClip)
-                {
-                    EditorGUI.indentLevel++;
-                    _cornerSize = EditorGUILayout.Slider("Corner Size", _cornerSize, 0f, 0.5f);
-                    _clipSoftness = EditorGUILayout.Slider("Clip Softness", _clipSoftness, 0.001f, 0.05f);
-                    EditorGUI.indentLevel--;
-                    EditorGUILayout.Space(4);
-                }
-            }
+                if (!_shaderGroups.TryGetValue(shaderName, out var imgs) || imgs.Count == 0) continue;
+                if (!ShaderProps.TryGetValue(shaderName, out var props)) continue;
 
-            // Glow
-            if (_glowImages.Count > 0)
-            {
-                _showGlow = EditorGUILayout.Foldout(_showGlow, $"发光 Glow ({_glowImages.Count})", true);
-                if (_showGlow)
-                {
-                    EditorGUI.indentLevel++;
-                    _glowColor = EditorGUILayout.ColorField("Glow Color", _glowColor);
-                    _glowRadius = EditorGUILayout.Slider("Glow Radius", _glowRadius, 0f, 0.5f);
-                    EditorGUI.indentLevel--;
-                    EditorGUILayout.Space(4);
-                }
-            }
+                var label = ShaderLabels.TryGetValue(shaderName, out var cn) ? cn : shaderName;
+                if (!_foldouts.TryGetValue(shaderName, out var show)) show = true;
+                show = EditorGUILayout.Foldout(show, $"{label} ({imgs.Count})", true);
+                _foldouts[shaderName] = show;
 
-            // CornerBracket
-            if (_bracketImages.Count > 0)
-            {
-                _showBracket = EditorGUILayout.Foldout(_showBracket, $"四角括号 CornerBracket ({_bracketImages.Count})", true);
-                if (_showBracket)
-                {
-                    EditorGUI.indentLevel++;
-                    _bracketColor = EditorGUILayout.ColorField("Bracket Color", _bracketColor);
-                    _bracketSize = EditorGUILayout.Slider("Bracket Size", _bracketSize, 0.05f, 0.5f);
-                    _bracketWidth = EditorGUILayout.Slider("Bracket Width", _bracketWidth, 0.002f, 0.05f);
-                    EditorGUI.indentLevel--;
-                    EditorGUILayout.Space(4);
-                }
-            }
+                if (!show) continue;
 
-            // GridBackground
-            if (_gridImages.Count > 0)
-            {
-                _showGrid = EditorGUILayout.Foldout(_showGrid, $"网格背景 GridBackground ({_gridImages.Count})", true);
-                if (_showGrid)
+                EditorGUI.indentLevel++;
+                foreach (var p in props)
                 {
-                    EditorGUI.indentLevel++;
-                    _gridColor = EditorGUILayout.ColorField("Grid Color", _gridColor);
-                    _gridSize = EditorGUILayout.Slider("Grid Size", _gridSize, 2f, 50f);
-                    _gridWidth = EditorGUILayout.Slider("Grid Width", _gridWidth, 0.001f, 0.05f);
-                    EditorGUI.indentLevel--;
-                    EditorGUILayout.Space(4);
-                }
-            }
+                    var key = CKey(shaderName, p.Name);
+                    if (!_paramCache.TryGetValue(key, out var val))
+                    {
+                        // 从材质读取默认值
+                        if (imgs[0] != null && imgs[0].material != null && imgs[0].material.HasProperty(p.Name))
+                        {
+                            if (p.Type == "Color")
+                                val = imgs[0].material.GetColor(p.Name);
+                            else
+                                val = imgs[0].material.GetFloat(p.Name);
+                            _paramCache[key] = val;
+                        }
+                        else continue;
+                    }
 
-            // Scanline
-            if (_scanlineImages.Count > 0)
-            {
-                _showScanline = EditorGUILayout.Foldout(_showScanline, $"扫描线 Scanline ({_scanlineImages.Count})", true);
-                if (_showScanline)
-                {
-                    EditorGUI.indentLevel++;
-                    _scanlineOpacity = EditorGUILayout.Slider("Scanline Opacity", _scanlineOpacity, 0f, 0.5f);
-                    _scanlineSpacing = EditorGUILayout.Slider("Scanline Spacing", _scanlineSpacing, 2f, 100f);
-                    EditorGUI.indentLevel--;
-                    EditorGUILayout.Space(4);
+                    if (p.Type == "Color")
+                    {
+                        var c = (Color)val;
+                        c = EditorGUILayout.ColorField(p.Display, c);
+                        _paramCache[key] = c;
+                    }
+                    else if (p.Type == "Range")
+                    {
+                        var f = (float)val;
+                        f = EditorGUILayout.Slider(p.Display, f, p.Min, p.Max);
+                        _paramCache[key] = f;
+                    }
+                    else if (p.Type == "Toggle")
+                    {
+                        var f = (float)val;
+                        f = EditorGUILayout.Toggle(p.Display, f > 0.5f) ? 1f : 0f;
+                        _paramCache[key] = f;
+                    }
+                    else // Float
+                    {
+                        var f = (float)val;
+                        f = EditorGUILayout.FloatField(p.Display, f);
+                        _paramCache[key] = f;
+                    }
                 }
+                EditorGUI.indentLevel--;
+                EditorGUILayout.Space(4);
             }
 
             if (EditorGUI.EndChangeCheck())
             {
-                ApplyClipCorner();
-                ApplyGlow();
-                ApplyBracket();
-                ApplyGrid();
-                ApplyScanline();
+                ApplyAll();
                 EditorUtility.SetDirty(_target);
                 SceneView.RepaintAll();
             }
 
             EditorGUILayout.Space(8);
 
-            // 保存到 Theme
+            // 底部按钮
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("保存到 Theme", GUILayout.Height(28)))
             {
@@ -316,7 +400,7 @@ namespace ReEndUnity.Editor
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Space(4);
-            EditorGUILayout.HelpBox("拖动滑块实时预览效果。\n点击「保存到 Theme」将当前值写入 ReEndTheme 资产，之后所有新创建的组件都会使用这些值。", MessageType.Info);
+            EditorGUILayout.HelpBox("拖动滑块实时预览效果。\n点击「保存到 Theme」将当前值写入 ReEndTheme 资产。", MessageType.Info);
 
             EditorGUILayout.EndScrollView();
         }
@@ -332,16 +416,49 @@ namespace ReEndUnity.Editor
 
             Undo.RecordObject(theme, "Save ReEnd Effect Params to Theme");
 
-            theme.clipCornerSm = _cornerSize * 0.667f;
-            theme.clipCornerMd = _cornerSize;
-            theme.clipCornerLg = _cornerSize * 1.333f;
-            theme.bracketSize = _bracketSize;
-            theme.bracketWidth = _bracketWidth;
-            theme.bracketColor = _bracketColor;
+            // ClipCorner
+            if (_paramCache.TryGetValue(CKey("ReEnd/UI/ClipCorner", "_CornerSize"), out var cs))
+            {
+                var v = (float)cs;
+                theme.clipCornerSm = v * 0.667f;
+                theme.clipCornerMd = v;
+                theme.clipCornerLg = v * 1.333f;
+            }
+
+            // CornerBracket
+            if (_paramCache.TryGetValue(CKey("ReEnd/UI/CornerBracket", "_BracketSize"), out var bs))
+                theme.bracketSize = (float)bs;
+            if (_paramCache.TryGetValue(CKey("ReEnd/UI/CornerBracket", "_BracketWidth"), out var bw))
+                theme.bracketWidth = (float)bw;
+            if (_paramCache.TryGetValue(CKey("ReEnd/UI/CornerBracket", "_BracketColor"), out var bc))
+                theme.bracketColor = (Color)bc;
+
+            // Glow
+            if (_paramCache.TryGetValue(CKey("ReEnd/UI/Glow", "_GlowColor"), out var gc))
+            {
+                theme.glowPrimary = (Color)gc;
+                theme.glowPrimaryStrong = new Color(((Color)gc).r, ((Color)gc).g, ((Color)gc).b, Mathf.Min(((Color)gc).a * 1.5f, 1f));
+            }
+            if (_paramCache.TryGetValue(CKey("ReEnd/UI/Glow", "_GlowRadius"), out var gr))
+                theme.glowRadius = (float)gr;
+
+            // GridBackground
+            if (_paramCache.TryGetValue(CKey("ReEnd/UI/GridBackground", "_GridColor"), out var gridc))
+                theme.bgGridColor = (Color)gridc;
+            if (_paramCache.TryGetValue(CKey("ReEnd/UI/GridBackground", "_GridSize"), out var gs))
+                theme.bgGridSize = (float)gs;
+            if (_paramCache.TryGetValue(CKey("ReEnd/UI/GridBackground", "_GridWidth"), out var gw))
+                theme.bgGridWidth = (float)gw;
+
+            // Scanline
+            if (_paramCache.TryGetValue(CKey("ReEnd/UI/Scanline", "_ScanlineOpacity"), out var so))
+                theme.scanlineOpacity = (float)so;
+            if (_paramCache.TryGetValue(CKey("ReEnd/UI/Scanline", "_ScanlineSpacing"), out var ss))
+                theme.scanlineSpacing = (float)ss;
 
             EditorUtility.SetDirty(theme);
             AssetDatabase.SaveAssets();
-            Debug.Log("[ReEndEffectTuner] 参数已保存到 Theme。clipCornerMd=" + theme.clipCornerMd + ", bracketSize=" + theme.bracketSize);
+            Debug.Log("[ReEndEffectTuner] 参数已保存到 Theme。");
         }
     }
 }

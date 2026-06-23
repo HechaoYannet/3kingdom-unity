@@ -16,6 +16,7 @@ namespace ReEndUnity
         public TMP_Text TitleText { get; private set; }
         public TMP_Text DescText { get; private set; }
         public TMP_Text StatusLabel { get; private set; }
+        public TMP_Text RewardLabel { get; private set; }
         public Image ProgressBar { get; private set; }
         private Image _progressFill;
         private Button _btn;
@@ -71,6 +72,15 @@ namespace ReEndUnity
             sRT.sizeDelta = new Vector2(100, 16);
             sRT.anchoredPosition = new Vector2(-12, 44);
 
+            // Reward label
+            RewardLabel = CreateChild<TextMeshProUGUI>(transform, "Reward");
+            RewardLabel.alignment = TextAlignmentOptions.Left;
+            RewardLabel.raycastTarget = false;
+            var rwRT = RewardLabel.rectTransform;
+            rwRT.anchorMin = new Vector2(0, 0);
+            rwRT.sizeDelta = new Vector2(200, 16);
+            rwRT.anchoredPosition = new Vector2(12, 22);
+
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 300);
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 120);
         }
@@ -88,6 +98,10 @@ namespace ReEndUnity
             StatusLabel.fontSize = Theme.captionSize;
             StatusLabel.color = Theme.textMuted;
 
+            RewardLabel.text = string.IsNullOrEmpty(RewardText) ? "" : $"◆ {RewardText}";
+            RewardLabel.fontSize = Theme.captionSize;
+            RewardLabel.color = Theme.primary;
+
             float pct = Mathf.Clamp01(Progress);
             _progressFill.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, pct * (RectTransform.rect.width - 24));
         }
@@ -95,6 +109,7 @@ namespace ReEndUnity
         public ReEndMissionCard SetTitle(string t) { Title = t; if (_built) ApplyTheme(); return this; }
         public ReEndMissionCard SetDescription(string d) { Description = d; if (_built) ApplyTheme(); return this; }
         public ReEndMissionCard SetProgress(float p) { Progress = p; if (_built) ApplyTheme(); return this; }
+        public ReEndMissionCard SetReward(string r) { RewardText = r; if (_built) ApplyTheme(); return this; }
         public ReEndMissionCard SetOnClick(System.Action cb) { OnClick = cb; return this; }
     }
 }

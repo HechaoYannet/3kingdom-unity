@@ -17,14 +17,17 @@ namespace ReEndUnity
         {
             BackgroundImage = gameObject.AddComponent<Image>();
             BackgroundImage.color = Theme.orangeSoft;
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            mat.SetFloat("_CornerSize", 0.04f);
+            BackgroundImage.material = mat;
 
             MessageText = CreateChild<TextMeshProUGUI>(transform, "Message");
             MessageText.alignment = TextAlignmentOptions.Left;
             MessageText.raycastTarget = false;
             var mRT = MessageText.rectTransform;
+            Stretch(mRT);
             mRT.offsetMin = new Vector2(16, 0);
             mRT.offsetMax = new Vector2(-16, 0);
-            Stretch(mRT);
 
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 600);
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 44);
@@ -51,6 +54,7 @@ namespace ReEndUnity
                 if (existing == null)
                 {
                     var btn = ReEndUI.Button(transform, ActionLabel).SetVariant(ReEndVariant.Outline).SetSize(ReEndSize.Xs).SetOnClick(OnAction);
+                    btn.gameObject.name = "ActionBtn";
                     btn.RectTransform.anchorMin = new Vector2(1, 0.5f);
                     btn.RectTransform.anchorMax = new Vector2(1, 0.5f);
                     btn.RectTransform.pivot = new Vector2(1, 0.5f);
@@ -61,6 +65,6 @@ namespace ReEndUnity
 
         public ReEndWarningBanner SetMessage(string m) { Message = m; if (_built) ApplyTheme(); return this; }
         public ReEndWarningBanner SetSeverity(ReEndSeverity s) { Severity = s; if (_built) ApplyTheme(); return this; }
-        public ReEndWarningBanner SetAction(string label, System.Action cb) { ActionLabel = label; OnAction = cb; return this; }
+        public ReEndWarningBanner SetAction(string label, System.Action cb) { ActionLabel = label; OnAction = cb; if (_built) ApplyTheme(); return this; }
     }
 }

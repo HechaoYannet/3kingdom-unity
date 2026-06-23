@@ -21,15 +21,17 @@ namespace ReEndUnity
             var scanGo = CreateChild(transform, "Scanline");
             var scanImg = scanGo.AddComponent<Image>();
             scanImg.material = GetOrCreateMaterial("ReEnd/UI/Scanline");
+            scanImg.material.SetFloat("_ScanlineOpacity", 0.015f);
+            scanImg.material.SetFloat("_ScanlineSpacing", 120);
             scanImg.raycastTarget = false;
             Stretch(scanImg.rectTransform);
 
             Output = CreateChild<TextMeshProUGUI>(transform, "Output");
             Output.alignment = TextAlignmentOptions.TopLeft;
             Output.raycastTarget = false;
+            Stretch(Output.rectTransform);
             Output.rectTransform.offsetMin = new Vector2(10, 10);
             Output.rectTransform.offsetMax = new Vector2(-10, -10);
-            Stretch(Output.rectTransform);
 
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 500);
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 300);

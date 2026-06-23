@@ -9,6 +9,7 @@ namespace ReEndUnity
     {
         protected ReEndTheme _theme;
         protected bool _built;
+        private bool _themeLoadFailed;
 
         public ReEndTheme Theme => _theme != null ? _theme : (_theme = ReEndThemeManager.Current);
 
@@ -42,10 +43,6 @@ namespace ReEndUnity
             return mat;
         }
 
-        // ── 事件清理注册 ──
-        private readonly List<Action> _cleanupActions = new();
-        protected void RegisterCleanup(Action action) => _cleanupActions.Add(action);
-
         protected virtual void Awake()
         {
             EnsureBuilt();
@@ -53,11 +50,6 @@ namespace ReEndUnity
 
         protected virtual void OnDestroy()
         {
-            foreach (var action in _cleanupActions)
-            {
-                try { action?.Invoke(); } catch { /* 忽略清理异常 */ }
-            }
-            _cleanupActions.Clear();
             // 清理本实例缓存的 Material
             foreach (var kvp in _instanceMaterials)
             {
@@ -68,14 +60,13 @@ namespace ReEndUnity
 
         public void EnsureBuilt()
         {
-            if (!_built)
+            if (!_built && !_themeLoadFailed)
             {
                 _theme = ReEndThemeManager.Current;
                 if (_theme == null)
                 {
                     Debug.LogError("[ReEndUnity] Theme is null — ensure ReEndTheme-Dark.asset exists in Resources.");
-                    _built = true;
-                    BuildInternal();
+                    _themeLoadFailed = true;
                     return;
                 }
                 _built = true;
@@ -84,23 +75,19 @@ namespace ReEndUnity
             }
         }
 
-        public void Rebuild()
-        {
-            // 先销毁所有子物体，避免重复创建
-            for (int i = transform.childCount - 1; i >= 0; i--)
-            {
-                Destroy(transform.GetChild(i).gameObject);
-            }
-            _theme = ReEndThemeManager.Current;
-            _built = true;
-            BuildInternal();
-            if (_theme != null) ApplyTheme();
-        }
-
         public void RefreshTheme()
         {
+            _themeLoadFailed = false;
             _theme = ReEndThemeManager.Current;
-            if (_theme != null) ApplyTheme();
+            if (_theme != null)
+            {
+                if (!_built)
+                {
+                    _built = true;
+                    BuildInternal();
+                }
+                ApplyTheme();
+            }
         }
 
         /// <summary>Create child objects and components. Do NOT apply theme here.</summary>

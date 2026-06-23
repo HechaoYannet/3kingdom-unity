@@ -33,9 +33,9 @@ namespace ReEndUnity
             Label.alignment = TextAlignmentOptions.Left;
             Label.raycastTarget = false;
             var lRT = Label.rectTransform;
+            Stretch(lRT);
             lRT.offsetMin = new Vector2(22, 0);
             lRT.offsetMax = new Vector2(-8, 0);
-            Stretch(lRT);
 
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 120);
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 28);

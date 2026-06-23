@@ -116,6 +116,13 @@ namespace ReEndUnity
         public float bracketWidth = 0.01f;
         public Color bracketColor = new Color(1f, 0.83f, 0.16f, 0.4f);
 
+        [Header("Effect Params")]
+        public float glowRadius = 0.15f;
+        public float glowFalloff = 0.5f;
+        public float scanlineOpacity = 0.015f;
+        public float scanlineSpacing = 120;
+        public float bgGridWidth = 0.005f;
+
         [Header("Radius")]
         public float radiusNone = 0;
         public float radiusSm   = 2;

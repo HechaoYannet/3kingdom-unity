@@ -8,7 +8,6 @@ namespace ReEndUnity
     {
         public string Title { get; set; }
         public string Description { get; set; }
-        public bool Hoverable { get; set; }
         public bool Selected { get; set; }
 
         public TMP_Text TitleText { get; private set; }
@@ -22,10 +21,14 @@ namespace ReEndUnity
             mat.SetFloat("_CornerSize", 0.12f);
             BackgroundImage.material = mat;
 
-            // Corner brackets (4 child images with CornerBracket shader)
+            // Corner brackets (4 child images with CornerBracket shader) — LT+RB
             var bracketGo = CreateChild(transform, "Brackets");
             var bracketImg = bracketGo.AddComponent<Image>();
-            bracketImg.material = GetOrCreateMaterial("ReEnd/UI/CornerBracket");
+            var bMat = GetOrCreateMaterial("ReEnd/UI/CornerBracket");
+            bMat.SetFloat("_BracketSize", 0.15f);
+            bMat.SetFloat("_BracketWidth", 0.01f);
+            bMat.SetColor("_BracketColor", Theme.bracketColor);
+            bracketImg.material = bMat;
             bracketImg.raycastTarget = false;
             Stretch(bracketImg.rectTransform);
 
@@ -59,7 +62,7 @@ namespace ReEndUnity
             ContentArea.anchorMin = new Vector2(0, 0);
             ContentArea.anchorMax = new Vector2(1, 1);
             ContentArea.offsetMin = new Vector2(16, 16);
-            ContentArea.offsetMax = new Vector2(-16, -8);
+            ContentArea.offsetMax = new Vector2(-16, -72);
         }
 
         public override void ApplyTheme()
@@ -77,7 +80,6 @@ namespace ReEndUnity
 
         public ReEndCard SetTitle(string t) { Title = t; if (_built) ApplyTheme(); return this; }
         public ReEndCard SetDescription(string d) { Description = d; if (_built) ApplyTheme(); return this; }
-        public ReEndCard SetHoverable(bool h = true) { Hoverable = h; return this; }
         public ReEndCard SetSelected(bool s = true) { Selected = s; if (_built) ApplyTheme(); return this; }
         public ReEndCard SetWidth(float w) { return SetWidth<ReEndCard>(w); }
         public ReEndCard SetHeight(float h) { return SetHeight<ReEndCard>(h); }

@@ -37,6 +37,8 @@ namespace ReEndUnity
             var scanGo = CreateChild(transform, "Scanline");
             _scanline = scanGo.AddComponent<Image>();
             _scanline.material = GetOrCreateMaterial("ReEnd/UI/Scanline");
+            _scanline.material.SetFloat("_ScanlineOpacity", 0.015f);
+            _scanline.material.SetFloat("_ScanlineSpacing", 120);
             _scanline.raycastTarget = false;
             Stretch(_scanline.rectTransform);
 
@@ -54,9 +56,9 @@ namespace ReEndUnity
             TitleText.alignment = TextAlignmentOptions.Left;
             TitleText.raycastTarget = false;
             var tRT = TitleText.rectTransform;
+            Stretch(tRT);
             tRT.offsetMin = new Vector2(16, 0);
             tRT.offsetMax = new Vector2(-40, 0);
-            Stretch(tRT);
 
             // Status dot
             var dotGo = CreateChild(headerGo.transform, "StatusDot");
@@ -90,9 +92,10 @@ namespace ReEndUnity
             StatusDot.color = Status switch
             {
                 ReEndStatus.Online => Theme.efGreen,
-                ReEndStatus.Offline => Theme.efGrayMid,
-                ReEndStatus.Warning => Theme.efOrange,
+                ReEndStatus.Offline => Theme.efRed,
+                ReEndStatus.Warning => Theme.efYellow,
                 ReEndStatus.Danger => Theme.efRed,
+                ReEndStatus.Scanning => Theme.efCyan,
                 _ => Theme.primary
             };
         }

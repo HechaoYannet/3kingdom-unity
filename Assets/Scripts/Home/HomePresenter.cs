@@ -47,20 +47,112 @@ public class HomePresenter
         _bgGroup = CreateGroup("Background", root);
         StretchRT(_bgGroup);
 
-        // 纯色底
+        // Layer 0: 纯色底
         var fillGo = new GameObject("BgFill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         fillGo.transform.SetParent(_bgGroup, false);
         StretchRT(fillGo.GetComponent<RectTransform>());
         fillGo.GetComponent<Image>().color = cfg.backgroundColor;
 
-        // GridBackground shader 叠加层
+        // Layer 1: 细密军事网格 (GridBackground — 主网格 + 对角线)
         var gridGo = new GameObject("GridOverlay", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         gridGo.transform.SetParent(_bgGroup, false);
         StretchRT(gridGo.GetComponent<RectTransform>());
         var gridImg = gridGo.GetComponent<Image>();
-        var mat = Shader.Find("ReEnd/UI/GridBackground");
-        if (mat != null) gridImg.material = new Material(mat);
-        gridImg.color = cfg.gridAlpha;
+        var gridMat = Shader.Find("ReEnd/UI/GridBackground");
+        if (gridMat != null)
+        {
+            var gm = new Material(gridMat);
+            gm.SetColor("_GridColor", new Color(0.20f, 0.24f, 0.34f, 0.25f));
+            gm.SetFloat("_GridSize", 60f);
+            gm.SetFloat("_GridWidth", 0.005f);
+            gm.SetFloat("_GridMajorScale", 5f);
+            gm.SetFloat("_DiagonalOpacity", 0.06f);
+            gm.SetFloat("_AspectRatio", 1.777f);
+            gridImg.material = gm;
+            gridImg.color = Color.white;
+        }
+        else
+        {
+            gridImg.color = new Color(1, 1, 1, 0);
+        }
+
+        // Layer 2: 等高线纹理 (TopoContour — 地形等高线，增加深度感)
+        var topoGo = new GameObject("TopoContour", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        topoGo.transform.SetParent(_bgGroup, false);
+        StretchRT(topoGo.GetComponent<RectTransform>());
+        var topoImg = topoGo.GetComponent<Image>();
+        var topoMat = Shader.Find("ReEnd/UI/TopoContour");
+        if (topoMat != null)
+        {
+            var tm = new Material(topoMat);
+            tm.SetColor("_ContourColor", new Color(0.15f, 0.22f, 0.32f, 0.18f));
+            tm.SetColor("_ContourMajorColor", new Color(0.20f, 0.28f, 0.40f, 0.28f));
+            tm.SetFloat("_ContourLevels", 14f);
+            tm.SetFloat("_ContourWidth", 0.006f);
+            tm.SetFloat("_ContourScale", 2.0f);
+            tm.SetFloat("_ContourSpeed", 0.01f);
+            tm.SetFloat("_NoiseSeed", 17f);
+            topoImg.material = tm;
+            topoImg.color = Color.white;
+        }
+        else
+        {
+            topoImg.color = new Color(1, 1, 1, 0);
+        }
+
+        // Layer 3: 大尺度扫描线 (Scanline — CRT 质感)
+        var scanGo = new GameObject("ScanlineOverlay", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        scanGo.transform.SetParent(_bgGroup, false);
+        StretchRT(scanGo.GetComponent<RectTransform>());
+        var scanImg = scanGo.GetComponent<Image>();
+        var scanMat = Shader.Find("ReEnd/UI/Scanline");
+        if (scanMat != null)
+        {
+            var sm = new Material(scanMat);
+            sm.SetFloat("_ScanlineOpacity", 0.025f);
+            sm.SetFloat("_ScanlineSpacing", 200f);
+            sm.SetFloat("_DarkOverlay", 0f);
+            scanImg.material = sm;
+        }
+        scanImg.color = new Color(1, 1, 1, 0);
+
+        // Layer 4: 边缘辉光 (Glow — 暗角效果，聚焦视觉中心)
+        var glowGo = new GameObject("EdgeGlow", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        glowGo.transform.SetParent(_bgGroup, false);
+        StretchRT(glowGo.GetComponent<RectTransform>());
+        var glowImg = glowGo.GetComponent<Image>();
+        var glowMat = Shader.Find("ReEnd/UI/Glow");
+        if (glowMat != null)
+        {
+            var gm2 = new Material(glowMat);
+            gm2.SetColor("_GlowColor", new Color(0.10f, 0.12f, 0.20f, 0.35f));
+            gm2.SetFloat("_GlowRadius", 0.12f);
+            gm2.SetFloat("_GlowFalloff", 0.8f);
+            gm2.SetFloat("_GlowPulse", 0f);
+            glowImg.material = gm2;
+        }
+        glowImg.color = new Color(1, 1, 1, 0);
+
+        // Layer 5: 右侧装饰光带 — 从右侧卡栈区域向左渐变，模拟环境光
+        var rightGlowGo = new GameObject("RightAmbient", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        rightGlowGo.transform.SetParent(_bgGroup, false);
+        var rightGlowRt = rightGlowGo.GetComponent<RectTransform>();
+        rightGlowRt.anchorMin = new Vector2(0.5f, 0f);
+        rightGlowRt.anchorMax = new Vector2(1f, 1f);
+        rightGlowRt.offsetMin = Vector2.zero;
+        rightGlowRt.offsetMax = Vector2.zero;
+        var rightGlowImg = rightGlowGo.GetComponent<Image>();
+        var rightGlowMat = Shader.Find("ReEnd/UI/Glow");
+        if (rightGlowMat != null)
+        {
+            var rgm = new Material(rightGlowMat);
+            rgm.SetColor("_GlowColor", new Color(1f, 0.83f, 0.16f, 0.06f));
+            rgm.SetFloat("_GlowRadius", 0.15f);
+            rgm.SetFloat("_GlowFalloff", 1.5f);
+            rgm.SetFloat("_GlowPulse", 0f);
+            rightGlowImg.material = rgm;
+        }
+        rightGlowImg.color = new Color(1, 1, 1, 0);
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -219,11 +311,26 @@ public class HomePresenter
         panel.SetWidth(cfg.stackWidth);
         panel.SetHeight(def.height);
 
-        // 覆盖卡片背景色 — 使其比默认 theme.card (#141414) 更亮以确保可见性
+        // 覆盖卡片背景色 — 提亮以确保与暗色背景的对比度
         if (panel.BackgroundImage != null)
             panel.BackgroundImage.color = def.isPrimary
-                ? new Color(0.10f, 0.10f, 0.16f, 1f)   // 主卡片: 带蓝调的暗色
-                : new Color(0.08f, 0.08f, 0.12f, 1f);  // 普通卡片: 略暗
+                ? new Color(0.14f, 0.14f, 0.20f, 1f)   // 主卡片: 带蓝调的中等亮度
+                : new Color(0.11f, 0.11f, 0.16f, 1f);  // 普通卡片: 略暗但仍清晰
+
+        // 左侧金色装饰条 — 提升视觉区分度
+        var accentBarGo = new GameObject("AccentBar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        accentBarGo.transform.SetParent(rt, false);
+        var accentBarRt = accentBarGo.GetComponent<RectTransform>();
+        accentBarRt.anchorMin = new Vector2(0, 0);
+        accentBarRt.anchorMax = new Vector2(0, 1);
+        accentBarRt.pivot = new Vector2(0, 0.5f);
+        accentBarRt.sizeDelta = new Vector2(def.isPrimary ? 4f : 2f, -8f);
+        accentBarRt.anchoredPosition = new Vector2(2, 0);
+        var accentBarImg = accentBarGo.GetComponent<Image>();
+        accentBarImg.color = def.isPrimary
+            ? new Color(1f, 0.83f, 0.16f, 0.9f)   // 金色 (主卡片)
+            : new Color(1f, 0.83f, 0.16f, 0.35f);  // 淡金 (普通卡片)
+        accentBarImg.raycastTarget = false;
 
         if (def.isPrimary)
         {

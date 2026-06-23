@@ -32,4 +32,14 @@ Varyings VertDefault(Attributes input)
     return output;
 }
 
+// ── 在片元着色器中用屏幕空间导数计算宽高比 ──
+// ddx(uv.x) = 1/quad_pixel_width, ddy(uv.y) = 1/quad_pixel_height
+// aspectRatio = width / height
+float ComputeAspectRatio(float2 uv)
+{
+    float dx = abs(ddx(uv.x));
+    float dy = abs(ddy(uv.y));
+    return dy / max(dx, 0.0001);
+}
+
 #endif

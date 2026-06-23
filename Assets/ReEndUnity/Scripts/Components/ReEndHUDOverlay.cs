@@ -11,6 +11,7 @@ namespace ReEndUnity
         public TMP_Text SystemLabelText { get; private set; }
         public TMP_Text CoordLabel { get; private set; }
         public Image Crosshair { get; private set; }
+        private Image _crosshairV;
         private Image _brackets;
         private Image _scanline;
 
@@ -28,6 +29,7 @@ namespace ReEndUnity
             _brackets.material = GetOrCreateMaterial("ReEnd/UI/CornerBracket");
             _brackets.material.SetFloat("_BracketSize", 0.2f);
             _brackets.material.SetFloat("_BracketWidth", 0.01f);
+            _brackets.material.SetFloat("_FourCorners", 1);
             _brackets.raycastTarget = false;
             Stretch(_brackets.rectTransform);
 
@@ -35,6 +37,8 @@ namespace ReEndUnity
             var scanGo = CreateChild(transform, "Scanline");
             _scanline = scanGo.AddComponent<Image>();
             _scanline.material = GetOrCreateMaterial("ReEnd/UI/Scanline");
+            _scanline.material.SetFloat("_ScanlineOpacity", 0.015f);
+            _scanline.material.SetFloat("_ScanlineSpacing", 120);
             _scanline.raycastTarget = false;
             Stretch(_scanline.rectTransform);
 
@@ -59,10 +63,10 @@ namespace ReEndUnity
             cRT.sizeDelta = new Vector2(24, 1);
 
             var crossV = CreateChild(transform, "CrosshairV");
-            var crossVImg = crossV.AddComponent<Image>();
-            crossVImg.color = Theme.primary;
-            crossVImg.raycastTarget = false;
-            var cvRT = crossVImg.rectTransform;
+            _crosshairV = crossV.AddComponent<Image>();
+            _crosshairV.color = Theme.primary;
+            _crosshairV.raycastTarget = false;
+            var cvRT = _crosshairV.rectTransform;
             cvRT.anchorMin = new Vector2(0.5f, 0.5f);
             cvRT.sizeDelta = new Vector2(1, 24);
 
@@ -85,13 +89,19 @@ namespace ReEndUnity
             SystemLabelText.text = SystemLabel;
             SystemLabelText.color = Theme.textMuted;
             Crosshair.color = new Color(1f, 0.83f, 0.16f, 0.15f);
-            CoordLabel.text = $"SYS::NOMINAL  //  {Time.time:F1}s";
+            _crosshairV.color = new Color(1f, 0.83f, 0.16f, 0.15f);
             CoordLabel.color = Theme.textMuted;
         }
 
+        private float _coordTimer;
         private void Update()
         {
-            CoordLabel.text = $"SYS::NOMINAL  //  {Time.time:F1}s";
+            _coordTimer += Time.deltaTime;
+            if (_coordTimer >= 0.1f)
+            {
+                _coordTimer = 0;
+                CoordLabel.text = $"SYS::NOMINAL  //  {Time.time:F1}s";
+            }
         }
 
         public ReEndHUDOverlay SetSystemLabel(string l) { SystemLabel = l; if (_built) ApplyTheme(); return this; }

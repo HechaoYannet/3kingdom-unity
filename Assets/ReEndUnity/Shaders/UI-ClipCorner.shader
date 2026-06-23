@@ -5,8 +5,9 @@ Shader "ReEnd/UI/ClipCorner"
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
 
-        _CornerSize ("Corner Size", Range(0, 0.5)) = 0.1
+        _CornerSize ("Corner Size", Range(0, 0.5)) = 0.12
         _ClipSoftness ("Clip Softness", Range(0.001, 0.05)) = 0.01
+        [Toggle] _RTOnly ("RT Only Cut", Float) = 0
 
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
@@ -64,6 +65,7 @@ Shader "ReEnd/UI/ClipCorner"
                 float4 _Color;
                 float _CornerSize;
                 float _ClipSoftness;
+                float _RTOnly;
             CBUFFER_END
 
             Varyings Vert(Attributes input)
@@ -76,13 +78,13 @@ Shader "ReEnd/UI/ClipCorner"
                 half4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
                 half4 color = tex * _Color * input.color;
 
-                // 使用 UV 空间（0~1）计算切角，不依赖纹理像素尺寸
-                // halfSize 固定为 (0.5, 0.5)，cornerSize 为 UV 空间比例
-                float2 halfSize = float2(0.5, 0.5);
-                float d = sdCutCorner(input.uv, halfSize, _CornerSize);
+                float ar = ComputeAspectRatio(input.uv);
+
+                // 切角模式：RT+LB (默认) 或 RT-only (头像)
+                float d = lerp(sdCutCornerRT_LB(input.uv, _CornerSize, ar),
+                               sdCutCornerRT(input.uv, _CornerSize, ar), _RTOnly);
 
                 // SDF：正值 = 内部（可见），负值 = 外部（裁剪）
-                // smoothstep 在边界处做柔和过渡
                 float alpha = smoothstep(0.0, _ClipSoftness, d);
                 color.a *= alpha;
 

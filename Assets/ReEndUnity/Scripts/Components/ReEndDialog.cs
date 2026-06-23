@@ -25,11 +25,18 @@ namespace ReEndUnity
 
         protected override void BuildInternal()
         {
-            // Overlay (full screen)
+            // Overlay (full screen) — click to close
             var overlayGo = CreateChild(transform, "Overlay");
             _overlay = overlayGo.AddComponent<Image>();
             _overlay.color = new Color(0, 0, 0, 0.85f);
             _overlay.raycastTarget = true;
+            var overlayBtn = overlayGo.AddComponent<Button>();
+            overlayBtn.onClick.AddListener(() =>
+            {
+                IsOpen = false;
+                gameObject.SetActive(false);
+                OnClose?.Invoke(false);
+            });
             Stretch(_overlay.rectTransform);
 
             // Panel
@@ -77,6 +84,30 @@ namespace ReEndUnity
             ContentSlot.offsetMax = new Vector2(-16, -60);
 
             // Buttons
+            // Close (X) button — top-right
+            var closeGo = CreateChild(transform, "CloseBtn");
+            var closeImg = closeGo.AddComponent<Image>();
+            closeImg.raycastTarget = true;
+            var closeBtn = closeGo.AddComponent<Button>();
+            closeBtn.onClick.AddListener(() =>
+            {
+                IsOpen = false;
+                gameObject.SetActive(false);
+                OnClose?.Invoke(false);
+            });
+            var clRT = closeImg.rectTransform;
+            clRT.anchorMin = new Vector2(1, 1);
+            clRT.anchorMax = new Vector2(1, 1);
+            clRT.pivot = new Vector2(1, 1);
+            clRT.sizeDelta = new Vector2(28, 28);
+            clRT.anchoredPosition = new Vector2(-4, -4);
+            var closeTxt = CreateChild<TextMeshProUGUI>(closeGo.transform, "X");
+            closeTxt.text = "✕";
+            closeTxt.fontSize = 14;
+            closeTxt.alignment = TextAlignmentOptions.Center;
+            closeTxt.raycastTarget = false;
+            Stretch(closeTxt.rectTransform);
+
             ConfirmBtn = ReEndUI.Button(transform, ConfirmText).SetVariant(ReEndVariant.Primary).SetSize(ReEndSize.Sm);
             ConfirmBtn.SetOnClick(Close);
             var cbRT = ConfirmBtn.RectTransform;

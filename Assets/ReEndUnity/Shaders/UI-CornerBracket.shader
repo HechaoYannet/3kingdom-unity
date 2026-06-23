@@ -8,6 +8,7 @@ Shader "ReEnd/UI/CornerBracket"
         _BracketColor ("Bracket Color", Color) = (1, 0.83, 0.16, 0.4)
         _BracketSize ("Bracket Size", Range(0.05, 0.5)) = 0.15
         _BracketWidth ("Bracket Width", Range(0.002, 0.05)) = 0.01
+        [Toggle] _FourCorners ("Four Corners", Float) = 0
 
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
@@ -62,6 +63,7 @@ Shader "ReEnd/UI/CornerBracket"
                 float4 _BracketColor;
                 float _BracketSize;
                 float _BracketWidth;
+                float _FourCorners;
             CBUFFER_END
 
             Varyings Vert(Attributes input)
@@ -71,37 +73,45 @@ Shader "ReEnd/UI/CornerBracket"
 
             half4 Frag(Varyings input) : SV_Target
             {
-                half4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
-                half4 color = tex * _Color * input.color;
-
                 float2 uv = input.uv;
 
-                // 所有尺寸均在 UV 空间 [0,1]
-                float bs = _BracketSize;
-                float bw = _BracketWidth;
+                // 按宽高比调整，使括号在非正方形矩形上物理尺寸一致
+                float ar = ComputeAspectRatio(input.uv);
+                float bsX = ar >= 1.0 ? _BracketSize / ar : _BracketSize;
+                float bsY = ar >= 1.0 ? _BracketSize : _BracketSize * ar;
+                float bwX = ar >= 1.0 ? _BracketWidth / ar : _BracketWidth;
+                float bwY = ar >= 1.0 ? _BracketWidth : _BracketWidth * ar;
 
-                // 四个角的 L 形括号
-                // 水平线 + 垂直线组成 L 形
-                float tlH = step(uv.x, bs) * step(1.0 - bs, uv.y) * (1.0 - smoothstep(0, bw, abs(uv.y - (1.0 - bs * 0.5))));
-                float tlV = step(1.0 - bs, uv.y) * step(uv.x, bs) * (1.0 - smoothstep(0, bw, abs(uv.x - bs * 0.5)));
+                // ── L 形括号：线在矩形边缘，不在括号区域中心 ──
+                // smoothstep(0, bw, edge - uv) → 1 at edge, 0 at bw distance from edge
+
+                // 左上角 (TL) ⌜
+                float tlH = step(uv.x, bsX) * (1.0 - smoothstep(0.0, bwY, 1.0 - uv.y));
+                float tlV = step(1.0 - bsY, uv.y) * (1.0 - smoothstep(0.0, bwX, uv.x));
                 float tl = max(tlH, tlV);
 
-                float trH = step(1.0 - bs, uv.x) * step(1.0 - bs, uv.y) * (1.0 - smoothstep(0, bw, abs(uv.y - (1.0 - bs * 0.5))));
-                float trV = step(1.0 - bs, uv.y) * step(1.0 - bs, uv.x) * (1.0 - smoothstep(0, bw, abs(uv.x - (1.0 - bs * 0.5))));
-                float tr = max(trH, trV);
-
-                float blH = step(uv.x, bs) * step(uv.y, bs) * (1.0 - smoothstep(0, bw, abs(uv.y - bs * 0.5)));
-                float blV = step(uv.y, bs) * step(uv.x, bs) * (1.0 - smoothstep(0, bw, abs(uv.x - bs * 0.5)));
-                float bl = max(blH, blV);
-
-                float brH = step(1.0 - bs, uv.x) * step(uv.y, bs) * (1.0 - smoothstep(0, bw, abs(uv.y - bs * 0.5)));
-                float brV = step(uv.y, bs) * step(1.0 - bs, uv.x) * (1.0 - smoothstep(0, bw, abs(uv.x - (1.0 - bs * 0.5))));
+                // 右下角 (BR) ⌟
+                float brH = step(1.0 - bsX, uv.x) * (1.0 - smoothstep(0.0, bwY, uv.y));
+                float brV = step(uv.y, bsY) * (1.0 - smoothstep(0.0, bwX, 1.0 - uv.x));
                 float br = max(brH, brV);
 
-                float bracket = max(max(tl, tr), max(bl, br));
-                color.rgb = lerp(color.rgb, _BracketColor.rgb, bracket * _BracketColor.a);
-                color.a = max(color.a, bracket * _BracketColor.a);
+                // 右上角 (TR) ⌝ — 4 角模式
+                float trH = step(1.0 - bsX, uv.x) * (1.0 - smoothstep(0.0, bwY, 1.0 - uv.y));
+                float trV = step(1.0 - bsY, uv.y) * (1.0 - smoothstep(0.0, bwX, 1.0 - uv.x));
+                float trC = max(trH, trV) * _FourCorners;
 
+                // 左下角 (BL) ⌞ — 4 角模式
+                float blH = step(uv.x, bsX) * (1.0 - smoothstep(0.0, bwY, uv.y));
+                float blV = step(uv.y, bsY) * (1.0 - smoothstep(0.0, bwX, uv.x));
+                float blC = max(blH, blV) * _FourCorners;
+
+                // Overlay-only: 只渲染括号，不渲染背景纹理
+                float bracket = max(max(tl, br), max(trC, blC));
+                half4 color;
+                color.rgb = _BracketColor.rgb;
+                color.a = bracket * _BracketColor.a;
+
+                clip(color.a - 0.001);
                 return color;
             }
             ENDHLSL

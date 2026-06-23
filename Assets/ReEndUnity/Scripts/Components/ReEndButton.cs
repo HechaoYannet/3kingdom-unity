@@ -25,6 +25,9 @@ namespace ReEndUnity
             // Background
             BackgroundImage = gameObject.GetComponent<Image>() ?? gameObject.AddComponent<Image>();
             BackgroundImage.raycastTarget = true;
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            mat.SetFloat("_CornerSize", Theme.clipCornerMd);
+            BackgroundImage.material = mat;
 
             _button = gameObject.GetComponent<Button>() ?? gameObject.AddComponent<Button>();
             _button.onClick.AddListener(() => OnClick?.Invoke());
@@ -55,11 +58,6 @@ namespace ReEndUnity
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, h);
             var pad = Theme.GetSpace((int)Size + 3);
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Mathf.Max(h * 2, 120));
-
-            // Clip corner
-            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
-            mat.SetFloat("_CornerSize", Theme.clipCornerMd);
-            BackgroundImage.material = mat;
 
             // Colors by variant
             (Color bg, Color fg, Color border) = Variant switch
@@ -103,7 +101,15 @@ namespace ReEndUnity
         public ReEndButton SetDisabled(bool d = true) { Disabled = d; if (_built) ApplyTheme(); return this; }
         public ReEndButton SetOnClick(Action cb) { OnClick = cb; return this; }
 
-        public void OnPointerEnter(PointerEventData e) { if (!Disabled) BackgroundImage.color = Theme.surfaceHover; }
+        public void OnPointerEnter(PointerEventData e)
+        {
+            if (Disabled) return;
+            // Ghost/Outline/Link use surfaceHover; solid variants darken via tint
+            if (Variant == ReEndVariant.Ghost || Variant == ReEndVariant.Outline || Variant == ReEndVariant.Link)
+                BackgroundImage.color = Theme.surfaceHover;
+            else
+                BackgroundImage.color = new Color(BackgroundImage.color.r * 0.85f, BackgroundImage.color.g * 0.85f, BackgroundImage.color.b * 0.85f, BackgroundImage.color.a);
+        }
         public void OnPointerExit(PointerEventData e) { ApplyTheme(); }
         public void OnPointerDown(PointerEventData e) { transform.localScale = new Vector3(0.96f, 0.96f, 1); }
         public void OnPointerUp(PointerEventData e) { transform.localScale = Vector3.one; }

@@ -20,6 +20,9 @@ namespace ReEndUnity
         {
             BackgroundImage = gameObject.GetComponent<Image>() ?? gameObject.AddComponent<Image>();
             BackgroundImage.raycastTarget = false;
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            mat.SetFloat("_CornerSize", Theme.clipCornerSm);
+            BackgroundImage.material = mat;
 
             var labGo = CreateChild(transform, "Label");
             Label = labGo.AddComponent<TextMeshProUGUI>();
@@ -39,6 +42,13 @@ namespace ReEndUnity
             rmRT.pivot = new Vector2(1, 0.5f);
             rmRT.sizeDelta = new Vector2(16, 16);
             rmRT.anchoredPosition = new Vector2(-4, 0);
+            var rmTxt = CreateChild<TextMeshProUGUI>(rmGo.transform, "X");
+            rmTxt.text = "×";
+            rmTxt.fontSize = 12;
+            rmTxt.alignment = TextAlignmentOptions.Center;
+            rmTxt.color = Theme.textMuted;
+            rmTxt.raycastTarget = false;
+            Stretch(rmTxt.rectTransform);
             RemoveButton.gameObject.SetActive(false);
         }
 
@@ -62,9 +72,6 @@ namespace ReEndUnity
             };
 
             BackgroundImage.color = bg;
-            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
-            mat.SetFloat("_CornerSize", Theme.clipCornerSm);
-            BackgroundImage.material = mat;
 
             Label.text = Text;
             Label.fontSize = Theme.captionSize;

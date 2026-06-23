@@ -21,6 +21,9 @@ namespace ReEndUnity
         protected override void BuildInternal()
         {
             BackgroundImage = gameObject.GetComponent<Image>() ?? gameObject.AddComponent<Image>();
+            var mat = GetOrCreateMaterial("ReEnd/UI/ClipCorner");
+            mat.SetFloat("_CornerSize", 0.06f);
+            BackgroundImage.material = mat;
             _btn = gameObject.AddComponent<Button>();
             _btn.onClick.AddListener(ToggleOpen);
 

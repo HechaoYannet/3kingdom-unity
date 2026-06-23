@@ -6,8 +6,12 @@ Shader "ReEnd/UI/GridBackground"
         _Color ("Tint", Color) = (1,1,1,1)
 
         _GridColor ("Grid Color", Color) = (1, 1, 1, 0.03)
-        _GridSize ("Grid Size", Range(2, 50)) = 10
-        _GridWidth ("Grid Line Width", Range(0.001, 0.05)) = 0.005
+        _GridSize ("Grid Size", Range(10, 120)) = 60
+        _GridWidth ("Grid Line Width", Range(0.001, 0.03)) = 0.005
+        _GridMajorScale ("Major Grid Scale", Range(2, 10)) = 5
+
+        _DiagonalOpacity ("Diagonal Opacity", Range(0, 0.15)) = 0.02
+        _AspectRatio ("Aspect Ratio (W/H)", Float) = 1.777
 
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
@@ -62,6 +66,9 @@ Shader "ReEnd/UI/GridBackground"
                 float4 _GridColor;
                 float _GridSize;
                 float _GridWidth;
+                float _GridMajorScale;
+                float _DiagonalOpacity;
+                float _AspectRatio;
             CBUFFER_END
 
             Varyings Vert(Attributes input)
@@ -74,16 +81,43 @@ Shader "ReEnd/UI/GridBackground"
                 half4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
                 half4 color = tex * _Color * input.color;
 
-                // 使用 UV 空间绘制网格（不依赖屏幕分辨率）
-                float2 gridUV = input.uv * _GridSize;
-                float2 grid = abs(frac(gridUV) - 0.5) * 2.0;
+                float2 uv = input.uv;
 
-                float lineX = 1.0 - smoothstep(0.0, _GridWidth, grid.x);
-                float lineY = 1.0 - smoothstep(0.0, _GridWidth, grid.y);
-                float gridLine = max(lineX, lineY);
+                // ── 宽高比校正 ────────────────────────────
+                float aspect = max(_AspectRatio, 0.1);
+                float2 aspectUV = float2(uv.x * aspect, uv.y);
 
-                color.rgb = lerp(color.rgb, _GridColor.rgb, gridLine * _GridColor.a);
-                color.a = max(color.a, gridLine * _GridColor.a);
+                // ── 主网格 (Major + Minor) ─────────────────
+                float2 gridUV = aspectUV * _GridSize;
+                float2 gridFrac = frac(gridUV);
+
+                float2 minorLine;
+                minorLine.x = 1.0 - smoothstep(0.0, _GridWidth, min(gridFrac.x, 1.0 - gridFrac.x));
+                minorLine.y = 1.0 - smoothstep(0.0, _GridWidth, min(gridFrac.y, 1.0 - gridFrac.y));
+                float minorGrid = max(minorLine.x, minorLine.y);
+
+                float2 majorFrac = frac(gridUV / _GridMajorScale);
+                float2 majorLine;
+                majorLine.x = 1.0 - smoothstep(0.0, _GridWidth * 2.0, min(majorFrac.x, 1.0 - majorFrac.x));
+                majorLine.y = 1.0 - smoothstep(0.0, _GridWidth * 2.0, min(majorFrac.y, 1.0 - majorFrac.y));
+                float majorGrid = max(majorLine.x, majorLine.y);
+
+                float gridLine = max(minorGrid * 0.6, majorGrid);
+
+                // ── -45° 对角线 ──────────────────────────
+                float diag = 0.0;
+                if (_DiagonalOpacity > 0.001)
+                {
+                    float diagPhase = frac((aspectUV.x - aspectUV.y) * _GridSize * 0.707);
+                    float diagLine = 1.0 - smoothstep(0.0, _GridWidth * 0.5, min(diagPhase, 1.0 - diagPhase));
+                    diag = diagLine * _DiagonalOpacity;
+                }
+
+                // ── 合成 ──────────────────────────────────────────
+                // 直接输出网格色 + 透明 alpha：非网格区域完全透明，仅网格线可见
+                float composite = saturate(gridLine * _GridColor.a + diag);
+                color.rgb = _GridColor.rgb;
+                color.a = composite;
 
                 return color;
             }

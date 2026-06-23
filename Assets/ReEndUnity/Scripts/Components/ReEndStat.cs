@@ -9,7 +9,6 @@ namespace ReEndUnity
         public string ValueText { get; set; } = "0";
         public string DeltaText { get; set; }
         public bool Positive { get; set; } = true;
-        public System.Action OnClickAction { get; set; }
 
         public TMP_Text Label { get; private set; }
         public TMP_Text Value { get; private set; }

@@ -48,6 +48,8 @@ namespace ReEndUnity
 
             if (Indeterminate)
                 ReEndAnimationHelper.PulseGlow(FillImage);
+            else
+                ReEndAnimationHelper.StopPulseGlow(FillImage);
         }
 
         public ReEndProgress SetValue(float v) { Value = v; if (_built) ApplyTheme(); return this; }

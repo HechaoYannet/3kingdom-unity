@@ -63,35 +63,6 @@ namespace ReEndUnity
             return b;
         }
 
-        public static ReEndNumberInput NumberInput(Transform parent)
-            => ReEndBaseComponent.CreateWithImage<ReEndNumberInput>(parent, "NumberInput");
-
-        public static ReEndOTPInput OTPInput(Transform parent, int length = 6)
-        {
-            var b = ReEndBaseComponent.Create<ReEndOTPInput>(parent, "OTPInput");
-            b.SetLength(length);
-            return b;
-        }
-
-        public static ReEndDatePicker DatePicker(Transform parent)
-            => ReEndBaseComponent.CreateWithImage<ReEndDatePicker>(parent, "DatePicker");
-
-        public static ReEndFileUpload FileUpload(Transform parent)
-            => ReEndBaseComponent.CreateWithImage<ReEndFileUpload>(parent, "FileUpload");
-
-        public static ReEndRichTextEditor RichTextEditor(Transform parent)
-            => ReEndBaseComponent.Create<ReEndRichTextEditor>(parent, "RichTextEditor");
-
-        public static ReEndRating Rating(Transform parent, int max = 5)
-        {
-            var b = ReEndBaseComponent.Create<ReEndRating>(parent, "Rating");
-            b.SetMax(max);
-            return b;
-        }
-
-        public static ReEndFilterBar FilterBar(Transform parent)
-            => ReEndBaseComponent.Create<ReEndFilterBar>(parent, "FilterBar");
-
         // ── Core Display & Layout ──
 
         public static ReEndCard Card(Transform parent, string title = null)
@@ -157,44 +128,6 @@ namespace ReEndUnity
             return b;
         }
 
-        public static ReEndTable Table(Transform parent)
-            => ReEndBaseComponent.Create<ReEndTable>(parent, "Table");
-
-        public static ReEndList List(Transform parent)
-            => ReEndBaseComponent.Create<ReEndList>(parent, "List");
-
-        public static ReEndChart Chart(Transform parent, ReEndChartType type = ReEndChartType.Line)
-        {
-            var b = ReEndBaseComponent.Create<ReEndChart>(parent, "Chart");
-            b.SetChartType(type);
-            return b;
-        }
-
-        // ── Navigation ──
-
-        public static ReEndTimeline Timeline(Transform parent)
-            => ReEndBaseComponent.Create<ReEndTimeline>(parent, "Timeline");
-
-        public static ReEndStepper Stepper(Transform parent, int steps = 3)
-        {
-            var b = ReEndBaseComponent.Create<ReEndStepper>(parent, "Stepper");
-            b.SetSteps(steps);
-            return b;
-        }
-
-        public static ReEndPagination Pagination(Transform parent, int total = 1)
-        {
-            var b = ReEndBaseComponent.Create<ReEndPagination>(parent, "Pagination");
-            b.SetTotal(total);
-            return b;
-        }
-
-        public static ReEndBreadcrumb Breadcrumb(Transform parent)
-            => ReEndBaseComponent.Create<ReEndBreadcrumb>(parent, "Breadcrumb");
-
-        public static ReEndFooter Footer(Transform parent)
-            => ReEndBaseComponent.Create<ReEndFooter>(parent, "Footer");
-
         // ── Feedback ──
 
         public static ReEndAlert Alert(Transform parent, string message = null)
@@ -204,103 +137,7 @@ namespace ReEndUnity
             return b;
         }
 
-        public static ReEndEmptyState EmptyState(Transform parent, ReEndEmptyStatePreset preset = ReEndEmptyStatePreset.NoData)
-        {
-            var b = ReEndBaseComponent.Create<ReEndEmptyState>(parent, "EmptyState");
-            b.SetPreset(preset);
-            return b;
-        }
-
-        public static ReEndSkeleton Skeleton(Transform parent, ReEndSkeletonVariant variant = ReEndSkeletonVariant.Line)
-        {
-            var b = ReEndBaseComponent.Create<ReEndSkeleton>(parent, "Skeleton");
-            b.SetVariant(variant);
-            return b;
-        }
-
-        public static ReEndToast Toast(string message, ReEndStatus status = ReEndStatus.Default)
-        {
-            // Toast is special — creates its own canvas
-            return ReEndToast.Show(message, status);
-        }
-
-        // ── Overlay & Interaction ──
-
-        public static ReEndDropdown Dropdown(Transform parent, string label = null)
-        {
-            var b = ReEndBaseComponent.CreateWithImage<ReEndDropdown>(parent, label ?? "Dropdown");
-            if (label != null) b.SetLabel(label);
-            return b;
-        }
-
-        public static ReEndContextMenu ContextMenu(Transform parent)
-            => ReEndBaseComponent.Create<ReEndContextMenu>(parent, "ContextMenu");
-
-        public static ReEndCommandPalette CommandPalette()
-        {
-            var b = ReEndBaseComponent.CreateWithImage<ReEndCommandPalette>(null, "CommandPalette");
-            return b;
-        }
-
-        public static ReEndCopyClipboard CopyClipboard(Transform parent, string text = null)
-        {
-            var b = ReEndBaseComponent.Create<ReEndCopyClipboard>(parent, "CopyClipboard");
-            if (text != null) b.SetText(text);
-            return b;
-        }
-
-        public static ReEndBottomSheet BottomSheet(Transform parent, string title = null)
-        {
-            var b = ReEndBaseComponent.CreateWithImage<ReEndBottomSheet>(parent, title ?? "BottomSheet");
-            if (title != null) b.SetTitle(title);
-            return b;
-        }
-
-        public static ReEndCarousel Carousel(Transform parent)
-            => ReEndBaseComponent.Create<ReEndCarousel>(parent, "Carousel");
-
-        public static ReEndResizable Resizable(Transform parent)
-            => ReEndBaseComponent.Create<ReEndResizable>(parent, "Resizable");
-
-        public static ReEndBackToTop BackToTop(Transform parent)
-            => ReEndBaseComponent.Create<ReEndBackToTop>(parent, "BackToTop");
-
-        public static ReEndScrollProgress ScrollProgress(Transform parent)
-            => ReEndBaseComponent.Create<ReEndScrollProgress>(parent, "ScrollProgress");
-
-        public static ReEndViewToggle ViewToggle(Transform parent)
-            => ReEndBaseComponent.Create<ReEndViewToggle>(parent, "ViewToggle");
-
-        public static ReEndSortControl SortControl(Transform parent, string label = null)
-        {
-            var b = ReEndBaseComponent.Create<ReEndSortControl>(parent, label ?? "Sort");
-            if (label != null) b.SetLabel(label);
-            return b;
-        }
-
-        public static ReEndSpoilerBlock SpoilerBlock(Transform parent, string text = null)
-        {
-            var b = ReEndBaseComponent.Create<ReEndSpoilerBlock>(parent, "SpoilerBlock");
-            if (text != null) b.SetText(text);
-            return b;
-        }
-
-        public static ReEndThemeSwitcher ThemeSwitcher(Transform parent)
-            => ReEndBaseComponent.Create<ReEndThemeSwitcher>(parent, "ThemeSwitcher");
-
-        public static ReEndPullToRefresh PullToRefresh(Transform parent)
-            => ReEndBaseComponent.Create<ReEndPullToRefresh>(parent, "PullToRefresh");
-
-        public static ReEndSwipeableItem SwipeableItem(Transform parent)
-            => ReEndBaseComponent.Create<ReEndSwipeableItem>(parent, "SwipeableItem");
-
-        public static ReEndSessionTimeoutModal SessionTimeoutModal(Transform parent)
-            => ReEndBaseComponent.CreateWithImage<ReEndSessionTimeoutModal>(parent, "SessionTimeoutModal");
-
-        public static ReEndCookieConsent CookieConsent(Transform parent)
-            => ReEndBaseComponent.Create<ReEndCookieConsent>(parent, "CookieConsent");
-
-        // ── Signature Components ──
+        // ── Signature HUD ──
 
         public static ReEndGlitchText GlitchText(Transform parent, string text = null)
         {
@@ -353,9 +190,6 @@ namespace ReEndUnity
             return b;
         }
 
-        public static ReEndRadarChart RadarChart(Transform parent)
-            => ReEndBaseComponent.CreateWithImage<ReEndRadarChart>(parent, "RadarChart");
-
         public static ReEndHUDOverlay HUDOverlay(string systemLabel = null)
         {
             var b = ReEndBaseComponent.Create<ReEndHUDOverlay>(null, "HUDOverlay");
@@ -397,9 +231,6 @@ namespace ReEndUnity
             return b;
         }
 
-        public static ReEndTacticalTable TacticalTable(Transform parent)
-            => ReEndBaseComponent.Create<ReEndTacticalTable>(parent, "TacticalTable");
-
         // ── Label ──
 
         public static ReEndLabel Label(Transform parent, string text = null)
@@ -408,5 +239,10 @@ namespace ReEndUnity
             if (text != null) b.SetText(text);
             return b;
         }
+
+        // ── Toast (静态，独立 Canvas) ──
+
+        public static ReEndToast Toast(string message, ReEndStatus status = ReEndStatus.Default)
+            => ReEndToast.Show(message, status);
     }
 }

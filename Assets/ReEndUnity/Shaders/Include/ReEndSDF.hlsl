@@ -3,41 +3,69 @@
 
 // ── Signed Distance Field primitives for UI shaders ──
 // 约定：正值 = 内部（可见），负值 = 外部（裁剪）
+// aspectRatio = width / height，用于将 UV 缩放到正方形空间，使对角线为 45°
 
-/// 切角矩形 SDF（八边形）。正值 = 内部，负值 = 外部。
+/// 定向切角矩形 SDF — 仅切右上 (RT) 和 左下 (LB) 两个角
 /// uv: [0,1] 范围
-/// halfSize: 矩形的半宽半高（与 uv 同空间）
-/// cornerSize: 切角大小（与 halfSize 同空间）
-float sdCutCorner(float2 uv, float2 halfSize, float cornerSize)
+/// cornerSize: 切角大小（以短边为基准的 UV 空间比例）
+/// aspectRatio: 矩形宽高比 (width / height)
+float sdCutCornerRT_LB(float2 uv, float cornerSize, float aspectRatio)
 {
-    // 将 uv 从 [0,1] 映射到 [-halfSize, +halfSize]
-    float2 p = (uv - 0.5) * 2.0 * halfSize;
-    float2 q = abs(p);
+    // 缩放到正方形空间：宽矩形拉伸 X，高矩形拉伸 Y
+    float2 scale = aspectRatio >= 1.0
+        ? float2(aspectRatio, 1.0)
+        : float2(1.0, 1.0 / aspectRatio);
 
-    // 矩形距离：到最近边的距离（正值 = 内部）
+    float2 p = (uv - 0.5) * scale;
+    float2 halfSize = 0.5 * scale;
+
+    // 基础矩形距离
+    float2 q = abs(p);
     float rectDist = min(halfSize.x - q.x, halfSize.y - q.y);
 
-    // 切角距离：45度斜面的距离（正值 = 切角内侧）
-    // 切角线方程：q.x + q.y = halfSize.x + halfSize.y - cornerSize
-    float chamferDist = (halfSize.x + halfSize.y - cornerSize) - (q.x + q.y);
+    // 右上角 (RT): 对角线在 p.x + p.y = halfSize.x + halfSize.y - cornerSize
+    float rtDist = 1.0e10;
+    if (p.x > 0.0 && p.y > 0.0)
+        rtDist = (halfSize.x + halfSize.y - cornerSize) - (p.x + p.y);
 
-    // 两者取最小值 = 切角矩形的交集
-    return min(rectDist, chamferDist);
+    // 左下角 (LB): 对角线在 p.x + p.y = -(halfSize.x + halfSize.y - cornerSize)
+    float lbDist = 1.0e10;
+    if (p.x < 0.0 && p.y < 0.0)
+        lbDist = (p.x + p.y) + (halfSize.x + halfSize.y - cornerSize);
+
+    return min(min(rectDist, rtDist), lbDist);
 }
 
-/// 标准矩形 SDF。正值 = 内部，负值 = 外部。
-float sdRect(float2 uv, float2 halfSize)
+/// 非对称切角 — 仅切右上 (RT)，用于 OperatorCard 头像裁剪
+float sdCutCornerRT(float2 uv, float cornerSize, float aspectRatio)
 {
-    float2 p = (uv - 0.5) * 2.0 * halfSize;
+    float2 scale = aspectRatio >= 1.0
+        ? float2(aspectRatio, 1.0)
+        : float2(1.0, 1.0 / aspectRatio);
+
+    float2 p = (uv - 0.5) * scale;
+    float2 halfSize = 0.5 * scale;
+
     float2 q = abs(p);
-    return min(halfSize.x - q.x, halfSize.y - q.y);
+    float rectDist = min(halfSize.x - q.x, halfSize.y - q.y);
+
+    float rtDist = 1.0e10;
+    if (p.x > 0.0 && p.y > 0.0)
+        rtDist = (halfSize.x + halfSize.y - cornerSize) - (p.x + p.y);
+
+    return min(rectDist, rtDist);
 }
 
-/// 菱形 SDF（45度旋转正方形）。正值 = 内部，负值 = 外部。
-float sdDiamond(float2 uv, float size)
+/// 菱形 SDF（45度旋转正方形）。
+/// ⚠ 例外约定：负值 = 内部（标准 SDF 约定），与本文件其他函数相反。
+/// 使用者需用 smoothstep(softness, 0.0, d) 而非 smoothstep(0.0, softness, d)。
+/// uv: [0,1] 空间中的采样点
+/// center: [0,1] 空间中菱形的中心
+/// radius: 菱形的半对角线长度（UV 空间）
+float sdDiamond(float2 uv, float2 center, float radius)
 {
-    float2 p = (uv - 0.5) * size;
-    return (size * 0.5 - (abs(p.x) + abs(p.y))) * 0.7071;
+    float2 p = uv - center;
+    return (abs(p.x) + abs(p.y)) - radius;
 }
 
 #endif

@@ -41,6 +41,11 @@ namespace ReEndUnity
                     RefreshTheme();
                     OnValueChanged?.Invoke(idx);
                 }
+                else
+                {
+                    // 单选组不允许取消选中，恢复选中状态
+                    item.SetChecked(true);
+                }
             });
             item.RectTransform.anchoredPosition = new Vector2(0, -(Options.Count - 1) * 32);
             _items.Add(item);

@@ -36,17 +36,24 @@ namespace ReEndUnity
                     Line.material = null;
                     break;
                 case ReEndSeparatorStyle.Gradient:
-                    Line.material = GetOrCreateMaterial("ReEnd/UI/Glow");
+                    Line.material = GetOrCreateMaterial("ReEnd/UI/GradientLine");
                     Line.color = Theme.primary;
+                    Line.material.SetFloat("_Direction", Direction == ReEndDirection.Horizontal ? 0 : 1);
                     break;
                 case ReEndSeparatorStyle.Glow:
-                    Line.color = Theme.primary;
                     Line.material = GetOrCreateMaterial("ReEnd/UI/Glow");
+                    Line.color = Theme.primary;
                     break;
                 case ReEndSeparatorStyle.Dashed:
                     Line.color = Theme.borderDefault;
+                    Line.material = null;
                     break;
                 case ReEndSeparatorStyle.Diamond:
+                    Line.material = GetOrCreateMaterial("ReEnd/UI/Diamond");
+                    Line.material.SetFloat("_DiamondCount", Direction == ReEndDirection.Horizontal ? 10 : 3);
+                    Line.material.SetFloat("_DiamondSize", 0.04f);
+                    Line.material.SetFloat("_DiamondSpacing", 0.12f);
+                    Line.material.SetFloat("_DiamondRotate", 0);
                     Line.color = Theme.primary;
                     break;
             }
