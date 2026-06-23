@@ -4,10 +4,18 @@
 
 A **Three Kingdoms-themed card battle game** (三国杀-style) built on Unity 2022.3 LTS + Tuanjie Engine 1.8.5. Players take on character roles from the Three Kingdoms era and battle using a deterministic turn-based card system with initiative/response mechanics.
 
+**初心**：让每一次出牌都像一场电影级对决。策略化为电影级动作。
+**使命**：确定性的规则核心 + 现代化的 3D 演出 + 剧本驱动的剧情战斗，区别于市面普通卡牌游戏。
+
+> **五大支柱** (`design/gdd/game-pillars.md`)：规则权威不可动摇 → 每张牌都是演出 → 一目了然 → 双端可降级 → 剧本模式（战斗即叙事）
+> 所有设计决策必须对齐支柱。冲突时按优先级裁决。
+
 - **Engine**: Unity `2022.3.62t7` (Tuanjie `1.8.5`)
 - **Render Pipeline**: URP 14.1.0
 - **Project Stage**: Production — code exists, battle-presentation vertical slice complete
 - **Active Scene**: `Assets/Scenes/BattleScene.scene`
+- **Game Concept**: `design/gdd/game-concept.md`
+- **Game Pillars**: `design/gdd/game-pillars.md`
 
 ## Key Scenes
 

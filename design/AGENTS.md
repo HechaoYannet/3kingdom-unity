@@ -3,6 +3,14 @@
 This directory keeps the original design workflow. Codex should follow it
 without replacing the Claude-authored structure.
 
+## North Star
+
+Before any design work, read and align with:
+- **`design/gdd/game-concept.md`** — 初心、核心幻想、MVP 范围
+- **`design/gdd/game-pillars.md`** — 五大支柱、反支柱、冲突裁决规则
+
+Every design document must serve at least one pillar. Anti-pillar violation = design defect.
+
 ## GDD Rules
 
 Every GDD in `design/gdd/` must include these 8 sections in order:

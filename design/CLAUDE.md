@@ -2,6 +2,16 @@
 
 When authoring or editing files in this directory, follow these standards.
 
+## North Star
+
+Before any design work, read and align with:
+- **`design/gdd/game-concept.md`** — 初心、核心幻想、MVP 范围
+- **`design/gdd/game-pillars.md`** — 五大支柱、反支柱、冲突裁决规则
+
+Every GDD, UX spec, and design decision must serve at least one pillar.
+When two pillars conflict, follow the priority order in `game-pillars.md`.
+Anti-pillars are equally binding — violating an anti-pillar is a design defect.
+
 ## GDD Files (`design/gdd/`)
 
 Every GDD must include all **8 required sections** in this order:

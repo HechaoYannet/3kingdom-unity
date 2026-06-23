@@ -2,8 +2,8 @@
 
 > **Status**: Draft
 > **Created**: 2026-04-27
-> **Last Updated**: 2026-04-27
-> **Source Concept**: Reverse-documented from `Assets/Scripts/` and existing GDDs
+> **Last Updated**: 2026-06-23
+> **Source Concept**: Reverse-documented from `Assets/Scripts/` and existing GDDs; now aligned with `game-concept.md` and `game-pillars.md`
 
 ---
 
@@ -134,14 +134,17 @@ This project already contains an implemented turn-based Three Kingdoms-themed ca
 | Design docs approved | 0 |
 | MVP systems designed | 5/8 |
 | Vertical Slice systems designed | 0/2 |
+| **Meta: Game Concept** | ✅ Written (`game-concept.md`) |
+| **Meta: Game Pillars** | ✅ Written (`game-pillars.md`) |
 
 ---
 
 ## Next Steps
 
+- [x] Write `design/gdd/game-concept.md` and `design/gdd/game-pillars.md`
 - [ ] Run `/reverse-document design Assets/Scripts/AssetBundleFramework`
 - [ ] Run `/reverse-document design Assets/Scripts/Data`
 - [ ] Run `/reverse-document design Assets/Scripts/Event`
 - [ ] Review and approve `design/gdd/3d-battle-presentation-system.md`
-- [ ] Run `/design-review` on the four existing GDDs so statuses can move from `In Review` to `Approved`
-- [ ] Create missing ADRs for role, UI, data, and asset-loading architecture
+- [ ] Run `/design-review` on the four existing GDDs — verify pillar alignment per `game-pillars.md`
+- [ ] Create missing ADRs for role, UI, data, and asset-loading architecture — each must reference served pillar(s)

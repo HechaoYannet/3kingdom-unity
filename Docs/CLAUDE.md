@@ -2,6 +2,11 @@
 
 When authoring or editing files in this directory, follow these standards.
 
+## North Star
+
+All architecture decisions must align with the project's five game pillars:
+`design/gdd/game-pillars.md`. Every ADR should reference which pillar(s) it serves.
+
 ## Architecture Decision Records (`docs/architecture/`)
 
 Use the ADR template: `.claude/docs/templates/architecture-decision-record.md`
