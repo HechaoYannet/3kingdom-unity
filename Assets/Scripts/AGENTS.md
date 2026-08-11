@@ -1,29 +1,27 @@
-# Source Directory
+# Source Directory — AGENTS
 
-When editing code in this directory, keep the existing Claude workflow rules and
-apply them through Codex.
+When editing code in this directory, follow the project conventions in `CLAUDE.md` (root) and `CODELY.md`.
 
 ## Engine Version Warning
 
-The pinned engine/tooling may be newer than model cutoff knowledge.
-Always check `Docs/engine-reference/` before using engine APIs.
+The pinned engine (Unity 2022.3.62t7 + Tuanjie 1.8.5) may be newer than model cutoff knowledge.
+Verify API signatures against the installed package docs before using unfamiliar APIs.
 
 ## Coding Standards
 
-- All public APIs require doc comments.
-- Gameplay values must be data-driven, never hardcoded.
-- Prefer dependency injection over singletons for testability.
-- Every new system needs a corresponding ADR in `Docs/architecture/`.
-- Commits must reference the relevant story ID or design document.
+- All public APIs require Chinese XML doc comments (`<summary>`).
+- Gameplay values must be data-driven (JSON / ScriptableObject), never hardcoded.
+- Follow existing singleton patterns (`public static T instance` in Awake) unless a new pattern is agreed.
+- Every new system needs a corresponding document in `Docs/architecture/`.
+- Commits must reference the relevant document or task.
 
 ## File Routing
 
-- Use the Unity-specialist guidance in `.claude/agents/` when work is engine-specific.
-- If the task mentions a Claude role, read that agent file before editing.
+- Game logic: `Assets/Scripts/Card/`, `Character/`, `Role/`, `CardManage/`
+- UI: `Assets/Scripts/UI/` (`UIFramework/` core + `UICompnent/` HUD)
+- Utilities: `Assets/Scripts/Tools/`
 
 ## Tests
 
-- Tests belong in `tests/`, not in `Assets/Scripts/`.
-- Every gameplay system should have unit tests for formulas and edge cases.
-- For UI-facing work, capture verification evidence when practical.
-
+- Runtime test code: `Assets/Scripts/UI/Test/` (has its own asmdef, Editor-only)
+- Test documentation: `Docs/testing/`

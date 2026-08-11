@@ -42,6 +42,10 @@ public class BattleHandPresenter : MonoBehaviour
     private BattleTargetButtonView selectedTarget;
     private BattleHandCardView lastHoveredCard;
     private bool layoutDirty = true;
+    private bool layoutTargetsDirty = true;
+    private bool lastGuideCanCommit;
+    private string lastHintText;
+    private Color lastHintColor;
 
     private Canvas rootCanvas;
     private readonly Dictionary<Card, Rect> cardGroundRects = new Dictionary<Card, Rect>();
@@ -172,6 +176,7 @@ public class BattleHandPresenter : MonoBehaviour
         SyncTargetSelectionFromCard();
         RefreshOverlayVisibility();
         layoutDirty = true;
+        layoutTargetsDirty = true;
     }
 
     /// <summary>
@@ -188,6 +193,9 @@ public class BattleHandPresenter : MonoBehaviour
         selectedCard = isDragging ? cardView : selectedCard;
         if (isDragging)
         {
+            // 拖拽卡需置顶 + 目标区显示，置脏标记由下一帧布局完成
+            layoutDirty = true;
+            layoutTargetsDirty = true;
             SyncTargetSelectionFromCard();
             UpdateTargetHoverFromScreenPosition(screenPosition);
         }
@@ -195,6 +203,7 @@ public class BattleHandPresenter : MonoBehaviour
         {
             hoveredTarget = null;
             layoutDirty = true;
+            layoutTargetsDirty = true;
         }
 
         UpdateGuideState(isDragging, screenPosition);
@@ -245,7 +254,12 @@ public class BattleHandPresenter : MonoBehaviour
     /// </summary>
     public void NotifyTargetHover(BattleTargetButtonView targetView, bool isHovered)
     {
+        BattleTargetButtonView prev = hoveredTarget;
         hoveredTarget = isHovered ? targetView : hoveredTarget == targetView ? null : hoveredTarget;
+        if (hoveredTarget != prev)
+        {
+            layoutTargetsDirty = true;
+        }
     }
 
     /// <summary>
@@ -274,12 +288,22 @@ public class BattleHandPresenter : MonoBehaviour
     {
         if (player == null) return;
 
-        // 拖拽过程中每帧更新位置
+        // 拖拽中：拖拽卡位置由 OnDrag 直接设置，其余卡仅在脏标记时重排，
+        // 避免每帧 DOKill + 重建全部 Tween 导致目标按钮 hover 反馈永远到不了目标值
         if (draggingCard != null)
         {
-            LayoutCards();
-            LayoutTargets();
-            layoutDirty = false;
+            if (layoutDirty)
+            {
+                LayoutCards();
+                layoutDirty = false;
+            }
+
+            if (layoutTargetsDirty)
+            {
+                LayoutTargets();
+                layoutTargetsDirty = false;
+            }
+
             return;
         }
 
@@ -287,12 +311,17 @@ public class BattleHandPresenter : MonoBehaviour
         UpdateHoverFromPointer();
 
         // 脏标记模式：仅在需要时重新布局
-        if (layoutDirty)
+        if (layoutDirty || layoutTargetsDirty)
         {
-            LayoutCards();
+            if (layoutDirty)
+            {
+                LayoutCards();
+                layoutDirty = false;
+            }
+
             LayoutTargets();
+            layoutTargetsDirty = false;
             RefreshOverlayVisibility();
-            layoutDirty = false;
         }
         else
         {
@@ -310,6 +339,7 @@ public class BattleHandPresenter : MonoBehaviour
 
         DiffUpdateHand();
         layoutDirty = true;
+        layoutTargetsDirty = true;
     }
 
     /// <summary>
@@ -330,15 +360,29 @@ public class BattleHandPresenter : MonoBehaviour
             handAnchor, Input.mousePosition, cam, out Vector2 localPoint))
             return;
 
-        BattleHandCardView newHovered = null;
-        foreach (KeyValuePair<Card, Rect> pair in cardGroundRects)
+        float tolerance = config != null ? config.hoverExitTolerance : 88f;
+
+        // 优先保持当前悬停卡：指针仍在"容差扩展矩形"内时不切换，
+        // 防止指针在卡牌边缘微动导致 hover 闪烁
+        if (hoveredCard != null && hoveredCard.BoundCard != null &&
+            cardGroundRects.TryGetValue(hoveredCard.BoundCard, out Rect currentRect) &&
+            ExpandRect(currentRect, tolerance).Contains(localPoint))
         {
-            if (!cardViews.TryGetValue(pair.Key, out BattleHandCardView view) || view == null)
+            return;
+        }
+
+        // 正常检测：从最上层（索引最大）向下检测，避免 Dictionary 无序导致重叠时错位
+        BattleHandCardView newHovered = null;
+        List<Card> cards = player.currentCards;
+        for (int i = cards.Count - 1; i >= 0; i--)
+        {
+            Card card = cards[i];
+            if (!cardViews.TryGetValue(card, out BattleHandCardView view) || view == null)
                 continue;
             if (view.IsDragging)
                 continue;
 
-            if (pair.Value.Contains(localPoint))
+            if (cardGroundRects.TryGetValue(card, out Rect groundRect) && groundRect.Contains(localPoint))
             {
                 newHovered = view;
                 break;
@@ -353,6 +397,19 @@ public class BattleHandPresenter : MonoBehaviour
             lastHoveredCard = null;
             layoutDirty = true;
         }
+    }
+
+    /// <summary>
+    /// 扩展矩形：底部容差最大（指针常从下方进入），两侧次之，顶部最小。
+    /// </summary>
+    private static Rect ExpandRect(Rect rect, float tolerance)
+    {
+        float side = tolerance * 0.3f;
+        return new Rect(
+            rect.xMin - side,
+            rect.yMin - tolerance,
+            rect.width + side * 2f,
+            rect.height + tolerance + tolerance * 0.2f);
     }
 
     /// <summary>
@@ -379,16 +436,9 @@ public class BattleHandPresenter : MonoBehaviour
         {
             if (cardViews.TryGetValue(removed, out BattleHandCardView view))
             {
-                if (cardViewPool != null)
-                {
-                    cardViewPool.Return(view);
-                }
-                else
-                {
-                    Destroy(view.gameObject);
-                }
                 cardViews.Remove(removed);
                 cardGroundRects.Remove(removed);
+                PlayExitAndRecycle(view);
             }
         }
 
@@ -430,9 +480,39 @@ public class BattleHandPresenter : MonoBehaviour
                     view.Bind(card);
                     view.gameObject.SetActive(true);
                 }
+                // 新牌从手牌区底部飞入，避免从 (0,0) 中心弹出
+                view.PrepareEntryAnimation();
                 cardViews[card] = view;
             }
         }
+    }
+
+    /// <summary>
+    /// 播放离场动画后回收视图，出牌/弃牌时卡牌有飞出反馈而非瞬间消失。
+    /// </summary>
+    private void PlayExitAndRecycle(BattleHandCardView view)
+    {
+        if (view == null)
+        {
+            return;
+        }
+
+        view.PlayExitAnimation(() =>
+        {
+            if (view == null)
+            {
+                return;
+            }
+
+            if (cardViewPool != null)
+            {
+                cardViewPool.Return(view);
+            }
+            else
+            {
+                Destroy(view.gameObject);
+            }
+        });
     }
 
     private void RebuildHand()
@@ -658,28 +738,43 @@ public class BattleHandPresenter : MonoBehaviour
         Color normalColor = config != null ? config.normalHintColor : new Color(0.88f, 0.82f, 0.64f, 0.72f);
         Color waitingColor = config != null ? config.waitingHintColor : new Color(0.5f, 0.5f, 0.5f, 0.5f);
 
+        string text;
+        Color color;
         if (player.IsRefusingInputActive)
         {
             int excess = player.currentCards.Count - player.GetMaxHP();
-            permanentHintText.text = excess > 0
+            text = excess > 0
                 ? $"弃牌阶段 — 点击手牌弃置（需弃 {excess} 张）"
                 : "弃牌阶段";
-            permanentHintText.color = discardColor;
+            color = discardColor;
         }
         else if (player.IsResponseInputActive)
         {
-            permanentHintText.text = "⚠ 响应阶段 — 点击闪/防御牌来响应";
-            permanentHintText.color = responseColor;
+            text = "⚠ 响应阶段 — 点击闪/防御牌来响应";
+            color = responseColor;
         }
         else if (CanInteract())
         {
-            permanentHintText.text = "选择一张牌出牌  ·  或向上拖拽";
-            permanentHintText.color = normalColor;
+            text = "选择一张牌出牌  ·  或向上拖拽";
+            color = normalColor;
         }
         else
         {
-            permanentHintText.text = "等待中…";
-            permanentHintText.color = waitingColor;
+            text = "等待中…";
+            color = waitingColor;
+        }
+
+        // 文本/颜色去重：TMP 赋值与字体材质重建有开销，避免每帧重复设置
+        if (text != lastHintText)
+        {
+            permanentHintText.text = text;
+            lastHintText = text;
+        }
+
+        if (color != lastHintColor)
+        {
+            permanentHintText.color = color;
+            lastHintColor = color;
         }
     }
 
@@ -805,6 +900,7 @@ public class BattleHandPresenter : MonoBehaviour
         hoveredTarget = null;
         RefreshSelectedTargetFromPlayer();
         RefreshOverlayVisibility();
+        layoutTargetsDirty = true;
     }
 
     private void SyncTargetSelectionFromCard()
@@ -845,10 +941,18 @@ public class BattleHandPresenter : MonoBehaviour
     {
         if (!ShouldShowTargetSelection())
         {
-            hoveredTarget = null;
+            if (hoveredTarget != null)
+            {
+                hoveredTarget = null;
+                layoutTargetsDirty = true;
+            }
             return;
         }
 
+        Camera cam = rootCanvas != null && rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay
+            ? rootCanvas.worldCamera : null;
+
+        BattleTargetButtonView prev = hoveredTarget;
         hoveredTarget = null;
         foreach (BattleTargetButtonView targetView in targetViews.Values)
         {
@@ -857,11 +961,16 @@ public class BattleHandPresenter : MonoBehaviour
                 continue;
             }
 
-            if (RectTransformUtility.RectangleContainsScreenPoint(targetView.RectTransform, screenPosition, null))
+            if (RectTransformUtility.RectangleContainsScreenPoint(targetView.RectTransform, screenPosition, cam))
             {
                 hoveredTarget = targetView;
                 break;
             }
+        }
+
+        if (hoveredTarget != prev)
+        {
+            layoutTargetsDirty = true;
         }
     }
 
@@ -961,6 +1070,12 @@ public class BattleHandPresenter : MonoBehaviour
         }
 
         bool canCommit = screenPosition.y >= GetCommitScreenHeight();
+        if (canCommit == lastGuideCanCommit)
+        {
+            return;
+        }
+
+        lastGuideCanCommit = canCommit;
         Color canCommitColor = config != null ? config.guideLineCanCommitColor : new Color(0.98f, 0.88f, 0.32f, 0.72f);
         Color defaultColor = config != null ? config.guideLineDefaultColor : new Color(0.96f, 0.78f, 0.28f, 0.16f);
         if (guideText != null)
@@ -989,30 +1104,16 @@ public class BattleHandPresenter : MonoBehaviour
 
     private float GetCommitScreenHeight()
     {
-        Canvas canvas = GetComponentInParent<Canvas>();
-        float canvasHeight = canvas != null && canvas.rootCanvas != null
-            ? ((RectTransform)canvas.rootCanvas.transform).rect.height
+        if (rootCanvas == null)
+        {
+            rootCanvas = GetComponentInParent<Canvas>();
+        }
+
+        float canvasHeight = rootCanvas != null
+            ? ((RectTransform)rootCanvas.transform).rect.height
             : Screen.height;
         float ratio = config != null ? config.commitHeightRatio : 0.5f;
         float threshold = config != null ? config.commitThreshold : 220f;
         return canvasHeight * ratio + threshold;
-    }
-
-    private void RetireCommittedCardView(BattleHandCardView cardView)
-    {
-        if (cardView == null || cardView.BoundCard == null)
-        {
-            return;
-        }
-
-        cardViews.Remove(cardView.BoundCard);
-        if (cardViewPool != null)
-        {
-            cardViewPool.Return(cardView);
-        }
-        else
-        {
-            Destroy(cardView.gameObject);
-        }
     }
 }

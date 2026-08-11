@@ -1,36 +1,31 @@
-# Source Directory
+# Source Directory — Coding Standards
 
 When writing or editing game code in this directory, follow these standards.
 
 ## Engine Version Warning
 
-The LLM's training data predates the pinned engine version.
-**Always check `docs/engine-reference/` before using any engine API.**
+The pinned engine may be newer than model cutoff knowledge.
+**Verify API signatures against the installed package docs before using them.**
 Do not guess at post-cutoff API signatures — look them up first.
 
 ## Coding Standards
 
-- All public APIs require doc comments
-- Gameplay values must be **data-driven** (external config files), never hardcoded
-- Prefer dependency injection over singletons for testability
-- Every new system needs a corresponding ADR in `docs/architecture/`
-- Commits must reference the relevant story ID or design document
+- All public APIs require Chinese XML doc comments
+- Gameplay values must be **data-driven** (JSON / ScriptableObject), never hardcoded
+- Follow the existing singleton convention (`public static T instance` in Awake)
+- Every new system needs a corresponding document in `Docs/architecture/`
+- Commits must reference the relevant design document or task
 
 ## File Routing
 
-Match the engine-specialist agent to the file type being written.
-See `CLAUDE.md` → Technical Preferences → Engine Specialists → File Extension Routing.
-
-When in doubt, use the primary engine specialist configured in `CLAUDE.md`.
+- Card rules: `Assets/Scripts/Card/`, `CardManage/`
+- Player / AI: `Assets/Scripts/Character/`
+- Roles: `Assets/Scripts/Role/`
+- Battle UI: `Assets/Scripts/UI/`
+- Utilities: `Assets/Scripts/Tools/`
 
 ## Tests
 
-Tests live in `tests/` — not in `src/`.
-Run `/test-setup` to scaffold the test framework if it doesn't exist yet.
+Tests live in `Assets/Scripts/UI/Test/` (Editor-only asmdef) and are documented in `Docs/testing/`.
 Every gameplay system should have unit tests covering its formulas and edge cases.
-
-## Verification-Driven Development
-
-Write tests first when adding gameplay systems.
-For UI changes, verify with screenshots.
-Compare expected output to actual output before marking work complete.
+For UI changes, verify with screenshots in the Unity editor.

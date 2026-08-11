@@ -34,6 +34,7 @@ public class BattleHandCardView : MonoBehaviour, IPointerDownHandler, IPointerMo
     private bool dragEnabled = true;
     private bool gyroEnabled;
     private Vector2 localPointerNormalized;
+    private string lastDragHintText;
     private ReEndTheme reEndTheme;
 
 
@@ -56,6 +57,12 @@ public class BattleHandCardView : MonoBehaviour, IPointerDownHandler, IPointerMo
         rectTransform.anchoredPosition = Vector2.zero;
         rectTransform.localRotation = Quaternion.identity;
         rectTransform.localScale = Vector3.one;
+        if (canvasGroup != null)
+        {
+            // 离场动画会把 alpha 渐隐到 0，回池必须还原，否则复用后卡牌不可见
+            canvasGroup.alpha = 1f;
+            canvasGroup.blocksRaycasts = true;
+        }
     }
 
     /// <summary>
@@ -151,6 +158,65 @@ public class BattleHandCardView : MonoBehaviour, IPointerDownHandler, IPointerMo
     }
 
     /// <summary>
+    /// 出牌/弃牌离场动画：上浮 + 淡出 + 微放大，完成后回调回收视图。
+    /// </summary>
+    /// <param name="onComplete">动画完成回调（回池或销毁）。</param>
+    public void PlayExitAnimation(System.Action onComplete)
+    {
+        if (canvasGroup != null)
+        {
+            canvasGroup.blocksRaycasts = false;
+        }
+
+        isInteractable = false;
+        isHovered = false;
+        isDragging = false;
+
+        rectTransform.DOKill();
+        if (canvasGroup != null)
+        {
+            canvasGroup.DOKill();
+        }
+
+        rectTransform.SetAsLastSibling();
+        const float exitDuration = 0.22f;
+        rectTransform.DOAnchorPos(rectTransform.anchoredPosition + new Vector2(0f, 130f), exitDuration)
+            .SetEase(Ease.OutQuad).SetUpdate(true);
+        rectTransform.DOScale(Vector3.one * 1.12f, exitDuration)
+            .SetEase(Ease.OutQuad).SetUpdate(true);
+        if (canvasGroup != null)
+        {
+            canvasGroup.DOFade(0f, exitDuration)
+                .SetEase(Ease.InQuad).SetUpdate(true)
+                .OnComplete(() => onComplete?.Invoke());
+        }
+        else
+        {
+            onComplete?.Invoke();
+        }
+    }
+
+    /// <summary>
+    /// 摸牌入场预置：从手牌区底部飞入扇形位，由下一次布局动画过渡到目标位置。
+    /// </summary>
+    public void PrepareEntryAnimation()
+    {
+        rectTransform.DOKill();
+        if (canvasGroup != null)
+        {
+            canvasGroup.DOKill();
+        }
+
+        rectTransform.anchoredPosition = new Vector2(0f, -160f);
+        rectTransform.localRotation = Quaternion.identity;
+        rectTransform.localScale = new Vector3(0.92f, 0.92f, 1f);
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = 0.4f;
+        }
+    }
+
+    /// <summary>
     /// 更新当前卡牌的交互模式提示。
     /// </summary>
     /// <param name="canInteract">是否允许交互。</param>
@@ -166,21 +232,29 @@ public class BattleHandCardView : MonoBehaviour, IPointerDownHandler, IPointerMo
             return;
         }
 
+        string hint;
         if (!canInteract)
         {
-            dragHintText.text = "当前不可用";
+            hint = "当前不可用";
         }
         else if (isResponseMode)
         {
-            dragHintText.text = "点击打出响应牌";
+            hint = "点击打出响应牌";
         }
         else if (allowDrag)
         {
-            dragHintText.text = "向上拖拽出牌";
+            hint = "向上拖拽出牌";
         }
         else
         {
-            dragHintText.text = "点击选择目标";
+            hint = "点击选择目标";
+        }
+
+        // 去重：布局可能随脏标记频繁执行，避免重复设置相同文本触发 TMP 重建
+        if (hint != lastDragHintText)
+        {
+            dragHintText.text = hint;
+            lastDragHintText = hint;
         }
     }
 
@@ -213,6 +287,10 @@ public class BattleHandCardView : MonoBehaviour, IPointerDownHandler, IPointerMo
         // 杀死 UpdatePresentation 创建的残留位置/旋转/缩放动画，防止与拖拽位置赋值冲突
         rectTransform.DOKill();
         canvasGroup.DOKill();
+
+        // 拖拽"拿起"反馈：摆正旋转并轻微放大，与位置直接赋值不冲突
+        rectTransform.DOLocalRotate(Vector3.zero, 0.12f).SetEase(Ease.OutQuad).SetUpdate(true);
+        rectTransform.DOScale(Vector3.one * 1.08f, 0.12f).SetEase(Ease.OutQuad).SetUpdate(true);
 
         presenter.NotifyCardDragState(this, true, eventData.position);
         UpdateDragPosition(eventData.position);
@@ -451,8 +529,7 @@ public class BattleHandCardView : MonoBehaviour, IPointerDownHandler, IPointerMo
         Vector2 gyroParallax = Vector2.zero;
         if (gyroEnabled)
         {
-            Vector3 forward = Input.gyro.attitude * Vector3.forward;
-            gyroParallax = new Vector2(forward.x, forward.y) * gyroMult;
+            gyroParallax = GetGyroParallax() * gyroMult;
         }
 
         Vector2 pointerParallax = localPointerNormalized * (isHovered || isDragging ? hoverAmount : idleAmount);
@@ -461,5 +538,28 @@ public class BattleHandCardView : MonoBehaviour, IPointerDownHandler, IPointerMo
         backLayerRect.anchoredPosition = Vector2.Lerp(backLayerRect.anchoredPosition, totalParallax * backFactor, lerpSpeed * Time.unscaledDeltaTime);
         artLayerRect.anchoredPosition = Vector2.Lerp(artLayerRect.anchoredPosition, totalParallax * artFactor, lerpSpeed * Time.unscaledDeltaTime);
         frontLayerRect.anchoredPosition = Vector2.Lerp(frontLayerRect.anchoredPosition, totalParallax * frontFactor, lerpSpeed * Time.unscaledDeltaTime);
+    }
+
+    // 陀螺仪姿态每帧仅读取一次，避免每张卡牌重复原生调用（多卡时开销明显）
+    private static Vector2 cachedGyroParallax;
+    private static int cachedGyroFrame = -1;
+
+    private static Vector2 GetGyroParallax()
+    {
+        if (cachedGyroFrame != Time.frameCount)
+        {
+            cachedGyroFrame = Time.frameCount;
+            if (SystemInfo.supportsGyroscope && Input.gyro.enabled)
+            {
+                Vector3 forward = Input.gyro.attitude * Vector3.forward;
+                cachedGyroParallax = new Vector2(forward.x, forward.y);
+            }
+            else
+            {
+                cachedGyroParallax = Vector2.zero;
+            }
+        }
+
+        return cachedGyroParallax;
     }
 }

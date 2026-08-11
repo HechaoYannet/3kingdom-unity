@@ -38,7 +38,7 @@ Turn the project from a framework-heavy prototype into a battle-presentation-fir
 
 ## Immediate Deliverables
 
-1. `design/gdd/3d-battle-presentation-system.md`
+1. `Docs/gdd/3d-battle-presentation-system.md`
 2. `Docs/architecture/adr-battle-presentation-first-architecture.md`
 3. `Docs/planning/6-week-battle-presentation-roadmap.md`
-4. `production/session-state/editor-required-handoff.md`
+4. `Docs/production/session-state/editor-required-handoff.md`

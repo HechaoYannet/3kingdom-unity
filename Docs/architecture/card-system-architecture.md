@@ -21,7 +21,7 @@ Reverse-documented from existing implementation
 | **Engine** | Unity 2022.3.62t7 + Tuanjie Engine 1.8.5 |
 | **Domain** | Core / UI / Asset Loading |
 | **Knowledge Risk** | Medium |
-| **References Consulted** | `Docs/engine-reference/unity/VERSION.md`, `Docs/engine-reference/unity/modules/ui.md`, `Docs/engine-reference/unity/plugins/addressables.md` |
+| **References Consulted** | Tuanjie UI docs, Addressables package docs |
 | **Post-Cutoff APIs Used** | None explicitly documented |
 | **Verification Required** | Validate `Resources.Load()` usage, 3D card drag interactions, and scene/UI camera behavior inside Unity 2022.3.62t7 + Tuanjie 1.8.5 with the current URP route |
 
@@ -102,9 +102,9 @@ The current product direction also expects card actions to feed a separate battl
 
 | GDD System | Requirement | How This ADR Addresses It |
 |------------|-------------|---------------------------|
-| `design/gdd/card-system.md` | Support a six-state round flow for card play sequencing | Documents the round-manager state machine |
-| `design/gdd/card-system.md` | Support polymorphic card behavior across multiple card types | Documents the abstract base class contract |
-| `design/gdd/card-system.md` | Support 3D hand layout, dragging, and play-zone interactions | Documents the component split |
+| `Docs/gdd/card-system.md` | Support a six-state round flow for card play sequencing | Documents the round-manager state machine |
+| `Docs/gdd/card-system.md` | Support polymorphic card behavior across multiple card types | Documents the abstract base class contract |
+| `Docs/gdd/card-system.md` | Support 3D hand layout, dragging, and play-zone interactions | Documents the component split |
 
 ## Performance Implications
 - **CPU**: Lightweight now, but large hands and repeated layout updates may become hotspots

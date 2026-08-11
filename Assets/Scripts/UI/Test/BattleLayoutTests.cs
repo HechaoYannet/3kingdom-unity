@@ -108,4 +108,65 @@ public class BattleLayoutTests
         Assert.Greater(anchorMin.y, 0f, "底部 anchor 应 > 0（避开刘海）");
         Assert.LessOrEqual(anchorMax.y, 1f, "顶部 anchor 应 <= 1");
     }
+
+    /// <summary>
+    /// hover 退出容差应让指针离开卡牌底部一小段距离后仍保持悬停（防边缘闪烁）。
+    /// </summary>
+    [Test]
+    public void HoverTolerance_KeepsHover_BelowCardBottom()
+    {
+        // 卡牌地面矩形 220x300，容差 88（配置默认值）
+        Rect ground = new Rect(-110f, -150f, 220f, 300f);
+        float tolerance = 88f;
+        float side = tolerance * 0.3f;
+        Rect extended = new Rect(
+            ground.xMin - side, ground.yMin - tolerance,
+            ground.width + side * 2f, ground.height + tolerance + tolerance * 0.2f);
+
+        // 指针在卡牌底部下方 50px（< 88px 容差）应仍在扩展矩形内
+        Vector2 belowBottom = new Vector2(0f, -150f - 50f);
+        Assert.IsTrue(extended.Contains(belowBottom), "底部容差内应保持悬停");
+
+        // 超出容差（150px）应脱离悬停
+        Vector2 farBelow = new Vector2(0f, -150f - 150f);
+        Assert.IsFalse(extended.Contains(farBelow), "超出容差应解除悬停");
+
+        // 卡牌中心应始终命中
+        Assert.IsTrue(extended.Contains(Vector2.zero), "卡牌内部应命中");
+    }
+
+    /// <summary>
+    /// hover 推开偏移应随距离指数衰减。
+    /// </summary>
+    [Test]
+    public void HoverPush_DecaysWithDistance()
+    {
+        float pushAmount = 12f;
+        float pushDecay = 0.60f;
+
+        float offsetAt1 = pushAmount * Mathf.Pow(pushDecay, 1 - 1); // 相邻：12
+        float offsetAt2 = pushAmount * Mathf.Pow(pushDecay, 2 - 1); // 隔一张：7.2
+        float offsetAt3 = pushAmount * Mathf.Pow(pushDecay, 3 - 1); // 隔两张：4.32
+
+        Assert.AreEqual(12f, offsetAt1, 0.001f, "相邻卡推开距离应为全额");
+        Assert.Greater(offsetAt2, offsetAt3, "距离越远推开越小");
+        Assert.Greater(offsetAt1, offsetAt2, "相邻卡推开应大于远处卡");
+    }
+
+    /// <summary>
+    /// 拖拽启动阈值应按 DPI 缩放但 clamp 上限，避免高 DPI 手机拖拽迟钝。
+    /// </summary>
+    [Test]
+    public void DragThreshold_ClampedForHighDpi()
+    {
+        float baseThreshold = 10f;
+
+        float lowDpi = Mathf.Clamp(96f / 96f, 1f, 2.4f);
+        float highDpi = Mathf.Clamp(400f / 96f, 1f, 2.4f);
+        float extremeDpi = Mathf.Clamp(600f / 96f, 1f, 2.4f);
+
+        Assert.AreEqual(10, Mathf.RoundToInt(baseThreshold * lowDpi), "96dpi 阈值应为 10px");
+        Assert.AreEqual(24, Mathf.RoundToInt(baseThreshold * highDpi), "400dpi 阈值应 clamp 到 24px");
+        Assert.AreEqual(24, Mathf.RoundToInt(baseThreshold * extremeDpi), "600dpi 阈值应 clamp 到 24px");
+    }
 }

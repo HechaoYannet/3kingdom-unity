@@ -243,12 +243,13 @@ public class BattleUIBootstrap : MonoBehaviour
 
     /// <summary>
     /// 根据 DPI 调整拖拽阈值，确保移动端触控手感一致。
+    /// 阈值 clamp 在 10-24px：高 DPI 手机按比例放大过大会让拖拽启动迟钝。
     /// </summary>
     private static void AdjustDragThreshold(EventSystem eventSystem)
     {
         if (eventSystem == null) return;
         float baseThreshold = 10f;
-        float dpiScale = Screen.dpi > 0 ? Screen.dpi / 96f : 1f;
+        float dpiScale = Screen.dpi > 0 ? Mathf.Clamp(Screen.dpi / 96f, 1f, 2.4f) : 1f;
         eventSystem.pixelDragThreshold = Mathf.RoundToInt(baseThreshold * dpiScale);
     }
 

@@ -19,6 +19,8 @@ public class BattleTargetButtonView : MonoBehaviour, IPointerClickHandler, IPoin
 
     private BattleHandPresenter presenter;
     private ReEndTheme reEndTheme;
+    private string lastTitleText;
+    private string lastDetailText;
 
     /// <summary>
     /// 绑定的目标玩家。
@@ -175,15 +177,31 @@ public class BattleTargetButtonView : MonoBehaviour, IPointerClickHandler, IPoin
             return;
         }
 
+        string title;
+        string detail;
         if (BoundPlayer == null)
         {
-            titleText.text = "Unknown";
-            detailText.text = string.Empty;
-            return;
+            title = "Unknown";
+            detail = string.Empty;
+        }
+        else
+        {
+            string roleName = BoundPlayer.CurrentRole != null ? BoundPlayer.CurrentRole.GetType().Name : "Enemy";
+            title = string.Format("{0}  #{1}", roleName, BoundPlayer.PlayerID);
+            detail = string.Format("HP {0}/{1}", BoundPlayer.CurrentHP, BoundPlayer.GetMaxHP());
         }
 
-        string roleName = BoundPlayer.CurrentRole != null ? BoundPlayer.CurrentRole.GetType().Name : "Enemy";
-        titleText.text = string.Format("{0}  #{1}", roleName, BoundPlayer.PlayerID);
-        detailText.text = string.Format("HP {0}/{1}", BoundPlayer.CurrentHP, BoundPlayer.GetMaxHP());
+        // 去重：拖动时 LayoutTargets 可能频繁触发，避免重复设置相同文本
+        if (title != lastTitleText)
+        {
+            titleText.text = title;
+            lastTitleText = title;
+        }
+
+        if (detail != lastDetailText)
+        {
+            detailText.text = detail;
+            lastDetailText = detail;
+        }
     }
 }

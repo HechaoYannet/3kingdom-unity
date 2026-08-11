@@ -21,7 +21,7 @@ Reverse-documented from existing implementation
 | **Engine** | Unity 2022.3.62t7 + Tuanjie Engine 1.8.5 |
 | **Domain** | Core / Gameplay / Coroutine Timing |
 | **Knowledge Risk** | Medium |
-| **References Consulted** | `Docs/engine-reference/unity/VERSION.md`, `Docs/engine-reference/unity/modules/animation.md`, `Docs/engine-reference/unity/modules/ui.md` |
+| **References Consulted** | Tuanjie Animation docs, Tuanjie UI docs |
 | **Post-Cutoff APIs Used** | None explicitly documented |
 | **Verification Required** | Validate coroutine timing, turn timeout handling, and role/player coupling inside Unity 2022.3.62t7 + Tuanjie 1.8.5 with the current URP route |
 
@@ -102,9 +102,9 @@ The current production direction places this system inside the deterministic rul
 
 | GDD System | Requirement | How This ADR Addresses It |
 |------------|-------------|---------------------------|
-| `design/gdd/character-system.md` | Represent both human players and AI opponents within one turn framework | Documents the inheritance-based entity model |
-| `design/gdd/character-system.md` | Enforce HP-driven hand limits and role composition | Documents the player-role composition pattern |
-| `design/gdd/character-system.md` | Support timed turns and AI response delays | Documents the coroutine-based timing model |
+| `Docs/gdd/character-system.md` | Represent both human players and AI opponents within one turn framework | Documents the inheritance-based entity model |
+| `Docs/gdd/character-system.md` | Enforce HP-driven hand limits and role composition | Documents the player-role composition pattern |
+| `Docs/gdd/character-system.md` | Support timed turns and AI response delays | Documents the coroutine-based timing model |
 
 ## Performance Implications
 - **CPU**: Cheap at current scale, but polling-style logic and manager scans will degrade with more actors

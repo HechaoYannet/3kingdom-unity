@@ -146,3 +146,14 @@ Data: `Assets/StreamingAssets/CardDefine.json` (6 types defined).
 - [ ] GDDs missing for AssetBundleFramework, Event System, Data Management
 - [ ] ~1 harmless "missing script" warning from old prefab GUIDs
 - [ ] SDF font atlas dynamic mode: could expand for full Chinese text
+
+## Codely Structured Memories
+
+### User
+
+### Feedback
+
+### Project
+- [2026-08-12 00:34:08] 2026-08-12 项目清理与文档迁移：CODELY.md 正文需人工同步更新——design/gdd/→Docs/gdd/、production/→Docs/production/、PROJECT-QUICKSTART.md→Docs/guides/quickstart.md、memory/glossary.md→Docs/reference/glossary.md；已删除死代码 AssetBundleFramework/Home/Login/xiaoxi/Data/Event/Mirror，核心系统现为 6 个；LoginScene.unity 未在 Build Settings 启用（预留）。**Why:** 防止未来会话被过时正文误导。**How to apply:** 读取 CODELY.md 时以本记录为准，文档总索引见 Docs/README.md。
+### Reference
+

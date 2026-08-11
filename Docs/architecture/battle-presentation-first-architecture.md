@@ -21,7 +21,7 @@ Proposed
 | **Engine** | Unity 2022.3.62t7 + Tuanjie Engine 1.8.5 |
 | **Domain** | Rendering / Camera / Presentation / Content Pipeline |
 | **Knowledge Risk** | Medium |
-| **References Consulted** | `Docs/engine-reference/unity/VERSION.md`, Tuanjie URP package docs, Tuanjie Cinemachine docs, Tuanjie Timeline docs, Tuanjie Shader Graph docs |
+| **References Consulted** | Tuanjie URP package docs, Tuanjie Cinemachine docs, Tuanjie Timeline docs, Tuanjie Shader Graph docs |
 | **Post-Cutoff APIs Used** | None required for this decision |
 | **Verification Required** | Confirm render-pipeline migration feasibility, current material compatibility, Cinemachine/Timeline package state, and effect fallbacks inside Unity 2022.3.62t7 + Tuanjie 1.8.5 |
 
